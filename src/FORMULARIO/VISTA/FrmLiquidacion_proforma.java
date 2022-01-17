@@ -937,6 +937,7 @@ public class FrmLiquidacion_proforma extends javax.swing.JInternalFrame {
             }
         }
     }
+    
 
     public FrmLiquidacion_proforma() {
         initComponents();

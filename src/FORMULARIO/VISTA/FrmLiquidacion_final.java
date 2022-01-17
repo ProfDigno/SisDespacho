@@ -134,6 +134,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private String liquidacion_espor = "EXPORTACION";
     private String estado_emitido = "EMITIDO";
     private String estado_anulado = "ANULADO";
+    private int idliquidacion_final_select;
     private void abrir_formulario() {
         this.setTitle("LIQUIDACION FINAL");
         evetbl.centrar_formulario_internalframa(this);
@@ -405,7 +406,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         monto_pagar = (monto_total_despacho - monto_adelanto);
         jFmonto_total_despacho.setValue(monto_total_despacho);
         jFmonto_pagar.setValue(monto_pagar);
-        monto_letra = nl.Convertir(String.valueOf(monto_pagar), true);
+        monto_letra = nl.Convertir(String.valueOf((int)monto_pagar), true);
         txtmonto_letra.setText(monto_letra);
     }
 
@@ -566,11 +567,31 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         if (validar_liquidacion_final()) {
             cargar_dato_liquidacion_final();
             if(BOliqfin.getBoolean_insertar_liquidacion_final(liqfin, tblitem_liquidacion_final)){
+                DAOliqfin.imprimir_rep_liquidacion_final(conn, idliquidacion_final);
                 reestableser_liquidacion();
             }
         }
     }
-
+    void seleccionar_liquidacion(){
+        idliquidacion_final_select = eveJtab.getInt_select_id(tblliquidacion);
+    }
+    private void boton_imprimir_liquidacion_final() {
+        if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
+            if (!eveJtab.getBoolean_validar_select(tblliquidacion)) {
+                DAOliqfin.imprimir_rep_liquidacion_final(conn, idliquidacion_final_select);
+            }
+        }
+    }
+    private void boton_anular_liquidacion_final() {
+        if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
+            if (!eveJtab.getBoolean_validar_select(tblliquidacion)) {
+                liqfin.setC7estado(estado_anulado);
+                liqfin.setC1idliquidacion_final(idliquidacion_final_select);
+                BOliqfin.anular_update_liquidacion_final(liqfin);
+                DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion, "");
+            }
+        }
+    }
     public FrmLiquidacion_final() {
         initComponents();
         abrir_formulario();
@@ -684,6 +705,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jPanel7 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblliquidacion = new javax.swing.JTable();
+        btnimprimir_liquidacion = new javax.swing.JButton();
+        btnanular = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -1719,6 +1742,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblliquidacion.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblliquidacionMouseReleased(evt);
+            }
+        });
         jScrollPane3.setViewportView(tblliquidacion);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -1732,17 +1760,41 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
+        btnimprimir_liquidacion.setText("IMPRIMIR LIQUIDACION");
+        btnimprimir_liquidacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_liquidacionActionPerformed(evt);
+            }
+        });
+
+        btnanular.setText("ANULAR");
+        btnanular.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnanularActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_filtro_liquidacionLayout = new javax.swing.GroupLayout(panel_filtro_liquidacion);
         panel_filtro_liquidacion.setLayout(panel_filtro_liquidacionLayout);
         panel_filtro_liquidacionLayout.setHorizontalGroup(
             panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(panel_filtro_liquidacionLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnimprimir_liquidacion)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnanular, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panel_filtro_liquidacionLayout.setVerticalGroup(
             panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_filtro_liquidacionLayout.createSequentialGroup()
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 173, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnimprimir_liquidacion)
+                    .addComponent(btnanular))
+                .addGap(0, 148, Short.MAX_VALUE))
         );
 
         jTab_liquidacion.addTab("FILTRO LIQUIDACION", panel_filtro_liquidacion);
@@ -2178,12 +2230,29 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         DAOliqfin.ancho_tabla_liquidacion_final(tblliquidacion);
     }//GEN-LAST:event_formInternalFrameOpened
 
+    private void tblliquidacionMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblliquidacionMouseReleased
+        // TODO add your handling code here:
+        seleccionar_liquidacion();
+    }//GEN-LAST:event_tblliquidacionMouseReleased
+
+    private void btnimprimir_liquidacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_liquidacionActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_liquidacion_final();
+    }//GEN-LAST:event_btnimprimir_liquidacionActionPerformed
+
+    private void btnanularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnanularActionPerformed
+        // TODO add your handling code here:
+        boton_anular_liquidacion_final();
+    }//GEN-LAST:event_btnanularActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnanular;
     private javax.swing.JButton btncalcular_monto;
     private javax.swing.JButton btneliminar_item_liquidacion;
     private javax.swing.JButton btnguardar;
     private javax.swing.JButton btnguardar1;
+    private javax.swing.JButton btnimprimir_liquidacion;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JButton btnnuevo1;
     private javax.swing.JComboBox<String> cmbaduana;

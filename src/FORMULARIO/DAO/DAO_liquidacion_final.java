@@ -33,7 +33,7 @@ public class DAO_liquidacion_final {
     private String sql_update = "UPDATE liquidacion_final SET fecha_creado=?,creado_por=?,fecha_despacho=?,despacho_numero=?,tipo_liquidacion=?,estado=?,observacion=?,contenedor_nro=?,contenedor_tipo=?,via_transporte=?,transporte_condicion=?,monto_imponible=?,monto_ajuste_incluir=?,monto_factura=?,monto_flete=?,monto_seguro=?,monto_cif=?,monto_total_despacho=?,monto_adelanto=?,monto_pagar=?,tasa_cambio_aduana=?,tasa_cambio_mercado=?,tipo_tasa_cambio=?,factura_numero=?,monto_letra=?,fk_idtipo_comprobante=?,fk_idtercero_ciudad=?,fk_idaduana=?,fk_iddespacho_zona=?,fk_idtransporte_empresa=?,fk_idtercero_importador=?,fk_idtercero_transportadora=?,fk_idmoneda_cambio=?,fk_idregimen=?,fk_idincoterms=? WHERE idliquidacion_final=?;";
 //    private String sql_select = "SELECT idliquidacion_final,fecha_creado,creado_por,fecha_despacho,despacho_numero,tipo_liquidacion,estado,observacion,contenedor_nro,contenedor_tipo,via_transporte,transporte_condicion,monto_imponible,monto_ajuste_incluir,monto_factura,monto_flete,monto_seguro,monto_cif,monto_total_despacho,monto_adelanto,monto_pagar,tasa_cambio_aduana,tasa_cambio_mercado,tipo_tasa_cambio,factura_numero,monto_letra,fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,fk_idmoneda_cambio,fk_idregimen,fk_idincoterms FROM liquidacion_final order by 1 desc;";
     private String sql_cargar = "SELECT idliquidacion_final,fecha_creado,creado_por,fecha_despacho,despacho_numero,tipo_liquidacion,estado,observacion,contenedor_nro,contenedor_tipo,via_transporte,transporte_condicion,monto_imponible,monto_ajuste_incluir,monto_factura,monto_flete,monto_seguro,monto_cif,monto_total_despacho,monto_adelanto,monto_pagar,tasa_cambio_aduana,tasa_cambio_mercado,tipo_tasa_cambio,factura_numero,monto_letra,fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,fk_idmoneda_cambio,fk_idregimen,fk_idincoterms FROM liquidacion_final WHERE idliquidacion_final=";
-
+    private String sql_update_estado = "UPDATE liquidacion_final SET estado=? WHERE idliquidacion_final=?;";
     public void insertar_liquidacion_final(Connection conn, liquidacion_final liqfin) {
         liqfin.setC1idliquidacion_final(eveconn.getInt_ultimoID_mas_uno(conn, liqfin.getTb_liquidacion_final(), liqfin.getId_idliquidacion_final()));
         String titulo = "insertar_liquidacion_final";
@@ -134,7 +134,21 @@ public class DAO_liquidacion_final {
             evemen.mensaje_error(e, sql_update + "\n" + liqfin.toString(), titulo);
         }
     }
-
+public void estado_update_liquidacion_final(Connection conn, liquidacion_final liqfin) {
+        String titulo = "estado_update_liquidacion_final";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_estado);
+            pst.setString(1, liqfin.getC7estado());
+            pst.setInt(2, liqfin.getC1idliquidacion_final());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_estado + "\n" + liqfin.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, true);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_estado + "\n" + liqfin.toString(), titulo);
+        }
+    }
     public void cargar_liquidacion_final(Connection conn, liquidacion_final liqfin, int id) {
         String titulo = "Cargar_liquidacion_final";
         try {
@@ -196,7 +210,7 @@ public class DAO_liquidacion_final {
                 + "from liquidacion_final lf,tercero ti,aduana ad,regimen re\n"
                 + "where lf.fk_idtercero_importador=ti.idtercero\n"
                 + "and lf.fk_idaduana=ad.idaduana \n"
-                + "and lf.fk_idregimen=re.idregimen \n"+filtro
+                + "and lf.fk_idregimen=re.idregimen \n" + filtro
                 + " order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_liquidacion_final(tbltabla);
@@ -205,5 +219,38 @@ public class DAO_liquidacion_final {
     public void ancho_tabla_liquidacion_final(JTable tbltabla) {
         int Ancho[] = {3, 19, 9, 12, 10, 10, 5, 5, 10, 10, 8};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void imprimir_rep_liquidacion_final(Connection conn, int id) {
+        String sql = "select lf.idliquidacion_final as idlqui,lf.tipo_liquidacion as tipo,lf.fecha_despacho as fec_despacho,\n"
+                + "ti.nombre as importa,lf.contenedor_nro as contene_nro,tc.descripcion as merca,tc2.nombre as destino,\n"
+                + "lf.via_transporte as via,ad.nombre as aduana,te.nombre as trans_emp,lf.transporte_condicion as trans_condi,\n"
+                + "lf.despacho_numero as despacho_nro,dz.nombre as zona,\n"
+                + "tex.nombre as exportador,\n"
+                + "lf.monto_imponible as m_imponible,lf.monto_ajuste_incluir as m_ajuste,\n"
+                + "lf.monto_factura as m_factura,lf.factura_numero as  nro_factura,\n"
+                + "lf.monto_flete as m_flete,lf.monto_seguro as m_seguro,\n"
+                + "lf.monto_cif as m_cif,(lf.monto_cif+lf.monto_ajuste_incluir) as m_cif_ajuste ,lf.tasa_cambio_aduana as tc_aduana,lf.tipo_tasa_cambio as moneda,\n"
+                + "re.nombre as regime,ic.nombre as incotern,lf.monto_total_despacho as m_ttdespacho,\n"
+                + "lf.monto_adelanto as m_adelanto,lf.monto_pagar as m_pagar,lf.monto_letra as m_letra,lf.observacion as observa,\n"
+                + "ilf.orden as i_ord,ilf.descripcion as i_descrip,ilf.comprobante_nro as i_comprobante,\n"
+                + "ilf.total_guarani as i_total\n"
+                + "from liquidacion_final lf,tercero ti,tipo_comprobante tc,tercero_ciudad tc2,aduana ad,transporte_empresa te,\n"
+                + "despacho_zona dz,tercero tex,regimen re,incoterms ic,item_liquidacion_final ilf \n"
+                + "where lf.fk_idtercero_importador=ti.idtercero\n"
+                + "and lf.fk_idtercero_transportadora=tex.idtercero \n"
+                + "and lf.fk_idtipo_comprobante=tc.idtipo_comprobante\n"
+                + "and lf.fk_idtercero_ciudad=tc2.idtercero_ciudad\n"
+                + "and lf.fk_idaduana=ad.idaduana \n"
+                + "and lf.fk_idtransporte_empresa=te.idtransporte_empresa\n"
+                + "and lf.fk_iddespacho_zona=dz.iddespacho_zona \n"
+                + "and lf.fk_idregimen=re.idregimen \n"
+                + "and lf.fk_idincoterms=ic.idincoterms \n"
+                + "and lf.idliquidacion_final=ilf.fk_idliquidacion_final \n"
+                + "and lf.idliquidacion_final="+id
+                + " order by ilf.orden asc;";
+        String titulonota = "LIQUIDACION";
+        String direccion = "src/REPORTE/LIQUIDACION/repLiquidacionFin.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }

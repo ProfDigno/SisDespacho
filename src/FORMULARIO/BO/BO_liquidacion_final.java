@@ -62,4 +62,24 @@ public class BO_liquidacion_final {
             }
         }
     }
+    public void anular_update_liquidacion_final(liquidacion_final liqfin) {
+        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE ANULAR LIQUIDACION_FINAL", "ANULAR", "ANULAR", "CANCELAR")) {
+            String titulo = "update_liquidacion_final";
+            Connection conn = ConnPostgres.getConnPosgres();
+            try {
+                if (conn.getAutoCommit()) {
+                    conn.setAutoCommit(false);
+                }
+                liqfin_dao.estado_update_liquidacion_final(conn, liqfin);
+                conn.commit();
+            } catch (SQLException e) {
+                evmen.mensaje_error(e, liqfin.toString(), titulo);
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    evmen.Imprimir_serial_sql_error(e1, liqfin.toString(), titulo);
+                }
+            }
+        }
+    }
 }
