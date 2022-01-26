@@ -38,6 +38,7 @@ public class EvenFecha {
     String fecha_dia1 = "yyyy-MM-01";
     String formato_fechaHora = "yyyy-MM-dd HH:mm";
     private String formato_hora = "HH:mm:ss";
+    String formato_fechaHoraZona = "yyyy-MM-dd HH:mm:ss.00";
     EvenConexion eveconn = new EvenConexion();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
 
@@ -245,5 +246,12 @@ public class EvenFecha {
             esMenos = true;
         }
         return esMenos;
+    }
+    public String getString_formato_fecha_hora_zona() {
+        String Sfecha;
+        java.util.Date date = new java.util.Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(formato_fechaHoraZona);
+        Sfecha = String.valueOf(sdf.format(date));
+        return Sfecha;
     }
 }

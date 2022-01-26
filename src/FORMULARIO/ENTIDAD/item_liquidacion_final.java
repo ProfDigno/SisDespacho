@@ -9,8 +9,8 @@ private int C4orden;
 private String C5descripcion;
 private String C6comprobante_nro;
 private double C7total_guarani;
-private double C8desglose;
-private double C9descriminacion_iva;
+private double C8sin_iva;
+private double C9solo_iva;
 private int C10fk_idliquidacion_final;
 private int C11fk_idtipo_comprobante;
 private static String nom_tabla;
@@ -75,17 +75,17 @@ private static String nom_idtabla;
 	public void setC7total_guarani(double C7total_guarani){
 		this.C7total_guarani = C7total_guarani;
 	}
-	public double getC8desglose(){
-		return C8desglose;
+	public double getC8sin_iva(){
+		return C8sin_iva;
 	}
-	public void setC8desglose(double C8desglose){
-		this.C8desglose = C8desglose;
+	public void setC8sin_iva(double C8sin_iva){
+		this.C8sin_iva = C8sin_iva;
 	}
-	public double getC9descriminacion_iva(){
-		return C9descriminacion_iva;
+	public double getC9solo_iva(){
+		return C9solo_iva;
 	}
-	public void setC9descriminacion_iva(double C9descriminacion_iva){
-		this.C9descriminacion_iva = C9descriminacion_iva;
+	public void setC9solo_iva(double C9solo_iva){
+		this.C9solo_iva = C9solo_iva;
 	}
 	public int getC10fk_idliquidacion_final(){
 		return C10fk_idliquidacion_final;
@@ -100,6 +100,6 @@ private static String nom_idtabla;
 		this.C11fk_idtipo_comprobante = C11fk_idtipo_comprobante;
 	}
 	public String toString() {
-		return "item_liquidacion_final(" + ",iditem_liquidacion_final=" + C1iditem_liquidacion_final + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,orden=" + C4orden + " ,descripcion=" + C5descripcion + " ,comprobante_nro=" + C6comprobante_nro + " ,total_guarani=" + C7total_guarani + " ,desglose=" + C8desglose + " ,descriminacion_iva=" + C9descriminacion_iva + " ,fk_idliquidacion_final=" + C10fk_idliquidacion_final + " ,fk_idtipo_comprobante=" + C11fk_idtipo_comprobante + " )";
+		return "item_liquidacion_final(" + ",iditem_liquidacion_final=" + C1iditem_liquidacion_final + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,orden=" + C4orden + " ,descripcion=" + C5descripcion + " ,comprobante_nro=" + C6comprobante_nro + " ,total_guarani=" + C7total_guarani + " ,desglose=" + C8sin_iva + " ,descriminacion_iva=" + C9solo_iva + " ,fk_idliquidacion_final=" + C10fk_idliquidacion_final + " ,fk_idtipo_comprobante=" + C11fk_idtipo_comprobante + " )";
 	}
 }

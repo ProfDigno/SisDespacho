@@ -5,6 +5,7 @@
  */
 package FORMULARIO.VISTA;
 
+import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Color.cla_color_palete;
 import Evento.Combobox.EvenCombobox;
@@ -13,12 +14,16 @@ import Evento.JLabel.EvenJLabel;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
+import Evento.Mensaje.EvenMensajeJoptionpane;
+import Evento.Utilitario.EvenNumero_a_Letra;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
@@ -32,6 +37,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
      EvenCombobox evecomb = new EvenCombobox();
      EvenJLabel evelbl=new EvenJLabel();
      EvenFecha evefec=new EvenFecha();
+     EvenConexion eveconn = new EvenConexion();
     private tercero ENTter = new tercero();
     private BO_tercero BOter = new BO_tercero();
     private DAO_tercero DAOter = new DAO_tercero();
@@ -39,6 +45,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private DAO_tercero_pais DAOpais = new DAO_tercero_pais();
     private tercero_ciudad ENTciu = new tercero_ciudad();
     private DAO_tercero_ciudad DAOciu = new DAO_tercero_ciudad();
+    private tercero_rubro ENTrub = new tercero_rubro();
+    private DAO_tercero_rubro DAOrub = new DAO_tercero_rubro();
     private item_tipo_registro ENTitr = new item_tipo_registro();
     private BO_item_tipo_registro BOitr = new BO_item_tipo_registro();
     private DAO_item_tipo_registro DAOitr = new DAO_item_tipo_registro();
@@ -49,6 +57,14 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private tipo_institucion ENTti = new tipo_institucion();
     private DAO_tipo_institucion DAOti = new DAO_tipo_institucion();
     private EvenJTextField evejtf = new EvenJTextField();
+     private saldo_credito_cliente scfina = new saldo_credito_cliente();
+    private credito_cliente cfina = new credito_cliente();
+    private grupo_credito_cliente gcfina = new grupo_credito_cliente();
+    private DAO_grupo_credito_cliente gcfina_dao = new DAO_grupo_credito_cliente();
+    private DAO_credito_cliente cfina_dao = new DAO_credito_cliente();
+    private EvenNumero_a_Letra nroletra = new EvenNumero_a_Letra();
+    private entidad_usuario usu = new entidad_usuario();
+    EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
     private boolean hab_combo_pais=false;
@@ -66,6 +82,10 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private int iditem_tipo_registro;
     private String estado_activo="ACTIVO";
     private String estado_desabilitado="DESABILITADO";
+    private String estado_EMITIDO = "EMITIDO";
+    private String estado_ABIERTO = "ABIERTO";
+    private boolean hab_combo_rubro;
+    private int fk_idtercero_rubro;
     private void abrir_formulario() {
         this.setTitle("TERCERO");
         evetbl.centrar_formulario_internalframa(this);        
@@ -73,6 +93,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         reestableser_item_tipo_registro();
         DAOter.actualizar_tabla_tercero(conn, tbltercero);
         color_formulario();
+        cargar_rubro();
         cargar_pais();
         cargar_ciudad();
         cargar_tipo_registro();
@@ -116,6 +137,10 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         evecomb.cargarCombobox(conn, jCtipo_institucion, "idtipo_institucion", "nombre", "tipo_institucion", "");
         hab_combo_tipo_institucion = true;
     }
+    private void cargar_rubro() {
+        evecomb.cargarCombobox(conn, jCrubros, "idtercero_rubro", "nombre", "tercero_rubro", "");
+        hab_combo_rubro = true;
+    }
     private void color_formulario(){
         panel_tabla.setBackground(clacolor.getColor_tabla());
         panel_insertar.setBackground(clacolor.getColor_insertar_primario());
@@ -139,10 +164,16 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtrepre_cedula, "DEBE CARGAR UNA CEDULA DEL REPRESENTANTE")) {
             return false;
         }
+        if (evejtf.getBoo_JTextField_vacio(txtsaldo_credito, "DEBE CARGAR UNA SALDO O  CERO")) {
+            return false;
+        }
         if(evecomb.getBoo_JCombobox_seleccionar(jCpais,"SELECCIONAR UN PAIS")){
             return false;
         }
         if(evecomb.getBoo_JCombobox_seleccionar(jCciudad,"SELECCIONAR UNA CIUDAD")){
+            return false;
+        }
+        if(evecomb.getBoo_JCombobox_seleccionar(jCrubros,"SELECCIONAR UN RUBRO")){
             return false;
         }
         
@@ -198,6 +229,9 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         ENTter.setC14transportadora(jCtransportadora.isSelected());
         ENTter.setC15fk_idtercero_pais(fk_idtercero_pais);
         ENTter.setC16fk_idtercero_ciudad(fk_idtercero_ciudad);
+        ENTter.setC17saldo_credito(Double.parseDouble(txtsaldo_credito.getText()));
+        ENTter.setC18fk_idtercero_rubro(fk_idtercero_rubro);
+        
     }
     private String getestado_registro(){
         String estado="error";
@@ -235,8 +269,18 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private void boton_guardar_tercero() {
         if (validar_guardar_tercero()) {
             cargar_dato_tercero();
-            BOter.insertar_tercero(ENTter, tbltercero);
-            reestableser_tercero();
+            int idcliente = (eveconn.getInt_ultimoID_mas_uno(conn, ENTter.getTb_tercero(), ENTter.getId_idtercero()));
+            int idsaldo_credito_cliente = (eveconn.getInt_ultimoID_mas_uno(conn, scfina.getTb_saldo_credito_cliente(), scfina.getId_idsaldo_credito_cliente()));
+            int idgrupo_credito_cliente = (eveconn.getInt_ultimoID_mas_uno(conn, gcfina.getTb_grupo_credito_cliente(), gcfina.getId_idgrupo_credito_cliente()));
+            cargar_dato_tercero();
+            cargar_saldo_credito_cliente(idcliente);
+            cargar_grupo_credito_cliente(idcliente);
+            cargar_credito_cliente(idsaldo_credito_cliente, idgrupo_credito_cliente);
+            if (BOter.getBoolean_insertar_cliente_con_credito_inicio1(ENTter, scfina, cfina, gcfina)) {
+                reestableser_tercero();
+                gcfina_dao.actualizar_tabla_grupo_credito_cliente_idc(conn, tblgrupo_credito_cliente, idcliente);
+                cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, tblcredito_cliente, idgrupo_credito_cliente);
+            }
         }
     }
     private void boton_guardar_item_tipo_registro() {
@@ -263,6 +307,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
 
     private void seleccionar_tabla_tercero() {
         fk_idtercero = eveJtab.getInt_select_id(tbltercero);
+        
         DAOter.cargar_tercero(conn,ENTter, fk_idtercero);
         txtid.setText(String.valueOf(ENTter.getC1idtercero()));
         txtnombre.setText(ENTter.getC4nombre());
@@ -278,10 +323,17 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCtransportadora.setSelected(ENTter.getC14transportadora());
         fk_idtercero_pais=ENTter.getC15fk_idtercero_pais();
         fk_idtercero_ciudad=ENTter.getC16fk_idtercero_ciudad();
+        fk_idtercero_rubro=ENTter.getC18fk_idtercero_rubro();
+        txtsaldo_credito.setText(String.valueOf(ENTter.getC17saldo_credito()));
         DAOpais.cargar_tercero_pais(conn, ENTpais,fk_idtercero_pais);
         evecomb.setSeleccionarCombobox(jCpais, ENTpais.getC1idtercero_pais(), ENTpais.getC2nombre());
         DAOciu.cargar_tercero_ciudad(conn, ENTciu,fk_idtercero_ciudad);
         evecomb.setSeleccionarCombobox(jCciudad, ENTciu.getC1idtercero_ciudad(), ENTciu.getC2nombre());
+        DAOrub.cargar_tercero_rubro(conn, ENTrub, fk_idtercero_rubro);
+        evecomb.setSeleccionarCombobox(jCrubros, ENTrub.getC1idtercero_rubro(), ENTrub.getC2nombre());
+        gcfina_dao.actualizar_tabla_grupo_credito_cliente_idc(conn, tblgrupo_credito_cliente, fk_idtercero);
+        gcfina_dao.cargar_grupo_credito_cliente_id(conn, gcfina, fk_idtercero);
+        cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, tblcredito_cliente, gcfina.getC1idgrupo_credito_cliente());
         btnguardar_tercero.setEnabled(false);
         btneditar_tercero.setEnabled(true);
     }
@@ -321,14 +373,71 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCcolaborador.setSelected(false);
         jCproveedor.setSelected(false);
         jCtransportadora.setSelected(false);
+        txtsaldo_credito.setText("0");
         fk_idtercero_pais=0;
         fk_idtercero_ciudad=0;
         jCpais.setSelectedIndex(0);
         jCciudad.setSelectedIndex(0);
+        jCrubros.setSelectedIndex(0);
+        DAOter.actualizar_tabla_tercero(conn, tbltercero);
+        jFsaldo_credito_total.setValue(DAOter.getDouble_sumar_monto_credito_cliente(conn));
         btnguardar_tercero.setEnabled(true);
         btneditar_tercero.setEnabled(false);
         btndeletar_tercero.setEnabled(false);
         txtnombre.grabFocus();
+    }
+    private void cargar_saldo_credito_cliente(int idcliente) {
+        scfina.setC3descripcion("CREDITO DE CLIENTE DE INICIO");
+        scfina.setC4monto_saldo_credito(ENTter.getC17saldo_credito());//cambiar
+        scfina.setC5monto_letra(nroletra.Convertir(txtsaldo_credito.getText(), true));
+        scfina.setC6estado(estado_EMITIDO);
+        scfina.setC7fk_idcliente(idcliente);
+        scfina.setC8fk_idusuario(usu.getGlobal_idusuario());
+    }
+    private void cargar_grupo_credito_cliente(int idcliente) {
+        gcfina.setC4estado(estado_ABIERTO);
+        gcfina.setC5fk_idcliente(idcliente);
+    }
+    private void cargar_credito_cliente(int idsaldo_credito_cliente, int idgrupo_credito_cliente) {
+        cfina.setC3descripcion("CREDITO DE CLIENTE DE INICIO");
+        cfina.setC4estado(estado_EMITIDO);
+        cfina.setC5monto_contado(0);
+        cfina.setC6monto_credito(ENTter.getC17saldo_credito());//cambiar clie.getC13saldo_credito()
+        cfina.setC7tabla_origen("CLIENTE");
+        cfina.setC8fk_idgrupo_credito_cliente(idgrupo_credito_cliente);
+        cfina.setC11fk_idventa_alquiler(0);
+        cfina.setC10fk_idrecibo_pago_cliente(0);
+        cfina.setC9fk_idsaldo_credito_cliente(idsaldo_credito_cliente);
+        cfina.setC12vence(false);
+        cfina.setC13fecha_vence(evefec.getString_formato_fecha_hora_zona());
+    }
+     private void boton_guardar_credito_inicio() {
+        if (tblgrupo_credito_cliente.getRowCount() == 0) {
+            int idcliente = eveJtab.getInt_select_id(tbltercero);
+            int idsaldo_credito_cliente = (eveconn.getInt_ultimoID_mas_uno(conn, scfina.getTb_saldo_credito_cliente(), scfina.getId_idsaldo_credito_cliente()));
+            int idgrupo_credito_cliente = (eveconn.getInt_ultimoID_mas_uno(conn, gcfina.getTb_grupo_credito_cliente(), gcfina.getId_idgrupo_credito_cliente()));
+            cargar_saldo_credito_cliente(idcliente);
+            cargar_grupo_credito_cliente(idcliente);
+            cargar_credito_cliente(idsaldo_credito_cliente, idgrupo_credito_cliente);
+            if (BOter.getBoolean_insertar_credito_inicio1(scfina, cfina, gcfina)) {
+                gcfina_dao.actualizar_tabla_grupo_credito_cliente_idc(conn, tblgrupo_credito_cliente, idcliente);
+                cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, tblcredito_cliente, idgrupo_credito_cliente);
+                JOptionPane.showMessageDialog(null, "CREDITO GRUPO INICIADO ");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "YA TIENE CREDITO GRUPO INICIADO ");
+        }
+    }
+      private void cargar_credito_cliente() {
+        if (!eveJtab.getBoolean_validar_select(tblgrupo_credito_cliente)) {
+            int idgrupo_credito_cliente = eveJtab.getInt_select_id(tblgrupo_credito_cliente);
+            cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, tblcredito_cliente, idgrupo_credito_cliente);
+        }
+    }
+     
+      private void actualizar_todo() {
+        DAOter.actualizar_tabla_tercero(conn, tbltercero);
+//        sumar_monto_credito_cliente();
     }
     private void boton_nuevo_tercero(){
         reestableser_tercero();
@@ -367,6 +476,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCpais = new javax.swing.JComboBox<>();
         lblciudad = new javax.swing.JLabel();
         jCciudad = new javax.swing.JComboBox<>();
+        lblpais1 = new javax.swing.JLabel();
+        jCrubros = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
@@ -380,9 +491,16 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCtransportadora = new javax.swing.JCheckBox();
         lblID = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
+        jLabel14 = new javax.swing.JLabel();
+        txtsaldo_credito = new javax.swing.JTextField();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltercero = new javax.swing.JTable();
+        btnpagar_credito = new javax.swing.JButton();
+        btnactualizar_tabla = new javax.swing.JButton();
+        btncrearcredito_inicio = new javax.swing.JButton();
+        jLabel13 = new javax.swing.JLabel();
+        jFsaldo_credito_total = new javax.swing.JFormattedTextField();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -415,6 +533,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblitem_tipo_registro = new javax.swing.JTable();
+        jPanel7 = new javax.swing.JPanel();
+        panel_tabla_cliente1 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tblgrupo_credito_cliente = new javax.swing.JTable();
+        panel_tabla_cliente2 = new javax.swing.JPanel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tblcredito_cliente = new javax.swing.JTable();
 
         setClosable(true);
         setIconifiable(true);
@@ -564,30 +689,57 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
         });
 
+        lblpais1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblpais1.setText("RUBRO:");
+        lblpais1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                lblpais1MouseMoved(evt);
+            }
+        });
+        lblpais1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblpais1MouseClicked(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                lblpais1MouseExited(evt);
+            }
+        });
+
+        jCrubros.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        jCrubros.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jCrubros.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCrubrosActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addComponent(lblpais, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel5)
+                        .addComponent(jLabel4)
+                        .addComponent(jLabel3)
+                        .addComponent(jLabel2)
+                        .addComponent(lblpais, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(lblpais1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtdireccion, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txttelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtruc, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtnombre, javax.swing.GroupLayout.PREFERRED_SIZE, 397, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtdireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                    .addComponent(txttelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                    .addComponent(txtruc, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                    .addComponent(txtnombre, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(jCpais, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblciudad)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCciudad, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jCciudad, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCrubros, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(64, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -616,7 +768,11 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblpais)
                         .addComponent(jCpais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 10, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCrubros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblpais1))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("REPRESENTANTE"));
@@ -720,12 +876,25 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addComponent(jCproveedor)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCtransportadora)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblID)
                     .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
+
+        jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel14.setText("SALDO DE CREDITO:");
+
+        txtsaldo_credito.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtsaldo_credito.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtsaldo_creditoKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtsaldo_creditoKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -734,32 +903,43 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             .addGroup(panel_insertarLayout.createSequentialGroup()
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(btnnuevo_tercero)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnguardar_tercero)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btneditar_tercero)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btndeletar_tercero))
-                    .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(39, Short.MAX_VALUE))
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_insertarLayout.createSequentialGroup()
+                            .addComponent(jLabel14)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtsaldo_credito))
+                        .addGroup(panel_insertarLayout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(btnnuevo_tercero)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnguardar_tercero)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btneditar_tercero)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btndeletar_tercero))))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(41, 41, 41))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel14)
+                    .addComponent(txtsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo_tercero)
                     .addComponent(btnguardar_tercero)
@@ -791,15 +971,63 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(tbltercero);
 
+        btnpagar_credito.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        btnpagar_credito.setText("PAGAR CREDITO");
+        btnpagar_credito.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnpagar_creditoActionPerformed(evt);
+            }
+        });
+
+        btnactualizar_tabla.setText("ACTUALIZAR TABLA");
+        btnactualizar_tabla.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnactualizar_tablaActionPerformed(evt);
+            }
+        });
+
+        btncrearcredito_inicio.setText("CREAR CREDITO DE INICIO");
+        btncrearcredito_inicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncrearcredito_inicioActionPerformed(evt);
+            }
+        });
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel13.setText("SALDO TOTAL:");
+
+        jFsaldo_credito_total.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFsaldo_credito_total.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsaldo_credito_total.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
         panel_tablaLayout.setHorizontalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 936, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
+            .addGroup(panel_tablaLayout.createSequentialGroup()
+                .addComponent(btnpagar_credito)
+                .addGap(2, 2, 2)
+                .addComponent(btnactualizar_tabla)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btncrearcredito_inicio, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFsaldo_credito_total, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 464, Short.MAX_VALUE)
+            .addGroup(panel_tablaLayout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(btnpagar_credito)
+                    .addComponent(btnactualizar_tabla)
+                    .addComponent(btncrearcredito_inicio)
+                    .addComponent(jLabel13)
+                    .addComponent(jFsaldo_credito_total, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("FILTRO TABLA", panel_tabla);
@@ -1088,13 +1316,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 572, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 567, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 37, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -1113,6 +1341,90 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         );
 
         jTabbedPane1.addTab("TIPO REGISTRO", jPanel4);
+
+        panel_tabla_cliente1.setBackground(new java.awt.Color(51, 204, 255));
+        panel_tabla_cliente1.setBorder(javax.swing.BorderFactory.createTitledBorder("GRUPO CREDITO FINANZA"));
+
+        tblgrupo_credito_cliente.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblgrupo_credito_cliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tblgrupo_credito_clienteMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblgrupo_credito_clienteMouseReleased(evt);
+            }
+        });
+        jScrollPane5.setViewportView(tblgrupo_credito_cliente);
+
+        javax.swing.GroupLayout panel_tabla_cliente1Layout = new javax.swing.GroupLayout(panel_tabla_cliente1);
+        panel_tabla_cliente1.setLayout(panel_tabla_cliente1Layout);
+        panel_tabla_cliente1Layout.setHorizontalGroup(
+            panel_tabla_cliente1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
+        );
+        panel_tabla_cliente1Layout.setVerticalGroup(
+            panel_tabla_cliente1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+
+        panel_tabla_cliente2.setBackground(new java.awt.Color(51, 204, 255));
+        panel_tabla_cliente2.setBorder(javax.swing.BorderFactory.createTitledBorder("CREDITO FINANZA"));
+
+        tblcredito_cliente.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblcredito_cliente.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblcredito_clienteMouseReleased(evt);
+            }
+        });
+        jScrollPane6.setViewportView(tblcredito_cliente);
+
+        javax.swing.GroupLayout panel_tabla_cliente2Layout = new javax.swing.GroupLayout(panel_tabla_cliente2);
+        panel_tabla_cliente2.setLayout(panel_tabla_cliente2Layout);
+        panel_tabla_cliente2Layout.setHorizontalGroup(
+            panel_tabla_cliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane6)
+        );
+        panel_tabla_cliente2Layout.setVerticalGroup(
+            panel_tabla_cliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
+        jPanel7.setLayout(jPanel7Layout);
+        jPanel7Layout.setHorizontalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(panel_tabla_cliente1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(panel_tabla_cliente2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel7Layout.setVerticalGroup(
+            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addComponent(panel_tabla_cliente1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panel_tabla_cliente2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("GRUPO CREDITO", jPanel7);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1337,9 +1649,69 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         seleccionar_tabla_item_tipo_registro();
     }//GEN-LAST:event_tblitem_tipo_registroMouseReleased
 
+    private void tblgrupo_credito_clienteMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblgrupo_credito_clienteMousePressed
+        // TODO add your handling code here:
+        cargar_credito_cliente();
+    }//GEN-LAST:event_tblgrupo_credito_clienteMousePressed
+
+    private void tblgrupo_credito_clienteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblgrupo_credito_clienteMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblgrupo_credito_clienteMouseReleased
+
+    private void tblcredito_clienteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblcredito_clienteMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblcredito_clienteMouseReleased
+
+    private void btnpagar_creditoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpagar_creditoActionPerformed
+        // TODO add your handling code here:
+        if (tbltercero.getSelectedRow() >= 0) {
+            evetbl.abrir_TablaJinternal(new FrmRecibo_pago_tercero());
+        }
+    }//GEN-LAST:event_btnpagar_creditoActionPerformed
+
+    private void btnactualizar_tablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnactualizar_tablaActionPerformed
+        // TODO add your handling code here:
+        actualizar_todo();
+    }//GEN-LAST:event_btnactualizar_tablaActionPerformed
+
+    private void btncrearcredito_inicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncrearcredito_inicioActionPerformed
+        // TODO add your handling code here:
+        boton_guardar_credito_inicio();
+    }//GEN-LAST:event_btncrearcredito_inicioActionPerformed
+
+    private void txtsaldo_creditoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsaldo_creditoKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtsaldo_creditoKeyPressed
+
+    private void txtsaldo_creditoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsaldo_creditoKeyTyped
+        // TODO add your handling code here:
+        evejtf.soloNumero(evt);
+    }//GEN-LAST:event_txtsaldo_creditoKeyTyped
+
+    private void lblpais1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseMoved
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblpais1MouseMoved
+
+    private void lblpais1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblpais1MouseClicked
+
+    private void lblpais1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseExited
+        // TODO add your handling code here:
+    }//GEN-LAST:event_lblpais1MouseExited
+
+    private void jCrubrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCrubrosActionPerformed
+        // TODO add your handling code here:
+        if (hab_combo_rubro) {
+            fk_idtercero_rubro = evecomb.getInt_seleccionar_COMBOBOX(conn, jCrubros, "idtercero_rubro", "nombre", "tercero_rubro");
+        }
+    }//GEN-LAST:event_jCrubrosActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnabrir_imagen;
+    private javax.swing.JButton btnactualizar_tabla;
+    private javax.swing.JButton btncrearcredito_inicio;
     private javax.swing.JButton btndeletar_tercero;
     private javax.swing.JButton btneditar_item_tr;
     private javax.swing.JButton btneditar_tercero;
@@ -1347,6 +1719,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnguardar_tercero;
     private javax.swing.JButton btnnuevo_item_tr;
     private javax.swing.JButton btnnuevo_tercero;
+    private javax.swing.JButton btnpagar_credito;
     private javax.swing.ButtonGroup est_reg;
     private javax.swing.JComboBox<String> jCciudad;
     private javax.swing.JCheckBox jCcolaborador;
@@ -1354,14 +1727,18 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox jCimportador;
     private javax.swing.JComboBox<String> jCpais;
     private javax.swing.JCheckBox jCproveedor;
+    private javax.swing.JComboBox<String> jCrubros;
     private javax.swing.JComboBox<String> jCtipo_dependencia;
     private javax.swing.JComboBox<String> jCtipo_institucion;
     private javax.swing.JComboBox<String> jCtipo_registro;
     private javax.swing.JCheckBox jCtransportadora;
+    public static javax.swing.JFormattedTextField jFsaldo_credito_total;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1376,10 +1753,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JRadioButton jRest_activo;
     private javax.swing.JRadioButton jRest_desabilitado;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblID;
     private javax.swing.JLabel lblciudad;
@@ -1387,13 +1767,18 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblformatfech_2;
     private javax.swing.JLabel lblformatfech_3;
     private javax.swing.JLabel lblpais;
+    private javax.swing.JLabel lblpais1;
     private javax.swing.JLabel lbltipo_dependencia;
     private javax.swing.JLabel lbltipo_institucion;
     private javax.swing.JLabel lbltipo_registro;
     private javax.swing.JPanel panel_insertar;
     private javax.swing.JPanel panel_tabla;
+    private javax.swing.JPanel panel_tabla_cliente1;
+    private javax.swing.JPanel panel_tabla_cliente2;
+    public static javax.swing.JTable tblcredito_cliente;
+    public static javax.swing.JTable tblgrupo_credito_cliente;
     private javax.swing.JTable tblitem_tipo_registro;
-    private javax.swing.JTable tbltercero;
+    public static javax.swing.JTable tbltercero;
     private javax.swing.JTextField txtdireccion;
     private javax.swing.JTextField txtfecha_estado;
     private javax.swing.JTextField txtfecha_habilitacion;
@@ -1406,6 +1791,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtrepre_cedula;
     private javax.swing.JTextField txtrepre_nombre;
     private javax.swing.JTextField txtruc;
+    private javax.swing.JTextField txtsaldo_credito;
     private javax.swing.JTextField txttelefono;
     // End of variables declaration//GEN-END:variables
 }

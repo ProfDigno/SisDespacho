@@ -9,6 +9,7 @@ import Evento.Fecha.EvenFecha;
 import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import javax.swing.JTable;
 
 public class DAO_tercero {
@@ -20,10 +21,27 @@ public class DAO_tercero {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "TERCERO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "TERCERO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO tercero(idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,fk_idtercero_pais,fk_idtercero_ciudad) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE tercero SET fecha_creacion=?,creado_por=?,nombre=?,ruc=?,telefono=?,direccion=?,representante_nombre=?,representante_cedula=?,importador=?,despachante=?,colaborador=?,proveedor=?,transportadora=?,fk_idtercero_pais=?,fk_idtercero_ciudad=? WHERE idtercero=?;";
-    private String sql_select = "SELECT idtercero,nombre,ruc,telefono,direccion FROM tercero order by 1 desc;";
-    private String sql_cargar = "SELECT idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,fk_idtercero_pais,fk_idtercero_ciudad FROM tercero WHERE idtercero=";
+    private String sql_insert = "INSERT INTO tercero(idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
+            + "representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,"
+            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE tercero SET fecha_creacion=?,creado_por=?,nombre=?,ruc=?,telefono=?,direccion=?,"
+            + "representante_nombre=?,representante_cedula=?,importador=?,despachante=?,colaborador=?,proveedor=?,transportadora=?,"
+            + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=? WHERE idtercero=?;";
+    private String sql_select = "SELECT t.idtercero,t.nombre,t.ruc,t.telefono,t.direccion,tr.nombre as rubro,\n"
+            + "TRIM(to_char(t.saldo_credito,'999G999G999')) as saldo \n"
+            + "FROM tercero t, tercero_rubro tr \n"
+            + "where t.fk_idtercero_rubro=tr.idtercero_rubro \n"
+            + "order by 1 desc;";
+    private String sql_cargar = "SELECT idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
+            + "representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,"
+            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro FROM tercero WHERE idtercero=";
+    private String sql_update_saldo = "update tercero set saldo_credito=\n"
+            + "(select sum(cc.monto_contado - cc.monto_credito) as saldo\n"
+            + "from grupo_credito_tercero gcc,credito_tercero cc\n"
+            + "where gcc.idgrupo_credito_tercero=cc.fk_idgrupo_credito_tercero\n"
+            + "and gcc.estado='ABIERTO'\n"
+            + "and (cc.estado='EMITIDO')\n"
+            + "and gcc.fk_idtercero=tercero.idtercero) where tercero.idtercero=?;";
 
     public void insertar_tercero(Connection conn, tercero ter) {
         ter.setC1idtercero(eveconn.getInt_ultimoID_mas_uno(conn, ter.getTb_tercero(), ter.getId_idtercero()));
@@ -47,6 +65,8 @@ public class DAO_tercero {
             pst.setBoolean(14, ter.getC14transportadora());
             pst.setInt(15, ter.getC15fk_idtercero_pais());
             pst.setInt(16, ter.getC16fk_idtercero_ciudad());
+            pst.setDouble(17, ter.getC17saldo_credito());
+            pst.setInt(18, ter.getC18fk_idtercero_rubro());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + ter.toString(), titulo);
@@ -76,7 +96,9 @@ public class DAO_tercero {
             pst.setBoolean(13, ter.getC14transportadora());
             pst.setInt(14, ter.getC15fk_idtercero_pais());
             pst.setInt(15, ter.getC16fk_idtercero_ciudad());
-            pst.setInt(16, ter.getC1idtercero());
+            pst.setDouble(16, ter.getC17saldo_credito());
+            pst.setInt(17, ter.getC18fk_idtercero_rubro());
+            pst.setInt(18, ter.getC1idtercero());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + ter.toString(), titulo);
@@ -92,6 +114,7 @@ public class DAO_tercero {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql_cargar + id, titulo);
             if (rs.next()) {
                 ter.setC1idtercero(rs.getInt(1));
+                ter.setC1idtercero_global(rs.getInt(1));
                 ter.setC2fecha_creacion(rs.getString(2));
                 ter.setC3creado_por(rs.getString(3));
                 ter.setC4nombre(rs.getString(4));
@@ -107,6 +130,8 @@ public class DAO_tercero {
                 ter.setC14transportadora(rs.getBoolean(14));
                 ter.setC15fk_idtercero_pais(rs.getInt(15));
                 ter.setC16fk_idtercero_ciudad(rs.getInt(16));
+                ter.setC17saldo_credito(rs.getDouble(17));
+                ter.setC18fk_idtercero_rubro(rs.getInt(18));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + ter.toString(), titulo);
             }
         } catch (Exception e) {
@@ -120,7 +145,36 @@ public class DAO_tercero {
     }
 
     public void ancho_tabla_tercero(JTable tbltabla) {
-        int Ancho[] = {10, 30, 15, 15, 30};
+        int Ancho[] = {5, 22, 12, 12, 23,16, 10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void update_cliente_saldo_credito(Connection conn, tercero cli) {
+        String titulo = "update_tercero_saldo_credito";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_saldo);
+            pst.setInt(1, cli.getC1idtercero());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_saldo + "\n" + cli.toString(), titulo);
+            evemen.modificado_correcto(mensaje_update, false);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_saldo + "\n" + cli.toString(), titulo);
+        }
+    }
+     public double getDouble_sumar_monto_credito_cliente(Connection conn) {
+         double monto=0;
+        String titulo = "sumar_monto_credito_cliente";
+        String sql = "select sum(saldo_credito) as monto from tercero; ";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                 monto = rs.getDouble("monto");
+            }
+        } catch (SQLException e) {
+            evemen.Imprimir_serial_sql_error(e, sql, titulo);
+        }
+        return monto;
     }
 }

@@ -2,9 +2,13 @@ package FORMULARIO.BO;
 
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import FORMULARIO.DAO.DAO_credito_cliente;
 import FORMULARIO.DAO.DAO_item_liquidacion_final;
 import FORMULARIO.DAO.DAO_liquidacion_final;
+import FORMULARIO.DAO.DAO_tercero;
+import FORMULARIO.ENTIDAD.credito_cliente;
 import FORMULARIO.ENTIDAD.liquidacion_final;
+import FORMULARIO.ENTIDAD.tercero;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.swing.JTable;
@@ -13,10 +17,12 @@ public class BO_liquidacion_final {
 
     private DAO_liquidacion_final liqfin_dao = new DAO_liquidacion_final();
     private DAO_item_liquidacion_final itemfin_dao = new DAO_item_liquidacion_final();
+    private DAO_credito_cliente ccli_dao = new DAO_credito_cliente();
+    private DAO_tercero cli_dao = new DAO_tercero();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public boolean getBoolean_insertar_liquidacion_final(liquidacion_final liqfin,JTable tblitem) {
-        boolean insert=false;
+    public boolean getBoolean_insertar_liquidacion_final(liquidacion_final liqfin, JTable tblitem, credito_cliente ccli, tercero clie) {
+        boolean insert = false;
         String titulo = "getBoolean_insertar_liquidacion_final";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
@@ -25,15 +31,18 @@ public class BO_liquidacion_final {
             }
             liqfin_dao.insertar_liquidacion_final(conn, liqfin);
             itemfin_dao.insertar_item_liquidacion_final_de_tabla_mercaderia(conn, tblitem);
-//            liqfin_dao.actualizar_tabla_liquidacion_final(conn, tbltabla);
-            insert=true;
+            if (true) {
+                ccli_dao.insertar_credito_cliente1(conn, ccli);
+                cli_dao.update_cliente_saldo_credito(conn, clie);
+            }
+            insert = true;
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, liqfin.toString(), titulo);
-            insert=false;
+            insert = false;
             try {
                 conn.rollback();
-                
+
             } catch (SQLException e1) {
                 evmen.Imprimir_serial_sql_error(e1, liqfin.toString(), titulo);
             }
@@ -62,6 +71,7 @@ public class BO_liquidacion_final {
             }
         }
     }
+
     public void anular_update_liquidacion_final(liquidacion_final liqfin) {
         if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE ANULAR LIQUIDACION_FINAL", "ANULAR", "ANULAR", "CANCELAR")) {
             String titulo = "update_liquidacion_final";
@@ -81,5 +91,33 @@ public class BO_liquidacion_final {
                 }
             }
         }
+    }
+    public boolean getBoolean_update_venta_alquiler_anular(liquidacion_final liqfin,  credito_cliente ccli,  tercero clie) {
+        boolean anulado = false;
+        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE ANULAR VENTA_ALQUILER", "ANULAR", "ACEPTAR", "CANCELAR")) {
+            String titulo = "getBoolean_update_venta_alquiler_anular";
+            Connection conn = ConnPostgres.getConnPosgres();
+            try {
+                if (conn.getAutoCommit()) {
+                    conn.setAutoCommit(false);
+                }
+//                vealq_dao.update_venta_alquiler_anular(conn, vealq);
+                liqfin_dao.estado_update_liquidacion_final(conn, liqfin);
+                ccli_dao.update_credito_cliente_anular(conn, ccli);
+                cli_dao.update_cliente_saldo_credito(conn, clie);
+//                int datocampoid=cdalq.getC20fk_idventa_alquiler();
+//                cdalq_dao.update_caja_detalle_alquilado_estado_todos(conn, cdalq,datocampoid,campoid);
+                conn.commit();
+                anulado = true;
+            } catch (SQLException e) {
+                evmen.mensaje_error(e, liqfin.toString(), titulo);
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    evmen.Imprimir_serial_sql_error(e1, liqfin.toString(), titulo);
+                }
+            }
+        }
+        return anulado;
     }
 }

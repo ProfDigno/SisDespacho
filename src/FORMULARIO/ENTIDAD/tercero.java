@@ -1,8 +1,23 @@
 	package FORMULARIO.ENTIDAD;
 public class tercero {
 
+    /**
+     * @return the C17saldo_credito
+     */
+    public double getC17saldo_credito() {
+        return C17saldo_credito;
+    }
+
+    /**
+     * @param C17saldo_credito the C17saldo_credito to set
+     */
+    public void setC17saldo_credito(double C17saldo_credito) {
+        this.C17saldo_credito = C17saldo_credito;
+    }
+
 //---------------DECLARAR VARIABLES---------------
 private int C1idtercero;
+private static int C1idtercero_global;
 private String C2fecha_creacion;
 private String C3creado_por;
 private String C4nombre;
@@ -18,6 +33,8 @@ private boolean C13proveedor;
 private boolean C14transportadora;
 private int C15fk_idtercero_pais;
 private int C16fk_idtercero_ciudad;
+private double C17saldo_credito;
+private int C18fk_idtercero_rubro;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -134,6 +151,23 @@ private static String nom_idtabla;
 	public void setC16fk_idtercero_ciudad(int C16fk_idtercero_ciudad){
 		this.C16fk_idtercero_ciudad = C16fk_idtercero_ciudad;
 	}
+
+    public int getC18fk_idtercero_rubro() {
+        return C18fk_idtercero_rubro;
+    }
+
+    public void setC18fk_idtercero_rubro(int C18fk_idtercero_rubro) {
+        this.C18fk_idtercero_rubro = C18fk_idtercero_rubro;
+    }
+
+    public static int getC1idtercero_global() {
+        return C1idtercero_global;
+    }
+
+    public static void setC1idtercero_global(int C1idtercero_global) {
+        tercero.C1idtercero_global = C1idtercero_global;
+    }
+        
 	public String toString() {
 		return "tercero(" + ",idtercero=" + C1idtercero + " ,fecha_creacion=" + C2fecha_creacion + " ,creado_por=" + C3creado_por + " ,nombre=" + C4nombre + " ,ruc=" + C5ruc + " ,telefono=" + C6telefono + " ,direccion=" + C7direccion + " ,representante_nombre=" + C8representante_nombre + " ,representante_cedula=" + C9representante_cedula + " ,importador=" + C10importador + " ,despachante=" + C11despachante + " ,colaborador=" + C12colaborador + " ,proveedor=" + C13proveedor + " ,transportadora=" + C14transportadora + " ,fk_idtercero_pais=" + C15fk_idtercero_pais + " ,fk_idtercero_ciudad=" + C16fk_idtercero_ciudad + " )";
 	}

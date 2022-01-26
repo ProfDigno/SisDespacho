@@ -75,93 +75,12 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
          * alter table itemventacomanda alter column preciocompra type
          * numeric(14,0) using preciocompra::numeric;
          */
+//        ALTER TABLE liquidacion_final ADD COLUMN fecha_pagado TIMESTAMP  NULL DEFAULT 'now()' ;
+//ALTER TABLE liquidacion_final ADD COLUMN monto_pagado NUMERIC(20,0)  NULL DEFAULT 0;
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n"
-                + "CREATE TABLE \"liquidacion_final\" (\n"
-                + "	\"idliquidacion_final\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"fecha_despacho\" DATE NOT NULL ,\n"
-                + "	\"despacho_numero\" TEXT NOT NULL ,\n"
-                + "	\"tipo_liquidacion\" TEXT NOT NULL ,\n"
-                + "	\"estado\" TEXT NOT NULL ,\n"
-                + "	\"observacion\" TEXT NOT NULL ,\n"
-                + "	\"contenedor_nro\" TEXT NOT NULL ,\n"
-                + "	\"contenedor_tipo\" TEXT NOT NULL ,\n"
-                + "	\"via_transporte\" TEXT NOT NULL ,\n"
-                + "	\"transporte_condicion\" TEXT NOT NULL ,\n"
-                + "	\"monto_imponible\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"monto_ajuste_incluir\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"monto_factura\" NUMERIC(20,2) NOT NULL ,\n"
-                + "	\"monto_flete\" NUMERIC(15,2) NOT NULL ,\n"
-                + "	\"monto_seguro\" NUMERIC(15,2) NOT NULL ,\n"
-                + "	\"monto_cif\" NUMERIC(20,2) NOT NULL ,\n"
-                + "	\"monto_total_despacho\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"monto_adelanto\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"monto_pagar\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"tasa_cambio_aduana\" NUMERIC(10,2) NOT NULL ,\n"
-                + "	\"tasa_cambio_mercado\" NUMERIC(10,2) NOT NULL ,\n"
-                + "	\"tipo_tasa_cambio\" TEXT NOT NULL ,\n"
-                + "	\"factura_numero\" TEXT NOT NULL ,\n"
-                + "	\"monto_letra\" TEXT NOT NULL ,\n"
-                + "	\"fk_idtipo_comprobante\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idtercero_ciudad\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idaduana\" INTEGER NOT NULL ,\n"
-                + "	\"fk_iddespacho_zona\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idtransporte_empresa\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idtercero_importador\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idtercero_transportadora\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idmoneda_cambio\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idregimen\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idincoterms\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idliquidacion_final\")\n"
-                + ");\n"
-                + "CREATE TABLE \"transporte_empresa\" (\n"
-                + "	\"idtransporte_empresa\" INTEGER NOT NULL ,\n"
-                + "	\"nombre\" TEXT NOT NULL ,\n"
-                + "	\"sigla\" TEXT NOT NULL ,\n"
-                + "	\"direccion\" TEXT NOT NULL ,\n"
-                + "	\"telefono\" TEXT NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idtransporte_empresa\")\n"
-                + ");\n"
-                + "CREATE TABLE \"despacho_zona\" (\n"
-                + "	\"iddespacho_zona\" INTEGER NOT NULL ,\n"
-                + "	\"nombre\" TEXT NOT NULL ,\n"
-                + "	PRIMARY KEY(\"iddespacho_zona\")\n"
-                + ");\n"
-                + "CREATE TABLE \"regimen\" (\n"
-                + "	\"idregimen\" INTEGER NOT NULL ,\n"
-                + "	\"nombre\" TEXT NOT NULL ,\n"
-                + "	\"sigla\" TEXT NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idregimen\")\n"
-                + ");\n"
-                + "CREATE TABLE \"incoterms\" (\n"
-                + "	\"idincoterms\" INTEGER NOT NULL ,\n"
-                + "	\"nombre\" TEXT NOT NULL ,\n"
-                + "	\"sigla\" TEXT NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idincoterms\")\n"
-                + ");\n"
-                + "CREATE TABLE \"item_liquidacion_final\" (\n"
-                + "	\"iditem_liquidacion_final\" INTEGER NOT NULL ,\n"
-                + "	\"fecha_creado\" TIMESTAMP NOT NULL ,\n"
-                + "	\"creado_por\" TEXT NOT NULL ,\n"
-                + "	\"orden\" INTEGER NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	\"comprobante_nro\" TEXT NOT NULL ,\n"
-                + "	\"total_guarani\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"desglose\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"descriminacion_iva\" NUMERIC(20,0) NOT NULL ,\n"
-                + "	\"fk_idliquidacion_final\" INTEGER NOT NULL ,\n"
-                + "	\"fk_idtipo_comprobante\" INTEGER NOT NULL ,\n"
-                + "	PRIMARY KEY(\"iditem_liquidacion_final\")\n"
-                + ");\n"
-                //                + " ALTER TABLE producto ADD COLUMN alquilado boolean; \n"
-                //                + " update producto set alquilado=false;\n"
-                //                + " ALTER TABLE compra ADD COLUMN alquilado boolean; \n"
-                //                + " update compra set alquilado=false;\n"
+
 
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
@@ -202,6 +121,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         jMenuItem_tipo_registro = new javax.swing.JMenuItem();
         jMenuItem_tipo_dependencia = new javax.swing.JMenuItem();
         jMenuItem_tipo_institucion = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
         jMenu_configuracion = new javax.swing.JMenu();
         jMenuItem_moneda_cambio = new javax.swing.JMenuItem();
         jMenuItem_honorario_despacho = new javax.swing.JMenuItem();
@@ -361,6 +281,14 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
             }
         });
         jMenu_tercero.add(jMenuItem_tipo_institucion);
+
+        jMenuItem7.setText("RUBRO");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
+        jMenu_tercero.add(jMenuItem7);
 
         jMenuBar1.add(jMenu_tercero);
 
@@ -632,6 +560,11 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmLiquidacion_final());
     }//GEN-LAST:event_btnliquidacionActionPerformed
 
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmTercero_rubro());
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -683,6 +616,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem4;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem_ciudad;
     public static javax.swing.JMenuItem jMenuItem_crear_usuario;
     public static javax.swing.JMenuItem jMenuItem_evento_rol_usuario;
