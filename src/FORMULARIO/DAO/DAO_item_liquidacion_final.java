@@ -23,13 +23,13 @@ public class DAO_item_liquidacion_final {
     private String creado_por = ENTusu.getGlobal_idusuario() + "-" + ENTusu.getGlobal_nombre();
     private String mensaje_insert = "ITEM_LIQUIDACION_FINAL GUARDADO CORRECTAMENTE";
     private String mensaje_update = "ITEM_LIQUIDACION_FINAL MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO item_liquidacion_final(iditem_liquidacion_final,fecha_creado,creado_por,orden,descripcion,comprobante_nro,total_guarani,desglose,descriminacion_iva,fk_idliquidacion_final,fk_idtipo_comprobante) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE item_liquidacion_final SET fecha_creado=?,creado_por=?,orden=?,descripcion=?,comprobante_nro=?,total_guarani=?,desglose=?,descriminacion_iva=?,fk_idliquidacion_final=?,fk_idtipo_comprobante=? WHERE iditem_liquidacion_final=?;";
-    private String sql_select = "SELECT iditem_liquidacion_final,fecha_creado,creado_por,orden,descripcion,comprobante_nro,total_guarani,desglose,descriminacion_iva,fk_idliquidacion_final,fk_idtipo_comprobante FROM item_liquidacion_final order by 1 desc;";
+    private String sql_insert = "INSERT INTO item_liquidacion_final(iditem_liquidacion_final,fecha_creado,creado_por,orden,descripcion,comprobante_nro,total_guarani,sin_iva,solo_iva,fk_idliquidacion_final,fk_idcomprobante_liquidacion) VALUES (?,?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE item_liquidacion_final SET fecha_creado=?,creado_por=?,orden=?,descripcion=?,comprobante_nro=?,total_guarani=?,sin_iva=?,solo_iva=?,fk_idliquidacion_final=?,fk_idcomprobante_liquidacion=? WHERE iditem_liquidacion_final=?;";
+    private String sql_select = "SELECT iditem_liquidacion_final,fecha_creado,creado_por,orden,descripcion,comprobante_nro,total_guarani,sin_iva,solo_iva,fk_idliquidacion_final,fk_idcomprobante_liquidacion FROM item_liquidacion_final order by 1 desc;";
     private String sql_cargar = "SELECT iditem_liquidacion_final,fecha_creado,creado_por,"
             + "orden,descripcion,comprobante_nro,"
-            + "total_guarani,desglose,descriminacion_iva,"
-            + "fk_idliquidacion_final,fk_idtipo_comprobante "
+            + "total_guarani,sin_iva,solo_iva,"
+            + "fk_idliquidacion_final,fk_idcomprobante_liquidacion "
             + "FROM item_liquidacion_final WHERE iditem_liquidacion_final=";
 
     public void insertar_item_liquidacion_final(Connection conn, item_liquidacion_final itemfin) {
@@ -48,7 +48,7 @@ public class DAO_item_liquidacion_final {
             pst.setDouble(8, itemfin.getC8sin_iva());
             pst.setDouble(9, itemfin.getC9solo_iva());
             pst.setInt(10, itemfin.getC10fk_idliquidacion_final());
-            pst.setInt(11, itemfin.getC11fk_idtipo_comprobante());
+            pst.setInt(11, itemfin.getC11fk_idcomprobante_liquidacion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + itemfin.toString(), titulo);
@@ -69,18 +69,18 @@ public class DAO_item_liquidacion_final {
             String total = ((tblitem_producto.getModel().getValueAt(row, 3).toString()));
             String idliqui = ((tblitem_producto.getModel().getValueAt(row, 4).toString()));
             String idcompro = ((tblitem_producto.getModel().getValueAt(row, 5).toString()));
-            double desglose = 0;
-            double descriminacion_iva = 0;
+            double sin_iva = 0;
+            double solo_iva = 0;
             try {
                 itemfin.setC3creado_por(creado_por);
                 itemfin.setC4orden(Integer.parseInt(ord));
                 itemfin.setC5descripcion(descripcion);
                 itemfin.setC6comprobante_nro(comprobante);
                 itemfin.setC7total_guarani(Double.parseDouble(total));
-                itemfin.setC8sin_iva(desglose);
-                itemfin.setC9solo_iva(descriminacion_iva);
+                itemfin.setC8sin_iva(sin_iva);
+                itemfin.setC9solo_iva(solo_iva);
                 itemfin.setC10fk_idliquidacion_final(Integer.parseInt(idliqui));
-                itemfin.setC11fk_idtipo_comprobante(Integer.parseInt(idcompro));
+                itemfin.setC11fk_idcomprobante_liquidacion(Integer.parseInt(idcompro));
                 insertar_item_liquidacion_final(conn, itemfin);
             } catch (Exception e) {
                 evemen.mensaje_error(e, titulo);
@@ -104,7 +104,7 @@ public class DAO_item_liquidacion_final {
             pst.setDouble(7, itemfin.getC8sin_iva());
             pst.setDouble(8, itemfin.getC9solo_iva());
             pst.setInt(9, itemfin.getC10fk_idliquidacion_final());
-            pst.setInt(10, itemfin.getC11fk_idtipo_comprobante());
+            pst.setInt(10, itemfin.getC11fk_idcomprobante_liquidacion());
             pst.setInt(11, itemfin.getC1iditem_liquidacion_final());
             pst.execute();
             pst.close();
@@ -130,7 +130,7 @@ public class DAO_item_liquidacion_final {
                 itemfin.setC8sin_iva(rs.getDouble(8));
                 itemfin.setC9solo_iva(rs.getDouble(9));
                 itemfin.setC10fk_idliquidacion_final(rs.getInt(10));
-                itemfin.setC11fk_idtipo_comprobante(rs.getInt(11));
+                itemfin.setC11fk_idcomprobante_liquidacion(rs.getInt(11));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + itemfin.toString(), titulo);
             }
         } catch (Exception e) {

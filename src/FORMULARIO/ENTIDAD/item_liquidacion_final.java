@@ -12,7 +12,7 @@ private double C7total_guarani;
 private double C8sin_iva;
 private double C9solo_iva;
 private int C10fk_idliquidacion_final;
-private int C11fk_idtipo_comprobante;
+private int C11fk_idcomprobante_liquidacion;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -93,13 +93,13 @@ private static String nom_idtabla;
 	public void setC10fk_idliquidacion_final(int C10fk_idliquidacion_final){
 		this.C10fk_idliquidacion_final = C10fk_idliquidacion_final;
 	}
-	public int getC11fk_idtipo_comprobante(){
-		return C11fk_idtipo_comprobante;
+	public int getC11fk_idcomprobante_liquidacion(){
+		return C11fk_idcomprobante_liquidacion;
 	}
-	public void setC11fk_idtipo_comprobante(int C11fk_idtipo_comprobante){
-		this.C11fk_idtipo_comprobante = C11fk_idtipo_comprobante;
+	public void setC11fk_idcomprobante_liquidacion(int C11fk_idcomprobante_liquidacion){
+		this.C11fk_idcomprobante_liquidacion = C11fk_idcomprobante_liquidacion;
 	}
 	public String toString() {
-		return "item_liquidacion_final(" + ",iditem_liquidacion_final=" + C1iditem_liquidacion_final + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,orden=" + C4orden + " ,descripcion=" + C5descripcion + " ,comprobante_nro=" + C6comprobante_nro + " ,total_guarani=" + C7total_guarani + " ,desglose=" + C8sin_iva + " ,descriminacion_iva=" + C9solo_iva + " ,fk_idliquidacion_final=" + C10fk_idliquidacion_final + " ,fk_idtipo_comprobante=" + C11fk_idtipo_comprobante + " )";
+		return "item_liquidacion_final(" + ",iditem_liquidacion_final=" + C1iditem_liquidacion_final + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,orden=" + C4orden + " ,descripcion=" + C5descripcion + " ,comprobante_nro=" + C6comprobante_nro + " ,total_guarani=" + C7total_guarani + " ,desglose=" + C8sin_iva + " ,descriminacion_iva=" + C9solo_iva + " ,fk_idliquidacion_final=" + C10fk_idliquidacion_final + " ,fk_idtipo_comprobante=" + C11fk_idcomprobante_liquidacion + " )";
 	}
 }

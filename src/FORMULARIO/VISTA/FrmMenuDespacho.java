@@ -79,9 +79,24 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 //ALTER TABLE liquidacion_final ADD COLUMN monto_pagado NUMERIC(20,0)  NULL DEFAULT 0;
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
-                + "        BEGIN\n"
-
-
+                + "        BEGIN\n "
+//                + "ALTER TABLE item_liquidacion_final RENAME COLUMN fk_idtipo_comprobante TO fk_idcomprobante_liquidacion; \n"
+//                + "ALTER TABLE item_liquidacion_final RENAME COLUMN desglose TO sin_iva; \n"
+//                + "ALTER TABLE item_liquidacion_final RENAME COLUMN descriminacion_iva TO solo_iva; \n"
+                + "CREATE TABLE \"comprobante_liquidacion\" (\n"
+                + "	\"idcomprobante_liquidacion\" INTEGER NOT NULL ,\n"
+                + "	\"descripcion\" TEXT NOT NULL ,\n"
+                + "	\"por_iva\" NUMERIC(5,0) NOT NULL ,\n"
+                + "	\"tipo_iva\" TEXT NOT NULL  ,\n"
+                + "	\"nro_despacho\" BOOLEAN NOT NULL ,\n"
+                + "	PRIMARY KEY(\"idcomprobante_liquidacion\")\n"
+                + ");"
+//                + "CREATE TABLE \"pre_item_liquidacion_final\" (\n"
+//                + "	\"idpre_item_liquidacion_final\" INTEGER NOT NULL ,\n"
+//                + "	\"orden\" INTEGER NOT NULL ,\n"
+//                + "	\"fk_idcomprobante_liquidacion\" INTEGER NOT NULL ,\n"
+//                + "	PRIMARY KEY(\"idpre_item_liquidacion_final\")\n"
+//                + ");"
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"
@@ -138,6 +153,8 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem9 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -406,6 +423,22 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         });
         jMenu1.add(jMenuItem5);
 
+        jMenuItem8.setText("COMPROBANTE");
+        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem8ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem8);
+
+        jMenuItem9.setText("PRE ITEM LIQUIDACION");
+        jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem9ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem9);
+
         jMenuBar1.add(jMenu1);
 
         setJMenuBar(jMenuBar1);
@@ -565,6 +598,16 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmTercero_rubro());
     }//GEN-LAST:event_jMenuItem7ActionPerformed
 
+    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmComprobante_liquidacion());
+    }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem9ActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPre_item_liquidacion_final());
+    }//GEN-LAST:event_jMenuItem9ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -617,6 +660,8 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JMenuItem jMenuItem_ciudad;
     public static javax.swing.JMenuItem jMenuItem_crear_usuario;
     public static javax.swing.JMenuItem jMenuItem_evento_rol_usuario;
