@@ -34,7 +34,6 @@ public class DAO_liquidacion_final {
 //    private String sql_select = "SELECT idliquidacion_final,fecha_creado,creado_por,fecha_despacho,despacho_numero,tipo_liquidacion,estado,observacion,contenedor_nro,contenedor_tipo,via_transporte,transporte_condicion,monto_imponible,monto_ajuste_incluir,monto_factura,monto_flete,monto_seguro,monto_cif,monto_total_despacho,monto_adelanto,monto_pagar,tasa_cambio_aduana,tasa_cambio_mercado,tipo_tasa_cambio,factura_numero,monto_letra,fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,fk_idmoneda_cambio,fk_idregimen,fk_idincoterms FROM liquidacion_final order by 1 desc;";
     private String sql_cargar = "SELECT idliquidacion_final,fecha_creado,creado_por,fecha_despacho,despacho_numero,tipo_liquidacion,estado,observacion,contenedor_nro,contenedor_tipo,via_transporte,transporte_condicion,monto_imponible,monto_ajuste_incluir,monto_factura,monto_flete,monto_seguro,monto_cif,monto_total_despacho,monto_adelanto,monto_pagar,tasa_cambio_aduana,tasa_cambio_mercado,tipo_tasa_cambio,factura_numero,monto_letra,fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,fk_idmoneda_cambio,fk_idregimen,fk_idincoterms FROM liquidacion_final WHERE idliquidacion_final=";
     private String sql_update_estado = "UPDATE liquidacion_final SET estado=? WHERE idliquidacion_final=?;";
-    
 
     public void insertar_liquidacion_final(Connection conn, liquidacion_final liqfin) {
         liqfin.setC1idliquidacion_final(eveconn.getInt_ultimoID_mas_uno(conn, liqfin.getTb_liquidacion_final(), liqfin.getId_idliquidacion_final()));
@@ -155,8 +154,6 @@ public class DAO_liquidacion_final {
         }
     }
 
-    
-
     public void cargar_liquidacion_final(Connection conn, liquidacion_final liqfin, int id) {
         String titulo = "Cargar_liquidacion_final";
         try {
@@ -226,7 +223,7 @@ public class DAO_liquidacion_final {
     }
 
     public void ancho_tabla_liquidacion_final(JTable tbltabla) {
-        int Ancho[] = {3, 3, 14, 8, 11, 10, 10, 5, 5, 8, 8,8, 8};
+        int Ancho[] = {3, 3, 14, 8, 11, 10, 10, 5, 5, 8, 8, 8, 8};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
@@ -260,7 +257,32 @@ public class DAO_liquidacion_final {
                 + " order by ilf.orden asc;";
         String titulonota = "LIQUIDACION";
         String direccion = "src/REPORTE/LIQUIDACION/repLiquidacionFin.jrxml";
-        rep.imprimirjasper(conn, sql, titulonota, direccion);
+        String rutatemp="Liquidacion_"+evefec.getString_formato_fecha()+"_"+id;
+        rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 
+    public void imprimir_rep_cuenta_liquidacion(Connection conn, int idtercero,String filtrofecha, int formatArchivo) {
+        String sql = "select ter.idtercero as idter,ter.nombre as cliente,ter.direccion as direccion,\n"
+                + "ter.ruc as ruc,ter.telefono as telefono,tr.nombre as rubro,\n"
+                + "lf.idliquidacion_final as idlf,trim(to_char(lf.fecha_despacho,'dd-MM-yyyy')) as fec_despacho,\n"
+                + "lf.despacho_numero as despacho_nro,lf.factura_numero  as factura_nro,\n"
+                + "substring(lf.tipo_liquidacion,1,3) as tipo, \n"
+                + "lf.monto_pagar as mon_pagar,lf.monto_pagado as mon_pagado,\n"
+                + "(lf.monto_pagado-lf.monto_pagar) as saldo,\n"
+                + "case when (lf.monto_pagado-lf.monto_pagar)=0 then lf.estado \n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then 'CREDITO'\n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then 'P.PARCIAL' else 'error' end as estado,\n"
+                + "case when lf.estado='PAGADO' then to_char(lf.fecha_pagado,'dd-MM-yyyy') else 'FALTA-PAGAR' end as fec_pago  \n"
+                + "from tercero ter,liquidacion_final lf,tercero_rubro tr  \n"
+                + "where lf.fk_idtercero_importador=ter.idtercero \n"
+                + "and ter.fk_idtercero_rubro=tr.idtercero_rubro \n"
+                + "and lf.estado!='ANULADO'\n"
+                + "and ter.idtercero="+idtercero+filtrofecha
+                + " order by lf.idliquidacion_final desc;";
+        String titulonota = "CUENTA LIQUIDACION";
+        String direccion = "src/REPORTE/TERCERO/repTerceroLiquidacionPagado.jrxml";
+        String rutatemp="Cuenta_liquidacion_"+evefec.getString_formato_fecha()+"_"+idtercero;
+//        rep.imprimirjasper(conn, sql, titulonota, direccion);
+        rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
+    }
 }

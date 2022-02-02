@@ -87,6 +87,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private String estado_ABIERTO = "ABIERTO";
     private boolean hab_combo_rubro;
     private int fk_idtercero_rubro;
+    private double saldo_credito;
     private void abrir_formulario() {
         this.setTitle("TERCERO");
         evetbl.centrar_formulario_internalframa(this);        
@@ -167,9 +168,9 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtrepre_cedula, "DEBE CARGAR UNA CEDULA DEL REPRESENTANTE")) {
             return false;
         }
-        if (evejtf.getBoo_JTextField_vacio(txtsaldo_credito, "DEBE CARGAR UNA SALDO O  CERO")) {
-            return false;
-        }
+//        if (evejtf.getBoo_JTextField_vacio(txtsaldo_credito, "DEBE CARGAR UNA SALDO O  CERO")) {
+//            return false;
+//        }
         if(evecomb.getBoo_JCombobox_seleccionar(jCpais,"SELECCIONAR UN PAIS")){
             return false;
         }
@@ -232,7 +233,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         ENTter.setC14transportadora(jCtransportadora.isSelected());
         ENTter.setC15fk_idtercero_pais(fk_idtercero_pais);
         ENTter.setC16fk_idtercero_ciudad(fk_idtercero_ciudad);
-        ENTter.setC17saldo_credito(Double.parseDouble(txtsaldo_credito.getText()));
+        ENTter.setC17saldo_credito(saldo_credito);
         ENTter.setC18fk_idtercero_rubro(fk_idtercero_rubro);
         
     }
@@ -330,7 +331,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         fk_idtercero_pais=ENTter.getC15fk_idtercero_pais();
         fk_idtercero_ciudad=ENTter.getC16fk_idtercero_ciudad();
         fk_idtercero_rubro=ENTter.getC18fk_idtercero_rubro();
-        txtsaldo_credito.setText(String.valueOf(ENTter.getC17saldo_credito()));
+        saldo_credito=(ENTter.getC17saldo_credito());
+        jFsaldo_credito.setValue(ENTter.getC17saldo_credito());
         suma_liquidacion("");
         suma_recibo("");
         DAOpais.cargar_tercero_pais(conn, ENTpais,fk_idtercero_pais);
@@ -395,7 +397,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCcolaborador.setSelected(false);
         jCproveedor.setSelected(false);
         jCtransportadora.setSelected(false);
-        txtsaldo_credito.setText("0");
+        jFsaldo_credito.setValue(0);
         fk_idtercero_pais=0;
         fk_idtercero_ciudad=0;
         jCpais.setSelectedIndex(0);
@@ -411,7 +413,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private void cargar_saldo_credito_cliente(int idcliente) {
         scfina.setC3descripcion("CREDITO DE CLIENTE DE INICIO");
         scfina.setC4monto_saldo_credito(ENTter.getC17saldo_credito());//cambiar
-        scfina.setC5monto_letra(nroletra.Convertir(txtsaldo_credito.getText(), true));
+        String Ssaldo_credito=String.valueOf((int)saldo_credito);
+        scfina.setC5monto_letra(nroletra.Convertir(Ssaldo_credito, true));
         scfina.setC6estado(estado_EMITIDO);
         scfina.setC7fk_idcliente(idcliente);
         scfina.setC8fk_idusuario(usu.getGlobal_idusuario());
@@ -477,6 +480,14 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
 //        }
     }
+      private void boton_imprimir_cuenta_liquidacion_final() {
+//        if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
+            if (!eveJtab.getBoolean_validar_select(tbltercero)) {
+                fk_idtercero=eveJtab.getInt_select_id(tbltercero);
+                DAOliqfin.imprimir_rep_cuenta_liquidacion(conn, fk_idtercero, "", 0);
+            }
+//        }
+    }
     private void boton_nuevo_tercero(){
         reestableser_tercero();
     }
@@ -530,15 +541,15 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         lblID = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
-        txtsaldo_credito = new javax.swing.JTextField();
+        jFsaldo_credito = new javax.swing.JFormattedTextField();
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltercero = new javax.swing.JTable();
         btnpagar_credito = new javax.swing.JButton();
         btnactualizar_tabla = new javax.swing.JButton();
         btncrearcredito_inicio = new javax.swing.JButton();
-        jLabel13 = new javax.swing.JLabel();
         jFsaldo_credito_total = new javax.swing.JFormattedTextField();
+        btnimprimir_cuenta1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -592,6 +603,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jLabel18 = new javax.swing.JLabel();
         cmbfecha_liquidacion = new javax.swing.JComboBox<>();
         btnimprimir_liquidacion = new javax.swing.JButton();
+        btnimprimir_cuenta = new javax.swing.JButton();
         jPanel10 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -950,15 +962,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jLabel14.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel14.setText("SALDO DE CREDITO:");
 
-        txtsaldo_credito.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        txtsaldo_credito.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtsaldo_creditoKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                txtsaldo_creditoKeyTyped(evt);
-            }
-        });
+        jFsaldo_credito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsaldo_credito.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -972,20 +977,19 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                             .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_insertarLayout.createSequentialGroup()
-                            .addComponent(jLabel14)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(txtsaldo_credito))
-                        .addGroup(panel_insertarLayout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(btnnuevo_tercero)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnguardar_tercero)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btneditar_tercero)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btndeletar_tercero))))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(btnnuevo_tercero)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnguardar_tercero)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btneditar_tercero)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btndeletar_tercero))
+                    .addGroup(panel_insertarLayout.createSequentialGroup()
+                        .addComponent(jLabel14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(34, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
@@ -1002,8 +1006,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
-                    .addComponent(txtsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                    .addComponent(jFsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo_tercero)
                     .addComponent(btnguardar_tercero)
@@ -1057,12 +1061,17 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel13.setText("SALDO TOTAL:");
-
+        jFsaldo_credito_total.setBorder(javax.swing.BorderFactory.createTitledBorder("SALDO TOTAL:"));
         jFsaldo_credito_total.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
         jFsaldo_credito_total.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsaldo_credito_total.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        btnimprimir_cuenta1.setText("IMP. CUENTA");
+        btnimprimir_cuenta1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_cuenta1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_tablaLayout = new javax.swing.GroupLayout(panel_tabla);
         panel_tabla.setLayout(panel_tablaLayout);
@@ -1070,28 +1079,32 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
             .addGroup(panel_tablaLayout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(btnpagar_credito)
-                .addGap(2, 2, 2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnactualizar_tabla)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btncrearcredito_inicio, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel13)
+                .addComponent(btncrearcredito_inicio)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimprimir_cuenta1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jFsaldo_credito_total, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(btnpagar_credito)
-                    .addComponent(btnactualizar_tabla)
-                    .addComponent(btncrearcredito_inicio)
-                    .addComponent(jLabel13)
-                    .addComponent(jFsaldo_credito_total, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btncrearcredito_inicio, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 27, Short.MAX_VALUE)
+                    .addComponent(btnactualizar_tabla, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnpagar_credito, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnimprimir_cuenta1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.CENTER, panel_tablaLayout.createSequentialGroup()
+                .addGap(444, 444, 444)
+                .addComponent(jFsaldo_credito_total, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(11, 11, 11))
         );
 
         jTabbedPane1.addTab("FILTRO TABLA", panel_tabla);
@@ -1543,10 +1556,17 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
         });
 
-        btnimprimir_liquidacion.setText("IMPRIMIR");
+        btnimprimir_liquidacion.setText("IMP. LIQUIDACION");
         btnimprimir_liquidacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnimprimir_liquidacionActionPerformed(evt);
+            }
+        });
+
+        btnimprimir_cuenta.setText("IMP. CUENTA");
+        btnimprimir_cuenta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_cuentaActionPerformed(evt);
             }
         });
 
@@ -1557,28 +1577,27 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
             .addGroup(jPanel9Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel9Layout.createSequentialGroup()
-                        .addComponent(jLabel16)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtnombre_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel17)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtruc_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel18)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbfecha_liquidacion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFsuma_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFsuma_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jFsuma_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtnombre_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtruc_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbfecha_liquidacion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimprimir_cuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFsuma_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFsuma_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFsuma_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1591,10 +1610,11 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                     .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel18)
                         .addComponent(cmbfecha_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(btnimprimir_cuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jFsuma_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jFsuma_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1975,15 +1995,6 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         boton_guardar_credito_inicio();
     }//GEN-LAST:event_btncrearcredito_inicioActionPerformed
 
-    private void txtsaldo_creditoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsaldo_creditoKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtsaldo_creditoKeyPressed
-
-    private void txtsaldo_creditoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsaldo_creditoKeyTyped
-        // TODO add your handling code here:
-        evejtf.soloNumero(evt);
-    }//GEN-LAST:event_txtsaldo_creditoKeyTyped
-
     private void lblpais1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseMoved
         // TODO add your handling code here:
     }//GEN-LAST:event_lblpais1MouseMoved
@@ -2025,6 +2036,16 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         boton_imprimir_liquidacion_final();
     }//GEN-LAST:event_btnimprimir_liquidacionActionPerformed
 
+    private void btnimprimir_cuentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_cuentaActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_cuenta_liquidacion_final();
+    }//GEN-LAST:event_btnimprimir_cuentaActionPerformed
+
+    private void btnimprimir_cuenta1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_cuenta1ActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_cuenta_liquidacion_final();
+    }//GEN-LAST:event_btnimprimir_cuenta1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnabrir_imagen;
@@ -2035,6 +2056,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JButton btneditar_tercero;
     private javax.swing.JButton btnguardar_item_tr;
     private javax.swing.JButton btnguardar_tercero;
+    private javax.swing.JButton btnimprimir_cuenta;
+    private javax.swing.JButton btnimprimir_cuenta1;
     private javax.swing.JButton btnimprimir_liquidacion;
     private javax.swing.JButton btnimprimir_recibo;
     private javax.swing.JButton btnnuevo_item_tr;
@@ -2054,6 +2077,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> jCtipo_institucion;
     private javax.swing.JComboBox<String> jCtipo_registro;
     private javax.swing.JCheckBox jCtransportadora;
+    private javax.swing.JFormattedTextField jFsaldo_credito;
     public static javax.swing.JFormattedTextField jFsaldo_credito_total;
     private javax.swing.JFormattedTextField jFsuma_pagado;
     private javax.swing.JFormattedTextField jFsuma_pagar;
@@ -2063,7 +2087,6 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
-    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
@@ -2135,7 +2158,6 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtruc;
     private javax.swing.JTextField txtruc_liquidacion;
     private javax.swing.JTextField txtruc_recibo;
-    private javax.swing.JTextField txtsaldo_credito;
     private javax.swing.JTextField txttelefono;
     // End of variables declaration//GEN-END:variables
 }

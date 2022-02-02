@@ -238,6 +238,8 @@ public class DAO_tercero {
                 + "and re.idrecibo_pago_tercero=" + id;
         String titulonota = "RECIBO";
         String direccion = "src/REPORTE/RECIBO/repRecibo.jrxml";
-        rep.imprimirjasper(conn, sql, titulonota, direccion);
+        String rutatemp="Recibo_"+evefec.getString_formato_fecha()+"_"+id;
+//        rep.imprimirjasper(conn, sql, titulonota, direccion);
+        rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 }
