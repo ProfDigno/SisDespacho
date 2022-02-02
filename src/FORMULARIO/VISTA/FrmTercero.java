@@ -62,6 +62,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private grupo_credito_cliente gcfina = new grupo_credito_cliente();
     private DAO_grupo_credito_cliente gcfina_dao = new DAO_grupo_credito_cliente();
     private DAO_credito_cliente cfina_dao = new DAO_credito_cliente();
+    private DAO_liquidacion_final DAOliqfin = new DAO_liquidacion_final();
     private EvenNumero_a_Letra nroletra = new EvenNumero_a_Letra();
     private entidad_usuario usu = new entidad_usuario();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
@@ -99,6 +100,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         cargar_tipo_registro();
         cargar_tipo_dependencia();
         cargar_tipo_institucion();
+        evefec.cargar_combobox_directo(cmbfecha_liquidacion);
+        evefec.cargar_combobox_directo(cmbfecha_recibo);
     }
     private void reestableser_item_tipo_registro(){
         txtfecha_estado.setText(evefec.getString_formato_fecha());
@@ -307,11 +310,14 @@ public class FrmTercero extends javax.swing.JInternalFrame {
 
     private void seleccionar_tabla_tercero() {
         fk_idtercero = eveJtab.getInt_select_id(tbltercero);
-        
         DAOter.cargar_tercero(conn,ENTter, fk_idtercero);
         txtid.setText(String.valueOf(ENTter.getC1idtercero()));
         txtnombre.setText(ENTter.getC4nombre());
+        txtnombre_liquidacion.setText(ENTter.getC4nombre());
+        txtnombre_recibo.setText(ENTter.getC4nombre());
         txtruc.setText(ENTter.getC5ruc());
+        txtruc_liquidacion.setText(ENTter.getC5ruc());
+        txtruc_recibo.setText(ENTter.getC5ruc());
         txttelefono.setText(ENTter.getC6telefono());
         txtdireccion.setText(ENTter.getC7direccion());
         txtrepre_nombre.setText(ENTter.getC8representante_nombre());
@@ -325,6 +331,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         fk_idtercero_ciudad=ENTter.getC16fk_idtercero_ciudad();
         fk_idtercero_rubro=ENTter.getC18fk_idtercero_rubro();
         txtsaldo_credito.setText(String.valueOf(ENTter.getC17saldo_credito()));
+        suma_liquidacion("");
+        suma_recibo("");
         DAOpais.cargar_tercero_pais(conn, ENTpais,fk_idtercero_pais);
         evecomb.setSeleccionarCombobox(jCpais, ENTpais.getC1idtercero_pais(), ENTpais.getC2nombre());
         DAOciu.cargar_tercero_ciudad(conn, ENTciu,fk_idtercero_ciudad);
@@ -336,6 +344,20 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, tblcredito_cliente, gcfina.getC1idgrupo_credito_cliente());
         btnguardar_tercero.setEnabled(false);
         btneditar_tercero.setEnabled(true);
+    }
+    void suma_liquidacion(String fecha){
+        DAOter.actualizar_tabla_tercero_liquidacion(conn, tblliquidacion_final, fk_idtercero,fecha);
+        double suma_saldo=eveJtab.getDouble_sumar_tabla(tblliquidacion_final, 9);
+        double suma_pagar=eveJtab.getDouble_sumar_tabla(tblliquidacion_final, 10);
+        double suma_pagado=eveJtab.getDouble_sumar_tabla(tblliquidacion_final, 11);
+        jFsuma_saldo.setValue(suma_saldo);
+        jFsuma_pagar.setValue(suma_pagar);
+        jFsuma_pagado.setValue(suma_pagado);
+    }
+    void suma_recibo(String fecha){
+        DAOter.actualizar_tabla_tercero_recibo(conn, tblrecibo, fk_idtercero,fecha);
+        double suma_recibo=eveJtab.getDouble_sumar_tabla(tblrecibo,5);
+        jFsuma_recibo.setValue(suma_recibo);
     }
     private void seleccionar_tabla_item_tipo_registro() {
         iditem_tipo_registro = eveJtab.getInt_select_id(tblitem_tipo_registro);
@@ -439,6 +461,22 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         DAOter.actualizar_tabla_tercero(conn, tbltercero);
 //        sumar_monto_credito_cliente();
     }
+      private void boton_imprimir_recibo() {
+//        if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
+            if (!eveJtab.getBoolean_validar_select(tblrecibo)) {
+                int idrecibo=eveJtab.getInt_select_id(tblrecibo);
+                DAOter.imprimir_rep_recibo(conn,idrecibo);
+            }
+//        }
+    }
+      private void boton_imprimir_liquidacion_final() {
+//        if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
+            if (!eveJtab.getBoolean_validar_select(tblliquidacion_final)) {
+                int idliquidacion_final_select=eveJtab.getInt_select_id(tblliquidacion_final);
+                DAOliqfin.imprimir_rep_liquidacion_final(conn, idliquidacion_final_select);
+            }
+//        }
+    }
     private void boton_nuevo_tercero(){
         reestableser_tercero();
     }
@@ -540,6 +578,32 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         panel_tabla_cliente2 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tblcredito_cliente = new javax.swing.JTable();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblliquidacion_final = new javax.swing.JTable();
+        jFsuma_saldo = new javax.swing.JFormattedTextField();
+        jLabel16 = new javax.swing.JLabel();
+        txtnombre_liquidacion = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        txtruc_liquidacion = new javax.swing.JTextField();
+        jFsuma_pagado = new javax.swing.JFormattedTextField();
+        jFsuma_pagar = new javax.swing.JFormattedTextField();
+        jLabel18 = new javax.swing.JLabel();
+        cmbfecha_liquidacion = new javax.swing.JComboBox<>();
+        btnimprimir_liquidacion = new javax.swing.JButton();
+        jPanel10 = new javax.swing.JPanel();
+        jPanel11 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tblrecibo = new javax.swing.JTable();
+        jFsuma_recibo = new javax.swing.JFormattedTextField();
+        jLabel19 = new javax.swing.JLabel();
+        txtnombre_recibo = new javax.swing.JTextField();
+        jLabel20 = new javax.swing.JLabel();
+        txtruc_recibo = new javax.swing.JTextField();
+        jLabel15 = new javax.swing.JLabel();
+        cmbfecha_recibo = new javax.swing.JComboBox<>();
+        btnimprimir_recibo = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -939,7 +1003,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(txtsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 52, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo_tercero)
                     .addComponent(btnguardar_tercero)
@@ -1019,7 +1083,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 425, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(btnpagar_credito)
@@ -1406,7 +1470,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         );
         panel_tabla_cliente2Layout.setVerticalGroup(
             panel_tabla_cliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -1425,6 +1489,238 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         );
 
         jTabbedPane1.addTab("GRUPO CREDITO", jPanel7);
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("LIQUIDACION FINAL"));
+
+        tblliquidacion_final.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane3.setViewportView(tblliquidacion_final);
+
+        jFsuma_saldo.setEditable(false);
+        jFsuma_saldo.setBorder(javax.swing.BorderFactory.createTitledBorder("Suma Saldo:"));
+        jFsuma_saldo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFsuma_saldo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_saldo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel16.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel16.setText("NOMBRE:");
+
+        txtnombre_liquidacion.setEditable(false);
+        txtnombre_liquidacion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel17.setText("RUC:");
+
+        txtruc_liquidacion.setEditable(false);
+        txtruc_liquidacion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jFsuma_pagado.setEditable(false);
+        jFsuma_pagado.setBorder(javax.swing.BorderFactory.createTitledBorder("Suma Pagado:"));
+        jFsuma_pagado.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFsuma_pagado.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_pagado.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jFsuma_pagar.setEditable(false);
+        jFsuma_pagar.setBorder(javax.swing.BorderFactory.createTitledBorder("Suma Pagar:"));
+        jFsuma_pagar.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFsuma_pagar.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_pagar.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel18.setText("Fecha:");
+
+        cmbfecha_liquidacion.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbfecha_liquidacionItemStateChanged(evt);
+            }
+        });
+
+        btnimprimir_liquidacion.setText("IMPRIMIR");
+        btnimprimir_liquidacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_liquidacionActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addComponent(jLabel16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtnombre_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel17)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtruc_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbfecha_liquidacion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 199, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel9Layout.createSequentialGroup()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel16)
+                    .addComponent(txtnombre_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel17)
+                    .addComponent(txtruc_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel18)
+                        .addComponent(cmbfecha_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFsuma_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFsuma_pagado, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFsuma_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(4, 4, 4))
+        );
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("TABLA LIQUIDACION", jPanel8);
+
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("RECIBO"));
+
+        tblrecibo.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane4.setViewportView(tblrecibo);
+
+        jFsuma_recibo.setEditable(false);
+        jFsuma_recibo.setBorder(javax.swing.BorderFactory.createTitledBorder("Suma Recibo:"));
+        jFsuma_recibo.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0 Gs"))));
+        jFsuma_recibo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_recibo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel19.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel19.setText("NOMBRE:");
+
+        txtnombre_recibo.setEditable(false);
+        txtnombre_recibo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel20.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel20.setText("RUC:");
+
+        txtruc_recibo.setEditable(false);
+        txtruc_recibo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+
+        jLabel15.setText("Fecha:");
+
+        cmbfecha_recibo.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbfecha_reciboItemStateChanged(evt);
+            }
+        });
+
+        btnimprimir_recibo.setText("IMPRIMIR");
+        btnimprimir_recibo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_reciboActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
+        jPanel11.setLayout(jPanel11Layout);
+        jPanel11Layout.setHorizontalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 931, Short.MAX_VALUE)
+            .addGroup(jPanel11Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addComponent(jLabel19)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtnombre_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 385, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtruc_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel15)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbfecha_recibo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(btnimprimir_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+        jPanel11Layout.setVerticalGroup(
+            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel19)
+                    .addComponent(txtnombre_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel20)
+                    .addComponent(txtruc_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel15)
+                        .addComponent(cmbfecha_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(btnimprimir_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFsuma_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(4, 4, 4))
+        );
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("TABLA RECIBO", jPanel10);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -1707,6 +2003,28 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_jCrubrosActionPerformed
 
+    private void cmbfecha_reciboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_reciboItemStateChanged
+        // TODO add your handling code here:
+        String fecha=evefec.getFechaDirecto_combobox(cmbfecha_recibo," re.fecha_emision ");
+        suma_recibo(fecha);
+    }//GEN-LAST:event_cmbfecha_reciboItemStateChanged
+
+    private void cmbfecha_liquidacionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_liquidacionItemStateChanged
+        // TODO add your handling code here:
+        String fecha=evefec.getFechaDirecto_combobox(cmbfecha_liquidacion," lf.fecha_despacho ");
+        suma_liquidacion(fecha);
+    }//GEN-LAST:event_cmbfecha_liquidacionItemStateChanged
+
+    private void btnimprimir_reciboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_reciboActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_recibo();
+    }//GEN-LAST:event_btnimprimir_reciboActionPerformed
+
+    private void btnimprimir_liquidacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_liquidacionActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_liquidacion_final();
+    }//GEN-LAST:event_btnimprimir_liquidacionActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnabrir_imagen;
@@ -1717,9 +2035,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JButton btneditar_tercero;
     private javax.swing.JButton btnguardar_item_tr;
     private javax.swing.JButton btnguardar_tercero;
+    private javax.swing.JButton btnimprimir_liquidacion;
+    private javax.swing.JButton btnimprimir_recibo;
     private javax.swing.JButton btnnuevo_item_tr;
     private javax.swing.JButton btnnuevo_tercero;
     private javax.swing.JButton btnpagar_credito;
+    private javax.swing.JComboBox<String> cmbfecha_liquidacion;
+    private javax.swing.JComboBox<String> cmbfecha_recibo;
     private javax.swing.ButtonGroup est_reg;
     private javax.swing.JComboBox<String> jCciudad;
     private javax.swing.JCheckBox jCcolaborador;
@@ -1733,13 +2055,23 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> jCtipo_registro;
     private javax.swing.JCheckBox jCtransportadora;
     public static javax.swing.JFormattedTextField jFsaldo_credito_total;
+    private javax.swing.JFormattedTextField jFsuma_pagado;
+    private javax.swing.JFormattedTextField jFsuma_pagar;
+    private javax.swing.JFormattedTextField jFsuma_recibo;
+    private javax.swing.JFormattedTextField jFsuma_saldo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
@@ -1748,16 +2080,22 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JRadioButton jRest_activo;
     private javax.swing.JRadioButton jRest_desabilitado;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
@@ -1778,6 +2116,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     public static javax.swing.JTable tblcredito_cliente;
     public static javax.swing.JTable tblgrupo_credito_cliente;
     private javax.swing.JTable tblitem_tipo_registro;
+    private javax.swing.JTable tblliquidacion_final;
+    private javax.swing.JTable tblrecibo;
     public static javax.swing.JTable tbltercero;
     private javax.swing.JTextField txtdireccion;
     private javax.swing.JTextField txtfecha_estado;
@@ -1787,10 +2127,14 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtiditem_tipo_registro;
     private javax.swing.JTextField txtimagen;
     private javax.swing.JTextField txtnombre;
+    private javax.swing.JTextField txtnombre_liquidacion;
+    private javax.swing.JTextField txtnombre_recibo;
     private javax.swing.JTextField txtnro_habilitacion;
     private javax.swing.JTextField txtrepre_cedula;
     private javax.swing.JTextField txtrepre_nombre;
     private javax.swing.JTextField txtruc;
+    private javax.swing.JTextField txtruc_liquidacion;
+    private javax.swing.JTextField txtruc_recibo;
     private javax.swing.JTextField txtsaldo_credito;
     private javax.swing.JTextField txttelefono;
     // End of variables declaration//GEN-END:variables

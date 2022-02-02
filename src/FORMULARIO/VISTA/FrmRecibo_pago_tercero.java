@@ -65,7 +65,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     private double monto_recibo_pago;
     private double monto_saldo_credito;
     private String monto_letra;
-    private String tabla_origen ="RECIBO"; //caja.getTabla_origen_recibo();
+    private String tabla_origen = "RECIBO"; //caja.getTabla_origen_recibo();
     private int fk_idusuario;
     private int idrecibo_pago_cliente;
     private double Lmonto_saldo_credito;
@@ -76,7 +76,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         fk_idusuario = usu.getGlobal_idusuario();
         cargar_cliente();
         reestableser();
-        rpcli_dao.actualizar_tabla_recibo_pago_cliente(conn, tblpro_categoria);
+        rpcli_dao.actualizar_tabla_recibo_pago_cliente(conn, tblpro_recibo);
         color_formulario();
 
     }
@@ -167,7 +167,6 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         sccli.setC8fk_idusuario(fk_idusuario);
     }
 
-
     private void boton_guardar() {
         if (hab_guardar) {
             if (validar_guardar()) {
@@ -178,17 +177,25 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                 clie.setC1idtercero(fk_idcliente);
                 if (clBO.getBoolean_insertar_cliente_con_recibo_pago1(clie, ccli, ccli2, gcc, rpcli, sccli)) {
                     reestableser();
-                    rpcli_dao.actualizar_tabla_recibo_pago_cliente(conn, tblpro_categoria);
+                    rpcli_dao.actualizar_tabla_recibo_pago_cliente(conn, tblpro_recibo);
                     cdao.actualizar_tabla_tercero(conn, FrmTercero.tbltercero);
                     gcfina_dao.actualizar_tabla_grupo_credito_cliente_idc(conn, FrmTercero.tblgrupo_credito_cliente, fk_idcliente);
                     gcfina_dao.cargar_grupo_credito_cliente_id(conn, gcfina, fk_idcliente);
                     cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, FrmTercero.tblcredito_cliente, gcfina.getC1idgrupo_credito_cliente());
                     FrmTercero.jFsaldo_credito_total.setValue(cdao.getDouble_sumar_monto_credito_cliente(conn));
+                    cdao.imprimir_rep_recibo(conn, idrecibo_pago_cliente);
                     if (evemen.MensajeGeneral_question("DESEA CERRAR EL RECIBO", "RECIBO", "CERRAR", "CANCELAR")) {
                         this.dispose();
                     }
                 }
             }
+        }
+    }
+
+    private void boton_imprimir_recibo() {
+        if (!evejta.getBoolean_validar_select(tblpro_recibo)) {
+            int idrecibo = evejta.getInt_select_id(tblpro_recibo);
+            cdao.imprimir_rep_recibo(conn, idrecibo);
         }
     }
 
@@ -201,7 +208,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     }
 
     private void seleccionar_tabla() {
-        int id = evejta.getInt_select_id(tblpro_categoria);
+        int id = evejta.getInt_select_id(tblpro_recibo);
         rpcli_dao.cargar_recibo_pago_cliente(conn, rpcli, id);
         txtid.setText(String.valueOf(rpcli.getC1idrecibo_pago_cliente()));
         txtrec_descripcion.setText(rpcli.getC3descripcion());
@@ -213,7 +220,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     private void reestableser() {
         txtid.setText(null);
         txtrec_fecha_emision.setText(evefec.getString_formato_fecha_hora());
-        txtrec_descripcion.setText("RECIBO DE PAGO PARA: " + clie.getC4nombre());
+        txtrec_descripcion.setText("DESPACHO ADUANERO PARA: " + clie.getC4nombre());
         txtrec_monto_recibo_pago.setText(null);
         txtrec_monto_letra.setText(null);
         btnguardar.setEnabled(true);
@@ -265,6 +272,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
 //            evemen.Imprimir_serial_sql_error(e, sql, titulo);
 //        }
 //    }
+
     public FrmRecibo_pago_tercero() {
         initComponents();
         abrir_formulario();
@@ -315,7 +323,8 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         jFnuevo_saldo = new javax.swing.JFormattedTextField();
         panel_tabla_categoria = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblpro_categoria = new javax.swing.JTable();
+        tblpro_recibo = new javax.swing.JTable();
+        btnimprimir_recibo = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -578,14 +587,14 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                             .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtrec_monto_letra, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtrec_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, 600, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
-                                .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel12)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jFnuevo_saldo))))
+                                .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtrec_monto_letra)
+                            .addComponent(txtrec_descripcion)))
                     .addGroup(panel_insertar_categoriaLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
                         .addComponent(btnnuevo)
@@ -595,7 +604,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                         .addComponent(btneditar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btndeletar)))
-                .addContainerGap(263, Short.MAX_VALUE))
+                .addContainerGap(159, Short.MAX_VALUE))
         );
         panel_insertar_categoriaLayout.setVerticalGroup(
             panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -616,7 +625,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                     .addComponent(jLabel10)
                     .addComponent(txtrec_monto_recibo_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12)
-                    .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.DEFAULT_SIZE, 48, Short.MAX_VALUE))
+                    .addComponent(jFnuevo_saldo, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_insertar_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel11)
@@ -635,7 +644,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         panel_tabla_categoria.setBackground(new java.awt.Color(51, 204, 255));
         panel_tabla_categoria.setBorder(javax.swing.BorderFactory.createTitledBorder("TABLA"));
 
-        tblpro_categoria.setModel(new javax.swing.table.DefaultTableModel(
+        tblpro_recibo.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -646,24 +655,37 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tblpro_categoria.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblpro_recibo.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
-                tblpro_categoriaMouseReleased(evt);
+                tblpro_reciboMouseReleased(evt);
             }
         });
-        jScrollPane1.setViewportView(tblpro_categoria);
+        jScrollPane1.setViewportView(tblpro_recibo);
+
+        btnimprimir_recibo.setText("IMPRIMIR");
+        btnimprimir_recibo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_reciboActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_tabla_categoriaLayout = new javax.swing.GroupLayout(panel_tabla_categoria);
         panel_tabla_categoria.setLayout(panel_tabla_categoriaLayout);
         panel_tabla_categoriaLayout.setHorizontalGroup(
             panel_tabla_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1004, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tabla_categoriaLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnimprimir_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
         panel_tabla_categoriaLayout.setVerticalGroup(
             panel_tabla_categoriaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tabla_categoriaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addComponent(jScrollPane1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimprimir_recibo)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("TABLAS", panel_tabla_categoria);
@@ -689,13 +711,13 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        rpcli_dao.ancho_tabla_recibo_pago_cliente(tblpro_categoria);
+        rpcli_dao.ancho_tabla_recibo_pago_cliente(tblpro_recibo);
     }//GEN-LAST:event_formInternalFrameOpened
 
-    private void tblpro_categoriaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblpro_categoriaMouseReleased
+    private void tblpro_reciboMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblpro_reciboMouseReleased
         // TODO add your handling code here:
         seleccionar_tabla();
-    }//GEN-LAST:event_tblpro_categoriaMouseReleased
+    }//GEN-LAST:event_tblpro_reciboMouseReleased
 
     private void btneditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditarActionPerformed
         // TODO add your handling code here:
@@ -766,6 +788,11 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         cargar_monto();
     }//GEN-LAST:event_txtrec_monto_recibo_pagoKeyReleased
 
+    private void btnimprimir_reciboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_reciboActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_recibo();
+    }//GEN-LAST:event_btnimprimir_reciboActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btncli_buscar;
@@ -773,6 +800,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     private javax.swing.JButton btndeletar;
     private javax.swing.JButton btneditar;
     private javax.swing.JButton btnguardar;
+    private javax.swing.JButton btnimprimir_recibo;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JFormattedTextField jFcli_saldo_credito;
     private javax.swing.JFormattedTextField jFnuevo_saldo;
@@ -794,7 +822,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     private javax.swing.JPanel panel_dato_cliente;
     private javax.swing.JPanel panel_insertar_categoria;
     private javax.swing.JPanel panel_tabla_categoria;
-    private javax.swing.JTable tblpro_categoria;
+    private javax.swing.JTable tblpro_recibo;
     private javax.swing.JTextField txtcli_direccion;
     private javax.swing.JTextField txtcli_fec_limite;
     private javax.swing.JTextField txtcli_nombre;

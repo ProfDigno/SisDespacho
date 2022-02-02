@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -106,7 +107,12 @@ public class EvenJTextField {
             return false;
         }
     }
-
+    public void seleccionar_flecha_abajo(KeyEvent evt, JTable tblbuscar){
+        if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+        tblbuscar.changeSelection(0, 0, false, false);
+        tblbuscar.grabFocus();
+        }
+    }
     public void soloNumero(java.awt.event.KeyEvent evt) {
         int k = (int) evt.getKeyChar();
         if (k == 8 || k == 10 || k == 46 || k == 48 || k == 49 || k == 50 || k == 51 || k == 52 || k == 53 || k == 54 || k == 55 || k == 56 || k == 57) {

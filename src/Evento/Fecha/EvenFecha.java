@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 /**
@@ -75,13 +76,16 @@ public class EvenFecha {
     public java.sql.Date getDateSQL_fecha_cargado_sinformat(String fechaStr) {
         java.sql.Date dateSql = null;
         try {
+//            SimpleDateFormat formato = new SimpleDateFormat(formato_fechaHora);
+//            java.sql.Date fromdate1=(java.sql.Date) formato.parse(fechaStr);
+//            dateSql=fromdate1;
             dateSql = java.sql.Date.valueOf(fechaStr);
         } catch (Exception e) {
             String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n "
                     + "FORMATO: AñO-MES-DIA HORA:MINUTO\n"
                     + "FECHA INGRESADO:"+fechaStr +"\n"+ e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR:getDateSQL_fecha_cargado_sinformat", JOptionPane.ERROR_MESSAGE);
-
+            dateSql = java.sql.Date.valueOf(getString_formato_fecha());
         }
         return dateSql;
     }
@@ -109,7 +113,10 @@ public class EvenFecha {
         }
         return dateSql;
     }
-
+    /**
+     * <H2>Formato fecha<H2/>
+     * @return dd-MM-yyyy
+     */
     public String getString_formato_fecha() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
@@ -253,5 +260,62 @@ public class EvenFecha {
         SimpleDateFormat sdf = new SimpleDateFormat(formato_fechaHoraZona);
         Sfecha = String.valueOf(sdf.format(date));
         return Sfecha;
+    }
+     public void cargar_combobox_directo(JComboBox combo){
+        String fechas[]={"HOY","AYER",
+            "ESTA SEMANA","SEMANA  ANTERIOR",
+            "ESTE MES","MES ANTERIOR",
+            "PRIMER TRIMESTRE","SEGUNDO TRIMESTRE","TERCER TRIMESTRE","CUARTO TRIMESTRE","TODO EL AÑO"};
+        for (int i = 0; i < fechas.length; i++) {
+            String fecha = fechas[i];
+            combo.addItem(fecha);
+        }
+    }
+    public String getFechaDirecto_combobox(JComboBox combo,String campofecha){
+        //date_part('year',(current_date - interval '1 year')) un ano menos
+        
+        String fecha="";
+        if(combo.getSelectedIndex()==0){//HOY
+            fecha="\n and date("+campofecha+")=date(current_date) ";
+        }
+        if(combo.getSelectedIndex()==1){//AYER
+            fecha="\n and date("+campofecha+")=date(current_date-1) ";
+        }
+        if(combo.getSelectedIndex()==2){//ESTA SEMANA
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('week',"+campofecha+")=date_part('week',current_date) ";
+        }
+        if(combo.getSelectedIndex()==3){//SEMANA  ANTERIOR
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('week',"+campofecha+")=date_part('week',(current_date - interval '1 week')) ";
+        }
+        if(combo.getSelectedIndex()==4){//ESTE MES
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('month',"+campofecha+")=date_part('month',current_date) ";
+        }
+        if(combo.getSelectedIndex()==5){//MES ANTERIOR
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('month',"+campofecha+")=date_part('month',(current_date - interval '1 month')) ";
+        }
+        if(combo.getSelectedIndex()==6){//PRIMER TRIMESTRE
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('quarter',"+campofecha+")=1 ";
+        }
+        if(combo.getSelectedIndex()==7){//SEGUNDO TRIMESTRE
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('quarter',"+campofecha+")=2 ";
+        }
+        if(combo.getSelectedIndex()==8){//TERCER TRIMESTRE
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('quarter',"+campofecha+")=3 ";
+        }
+        if(combo.getSelectedIndex()==9){//CUARTO TRIMESTRE
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
+                + "\n and date_part('quarter',"+campofecha+")=4 ";
+        }
+        if(combo.getSelectedIndex()==10){//todo el año
+            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)";
+        }
+        return fecha;
     }
 }

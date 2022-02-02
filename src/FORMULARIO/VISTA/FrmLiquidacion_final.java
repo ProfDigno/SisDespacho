@@ -7,6 +7,8 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
+import BUSCAR.ClaVarBuscar;
+import BUSCAR.JDiaBuscarDosColumnas;
 import Evento.Color.cla_color_palete;
 import Evento.Combobox.CargaDirectoCombobox;
 import Evento.Combobox.EvenCombobox;
@@ -19,10 +21,12 @@ import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Utilitario.EvenNumero_a_Letra;
+import FORMULARIO.BO.BO_comprobante_liquidacion;
 import FORMULARIO.BO.BO_item_liquidacion_final;
 import FORMULARIO.BO.BO_liquidacion_final;
 import FORMULARIO.BO.BO_liquidacion_proforma;
 import FORMULARIO.DAO.DAO_aduana;
+import FORMULARIO.DAO.DAO_comprobante_liquidacion;
 import FORMULARIO.DAO.DAO_grupo_credito_cliente;
 import FORMULARIO.DAO.DAO_honorario_despacho;
 import FORMULARIO.DAO.DAO_item_liquidacion_final;
@@ -33,6 +37,7 @@ import FORMULARIO.DAO.DAO_tercero;
 import FORMULARIO.DAO.DAO_tipo_comprobante;
 import FORMULARIO.DAO.dao_usuario;
 import FORMULARIO.ENTIDAD.aduana;
+import FORMULARIO.ENTIDAD.comprobante_liquidacion;
 import FORMULARIO.ENTIDAD.credito_cliente;
 import FORMULARIO.ENTIDAD.entidad_usuario;
 import FORMULARIO.ENTIDAD.grupo_credito_cliente;
@@ -46,6 +51,7 @@ import FORMULARIO.ENTIDAD.tipo_comprobante;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -66,6 +72,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     EvenJasperReport rep = new EvenJasperReport();
     EvenJLabel evelbl = new EvenJLabel();
     CargaDirectoCombobox carcbm = new CargaDirectoCombobox();
+    private ClaVarBuscar vbus = new ClaVarBuscar();
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenFecha evefec = new EvenFecha();
     private dao_usuario dao_usu = new dao_usuario();//dao_usuario
@@ -102,26 +109,28 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private credito_cliente cclie = new credito_cliente();
     private grupo_credito_cliente gcc = new grupo_credito_cliente();
     private EvenNumero_a_Letra nl = new EvenNumero_a_Letra();
+    private comprobante_liquidacion ENTcl = new comprobante_liquidacion();
+    private DAO_comprobante_liquidacion DAOcl = new DAO_comprobante_liquidacion();
     private boolean hab_cargar_tercero_importador;
-    private int fk_idtercero_importador;
+    private static int fk_idtercero_importador;
     private boolean hab_cargar_tercero_exportador;
-    private int fk_idtercero_exportador;
+    private static int fk_idtercero_exportador;
     private boolean hab_cargar_moneda_cambio;
     private int fk_idmoneda_cambio;
     private boolean hab_cargar_aduana;
-    private int fk_idaduana;
+    private static int fk_idaduana;
     private boolean hab_cargar_transporte_empresa;
-    private int fk_idtransporte_empresa;
+    private static int fk_idtransporte_empresa;
     private boolean hab_cargar_despachozona;
     private int fk_iddespacho_zona;
     private boolean hab_cargar_tc_mercaderia;
-    private int fk_idtc_mercaderia;
+    private static int fk_idtc_mercaderia;
     private boolean hab_combo_ciudad;
-    private int fk_idtercero_ciudad;
+    private static int fk_idtercero_ciudad;
     private boolean hab_combo_regimen;
     private boolean hab_combo_incoterms;
-    private int fk_idregimen;
-    private int fk_idincoterms;
+    private static int fk_idregimen;
+    private static int fk_idincoterms;
     private String tipo_tasa_cambio;
     private double tasa_cambio_aduana = 0;
     private double tasa_cambio_mercado = 0;
@@ -145,7 +154,77 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private String estado_anulado = "ANULADO";
     private int idliquidacion_final_select;
     private String tabla_origen = "LIQUIDACION";
-    private String estado_pagado="PAGADO";
+    private String estado_pagado = "PAGADO";
+    private String tipo_SIN_IVA = "SIN_IVA";
+    private String tipo_SOLO_IVA = "SOLO_IVA";
+    private String tipo_SIN_Y_SOLO_IVA = "SIN_Y_SOLO_IVA";
+    private int fila_select_item_orden_lab;
+    private String sin_iva;
+    private String solo_iva;
+
+    public static int getFk_idtc_mercaderia() {
+        return fk_idtc_mercaderia;
+    }
+
+    public static void setFk_idtc_mercaderia(int fk_idtc_mercaderia) {
+        FrmLiquidacion_final.fk_idtc_mercaderia = fk_idtc_mercaderia;
+    }
+
+    public static int getFk_idtercero_ciudad() {
+        return fk_idtercero_ciudad;
+    }
+
+    public static void setFk_idtercero_ciudad(int fk_idtercero_ciudad) {
+        FrmLiquidacion_final.fk_idtercero_ciudad = fk_idtercero_ciudad;
+    }
+
+    public static int getFk_idtercero_importador() {
+        return fk_idtercero_importador;
+    }
+
+    public static void setFk_idtercero_importador(int fk_idtercero_importador) {
+        FrmLiquidacion_final.fk_idtercero_importador = fk_idtercero_importador;
+    }
+
+    public static int getFk_idtercero_exportador() {
+        return fk_idtercero_exportador;
+    }
+
+    public static void setFk_idtercero_exportador(int fk_idtercero_exportador) {
+        FrmLiquidacion_final.fk_idtercero_exportador = fk_idtercero_exportador;
+    }
+
+    public static int getFk_idaduana() {
+        return fk_idaduana;
+    }
+
+    public static void setFk_idaduana(int fk_idaduana) {
+        FrmLiquidacion_final.fk_idaduana = fk_idaduana;
+    }
+
+    public static int getFk_idtransporte_empresa() {
+        return fk_idtransporte_empresa;
+    }
+
+    public static void setFk_idtransporte_empresa(int fk_idtransporte_empresa) {
+        FrmLiquidacion_final.fk_idtransporte_empresa = fk_idtransporte_empresa;
+    }
+
+    public static int getFk_idregimen() {
+        return fk_idregimen;
+    }
+
+    public static void setFk_idregimen(int fk_idregimen) {
+        FrmLiquidacion_final.fk_idregimen = fk_idregimen;
+    }
+
+    public static int getFk_idincoterms() {
+        return fk_idincoterms;
+    }
+
+    public static void setFk_idincoterms(int fk_idincoterms) {
+        FrmLiquidacion_final.fk_idincoterms = fk_idincoterms;
+    }
 
     private void abrir_formulario() {
         this.setTitle("LIQUIDACION FINAL");
@@ -153,20 +232,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         if (cargado_inicial) {
             carcbm.cargarCombobox_via_transporte(cmbvia_transporte);
             carcbm.cargarCombobox_modo_transporte(cmbcontenedor_tipo);
-            cargar_tercero_importador();
-            cargar_tercero_exportador();
-            cargar_aduana();
             cargar_moneda_cambio();
-            cargar_transporte_empresa();
             cargar_despacho_zona();
-            cargar_tc_mercaderia();
-            cargar_ciudad();
-            cargar_regimen();
-            cargar_incoterms();
             cargar_montos();
             crear_item_liquidacion_final();
             reestableser_liquidacion();
-//            crear_item_texte();
             cargado_inicial = false;
         }
     }
@@ -186,26 +256,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         }
     }
 
-    private void cargar_tercero_importador() {
-        evecomb.cargarCombobox(conn, cmbtercero_importador, "idtercero", "nombre", "tercero", "where importador=true ");
-        hab_cargar_tercero_importador = true;
-    }
-
-    private void cargar_tercero_exportador() {
-        evecomb.cargarCombobox(conn, cmbtercero_exportador, "idtercero", "nombre", "tercero", "where importador=true ");
-        hab_cargar_tercero_exportador = true;
-    }
-
-    private void cargar_aduana() {
-        evecomb.cargarCombobox(conn, cmbaduana, "idaduana", "nombre", "aduana", "");
-        hab_cargar_aduana = true;
-    }
-
-    private void cargar_transporte_empresa() {
-        evecomb.cargarCombobox(conn, cmbtransporte_empresa, "idtransporte_empresa", "nombre", "transporte_empresa", "");
-        hab_cargar_transporte_empresa = true;
-    }
-
     private void cargar_moneda_cambio() {
         evecomb.cargarCombobox(conn, cmbmoneda_cambio, "idmoneda_cambio", "moneda", "moneda_cambio", "");
         hab_cargar_moneda_cambio = true;
@@ -215,27 +265,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         evecomb.cargarCombobox(conn, cmbdespachozona, "iddespacho_zona", "nombre", "despacho_zona", "");
         hab_cargar_despachozona = true;
     }
-
-    private void cargar_tc_mercaderia() {
-        evecomb.cargarCombobox(conn, cmbtc_mercaderia, "idtipo_comprobante", "descripcion", "tipo_comprobante", "where mercaderia=true");
-        hab_cargar_tc_mercaderia = true;
-    }
-
-    private void cargar_ciudad() {
-        evecomb.cargarCombobox(conn, cmbdestino, "idtercero_ciudad", "nombre", "tercero_ciudad", "");
-        hab_combo_ciudad = true;
-    }
-
-    private void cargar_regimen() {
-        evecomb.cargarCombobox(conn, cmbregimen, "idregimen", "nombre", "regimen", "");
-        hab_combo_regimen = true;
-    }
-
-    private void cargar_incoterms() {
-        evecomb.cargarCombobox(conn, cmbincoterms, "idincoterms", "nombre", "incoterms", "");
-        hab_combo_incoterms = true;
-    }
-
     private void cargar_dato_select_moneda_cambio(int fk_idmoneda_cambio, boolean cargarcombo) {
         DAOmc.cargar_moneda_cambio(conn, ENTmc, fk_idmoneda_cambio);
         tipo_tasa_cambio = ENTmc.getC2moneda();
@@ -313,16 +342,31 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         txtlp_contenedor_nro.setText(null);
         txtfactura_numero.setText(null);
         cmbdespachozona.setSelectedIndex(0);
-        cmbtercero_importador.setSelectedIndex(0);
-        cmbtercero_exportador.setSelectedIndex(0);
-        cmbtc_mercaderia.setSelectedIndex(0);
-        cmbdestino.setSelectedIndex(0);
+        txtbuscar_mercaderia.setText(null);
+        txtbuscar_destino.setText(null);
+        txtbuscar_importador.setText(null);
+        txtbuscar_exportador.setText(null);
+        txtbuscar_aduana.setText(null);
+        txtbuscar_transportadora.setText(null);
+        txtbuscar_regimen.setText(null);
+        txtregimen_descripcion.setText(null);
+        txtbuscar_incoterm.setText(null);
+        txtincoterm_descripcion.setText(null);
+        txtruc_importador.setText(null);
+        txtruc_exportador.setText(null);
+        txtimportador_rubro.setText(null);
+        jFimportador_saldo.setValue(0);
         cmbvia_transporte.setSelectedIndex(0);
-        cmbaduana.setSelectedIndex(0);
-        cmbtransporte_empresa.setSelectedIndex(0);
         cmbcontenedor_tipo.setSelectedIndex(0);
-        cmbregimen.setSelectedIndex(0);
-        cmbincoterms.setSelectedIndex(0);
+        setFk_idtc_mercaderia(0);
+        setFk_idtercero_ciudad(0);
+        setFk_idtercero_importador(0);
+        setFk_idtercero_exportador(0);
+        setFk_idaduana(0);
+        setFk_idtransporte_empresa(0);
+        setFk_idregimen(0);
+        setFk_idincoterms(0);
+        vbus.limpiar_variables_buscar();
         eveJtab.limpiar_tabla_datos(model_item_liquidacion);
         monto_factura = 0;
         monto_seguro = 0;
@@ -339,27 +383,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion, "");
         sumar_item_liquidacion_final();
         cargar_colores_impor_export();
-    }
-
-    void seleccionar_cargar_comprobante() {
-        fk_idtipo_comprobante = eveconn.getInt_Solo_seleccionar_JLista(conn, jList_comprobante, "tipo_comprobante", "descripcion", "idtipo_comprobante", true);
-        DAOcb.cargar_tipo_comprobante(conn, ENTcb, fk_idtipo_comprobante);
-        System.out.println("fk_idtipo_comprobante:" + fk_idtipo_comprobante);
-        System.out.println("ENTcb.getC2descripcion():" + ENTifin.getC5descripcion());
-        txtbucar_comprobante.setText(ENTcb.getC2descripcion());
-        txtdespacho_numero_item.grabFocus();
-    }
-
-    private void crear_item_liquidacion_final() {
-        String dato[] = {"ord", "descripcion", "comprobante", "total", "idliqui", "idcompro"};
-        eveJtab.crear_tabla_datos(tblitem_liquidacion_final, model_item_liquidacion, dato);
-        eveJtab.ocultar_columna(tblitem_liquidacion_final, 4);
-        eveJtab.ocultar_columna(tblitem_liquidacion_final, 5);
-    }
-
-    void ancho_item_liquidacion_final() {
-        int Ancho[] = {10, 40, 30, 20, 1, 1};
-        eveJtab.setAnchoColumnaJtable(tblitem_liquidacion_final, Ancho);
     }
 
     boolean validar_item_liquidacion_final() {
@@ -410,6 +433,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
     void sumar_item_liquidacion_final() {
         double monto = eveJtab.getDouble_sumar_tabla(tblitem_liquidacion_final, 3);
+        double suma_sin_iva = eveJtab.getDouble_sumar_tabla(tblitem_liquidacion_final, 4);
+        double suma_solo_iva = eveJtab.getDouble_sumar_tabla(tblitem_liquidacion_final, 5);
         monto_total_despacho = monto;
         if (txtmonto_adelanto.getText().trim().length() > 0) {
             monto_adelanto = Double.parseDouble(txtmonto_adelanto.getText());
@@ -421,6 +446,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jFmonto_pagar.setValue(monto_pagar);
         monto_letra = nl.Convertir(String.valueOf((int) monto_pagar), true);
         txtmonto_letra.setText(monto_letra);
+        jFsuma_sin_iva.setValue(suma_sin_iva);
+        jFsuma_solo_iva.setValue(suma_solo_iva);
     }
 
     void boton_eliminar_item_liquidacion_final() {
@@ -446,48 +473,64 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbtercero_importador, "SE DEBE CARGAR UN IMPORTADOR")) {
+        if (getFk_idtercero_importador() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UN IMPORTADOR", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_importador.grabFocus();
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbtercero_exportador, "SE DEBE CARGAR UN EXPORTADOR")) {
+        if (getFk_idtercero_exportador() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UN EXPORTADOR", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_exportador.grabFocus();
             return false;
         }
         if (evejtf.getBoo_JTextField_vacio(txtlp_contenedor_nro, "SE DEBE CARGAR UN NUMERO DE CONTENEDOR")) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbtc_mercaderia, "SE DEBE CARGAR UNA MERCADERIA")) {
+        if (getFk_idtc_mercaderia() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UNA MERCADERIA", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_mercaderia.grabFocus();
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbdestino, "SE DEBE CARGAR UN DESTINO")) {
+        if (getFk_idtercero_ciudad() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UN DESTINO", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_destino.grabFocus();
             return false;
         }
         if (evecomb.getBoo_JCombobox_seleccionar(cmbvia_transporte, "SE DEBE CARGAR UNA VIA")) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbaduana, "SE DEBE CARGAR UNA ADUANA")) {
+        if (getFk_idaduana() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UNA ADUANA", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_aduana.grabFocus();
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbtransporte_empresa, "SE DEBE CARGAR UNA TRANSPORTADORA EMPRESA")) {
+        if (getFk_idtransporte_empresa() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UNA TRANSPORTADORA EMPRESA", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_transportadora.grabFocus();
             return false;
         }
         if (evecomb.getBoo_JCombobox_seleccionar(cmbcontenedor_tipo, "SE DEBE CARGAR UNA TIPO CONTENEDOR")) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbregimen, "SE DEBE CARGAR UN REGIMEN")) {
+        if (getFk_idregimen() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UN REGIMEN", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_regimen.grabFocus();
             return false;
         }
-        if (evecomb.getBoo_JCombobox_seleccionar(cmbincoterms, "SE DEBE CARGAR UN INCOTERMS")) {
+        if (getFk_idincoterms() == 0) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UN INCOTERMS", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_incoterm.grabFocus();
             return false;
         }
         if (evecomb.getBoo_JCombobox_seleccionar(cmbmoneda_cambio, "SE DEBE CARGAR UNA MONEDA CAMBIO")) {
@@ -521,6 +564,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         if (monto_imponible == 0) {
             JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN VALOR IMPONIBLE CARGADO");
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            return false;
+        }
+        if (monto_pagar == 0) {
+            JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN VALOR PAGA PAGAR");
+            eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 1);
             return false;
         }
         if (eveJtab.getBoolean_validar_cant_cargado(tblitem_liquidacion_final)) {
@@ -567,24 +615,24 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         liqfin.setC24tipo_tasa_cambio(tipo_tasa_cambio);
         liqfin.setC25factura_numero(txtfactura_numero.getText());
         liqfin.setC26monto_letra(monto_letra);
-        liqfin.setC27fk_idtipo_comprobante(fk_idtc_mercaderia);
-        liqfin.setC28fk_idtercero_ciudad(fk_idtercero_ciudad);
-        liqfin.setC29fk_idaduana(fk_idaduana);
+        liqfin.setC27fk_idtipo_comprobante(getFk_idtc_mercaderia());
+        liqfin.setC28fk_idtercero_ciudad(getFk_idtercero_ciudad());
+        liqfin.setC29fk_idaduana(getFk_idaduana());
         liqfin.setC30fk_iddespacho_zona(fk_iddespacho_zona);
-        liqfin.setC31fk_idtransporte_empresa(fk_idtransporte_empresa);
-        liqfin.setC32fk_idtercero_importador(fk_idtercero_importador);
-        liqfin.setC33fk_idtercero_transportadora(fk_idtercero_exportador);
+        liqfin.setC31fk_idtransporte_empresa(getFk_idtransporte_empresa());
+        liqfin.setC32fk_idtercero_importador(getFk_idtercero_importador());
+        liqfin.setC33fk_idtercero_transportadora(getFk_idtercero_exportador());
         liqfin.setC34fk_idmoneda_cambio(fk_idmoneda_cambio);
-        liqfin.setC35fk_idregimen(fk_idregimen);
-        liqfin.setC36fk_idincoterms(fk_idincoterms);
+        liqfin.setC35fk_idregimen(getFk_idregimen());
+        liqfin.setC36fk_idincoterms(getFk_idincoterms());
         liqfin.setC38monto_pagado(0);
     }
 
     private void cargar_credito_cliente() {
         if (true) {
             double monto_credito = monto_pagar;
-            gccDAO.cargar_grupo_credito_cliente_id(conn, gcc, fk_idtercero_importador);
-            cclie.setC3descripcion("Nro: " + txtdespacho_numero.getText() );
+            gccDAO.cargar_grupo_credito_cliente_id(conn, gcc, getFk_idtercero_importador());
+            cclie.setC3descripcion("Nro: " + txtdespacho_numero.getText());
             cclie.setC4estado(estado_emitido);
             cclie.setC5monto_contado(0);
             cclie.setC6monto_credito(monto_credito);
@@ -595,7 +643,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             cclie.setC11fk_idventa_alquiler(idliquidacion_final);
             cclie.setC12vence(true);
             cclie.setC13fecha_vence(evefec.getString_formato_fecha_hora_zona());
-            ENTter.setC1idtercero(fk_idtercero_importador);
+            ENTter.setC1idtercero(getFk_idtercero_importador());
         }
     }
 
@@ -612,14 +660,14 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
     void seleccionar_liquidacion() {
         idliquidacion_final_select = eveJtab.getInt_select_id(tblliquidacion);
-        String estado=eveJtab.getString_select(tblliquidacion,12);
-        if(estado.equals(estado_pagado)){
+        String estado = eveJtab.getString_select(tblliquidacion, 12);
+        if (estado.equals(estado_pagado)) {
             btnanular.setEnabled(false);
         }
-        if(estado.equals(estado_emitido)){
+        if (estado.equals(estado_emitido)) {
             btnanular.setEnabled(true);
         }
-        if(estado.equals(estado_anulado)){
+        if (estado.equals(estado_anulado)) {
             btnanular.setEnabled(false);
         }
         DAOifin.actualizar_tabla_item_liquidacion_final_por_id(conn, tblitem_liquidacion_final_id, idliquidacion_final_select);
@@ -643,33 +691,175 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 cclie.setC4estado(estado_anulado);
                 cclie.setC11fk_idventa_alquiler(idventa_alquiler);
                 ENTter.setC1idtercero(fk_idcliente);
-                if(BOliqfin.getBoolean_update_venta_alquiler_anular(liqfin, cclie, ENTter)){
+                if (BOliqfin.getBoolean_update_venta_alquiler_anular(liqfin, cclie, ENTter)) {
                     DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion, "");
                 }
             }
         }
     }
-//     private void crear_item_texte() {
-//        String dato[] = {"normal", "campo", "boton"};
-//        eveJtab.crear_tabla_datos(jTable1, model_texte, dato);
-//    }
-//     private void cargar_item_texte() {
-//        String texte="texto";
-//         JTextField txtfield=new JTextField();
-//         JButton botton=new JButton();
-//        Object dato[] = {texte, txtfield, botton};
-////        eveJtab.cargar_tabla_datos(tblprueba, model_texte, dato);
-//        try {
-//            model_texte.addRow(dato);
-//            jTable1.setModel(model_texte);
-//            for (int c = 0; c < dato.length; c++) {
-//                System.out.print(dato[c] + "\t");
-//            }
-//            System.out.println();
-//        } catch (Exception e) {
-//            evemen.mensaje_error(e, "cargar_item_texte");
-//        }
-//     }
+
+    private void crear_item_liquidacion_final() {
+        String dato[] = {"ord", "descripcion", "comprobante", "total", "sin_iva", "solo_iva", "idliqui", "idcompro"};
+        eveJtab.crear_tabla_datos(tblitem_liquidacion_final, model_item_liquidacion, dato);
+        eveJtab.ocultar_columna(tblitem_liquidacion_final, 6);
+        eveJtab.ocultar_columna(tblitem_liquidacion_final, 7);
+    }
+
+    void ancho_item_liquidacion_final() {
+        int Ancho[] = {8, 40, 20, 10, 10, 10, 1, 1};
+        eveJtab.setAnchoColumnaJtable(tblitem_liquidacion_final, Ancho);
+    }
+
+    public void cargar_pre_item_liquidacion() {
+        if (txtdespacho_numero.getText().trim().length() > 0) {
+            String titulo = "cargar_pre_item_liquidacion";
+            String sql = "select cl.idcomprobante_liquidacion, \n"
+                    + "pilf.orden,cl.descripcion,cl.por_iva,cl.tipo_iva,cl.nro_despacho \n"
+                    + "from pre_item_liquidacion_final pilf,comprobante_liquidacion cl \n"
+                    + "where pilf.fk_idcomprobante_liquidacion=cl.idcomprobante_liquidacion \n"
+                    + "order by pilf.orden asc; ";
+            eveJtab.limpiar_tabla_datos(model_item_liquidacion);
+            try {
+                ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+                while (rs.next()) {
+                    String idcomprobante_liquidacion = rs.getString("idcomprobante_liquidacion");
+                    String orden = rs.getString("orden");
+                    String descripcion = rs.getString("descripcion");
+                    boolean nro_despacho = rs.getBoolean("nro_despacho");
+                    String idliqui = String.valueOf(idliquidacion_final);
+                    String comprobante = "x";
+                    if (nro_despacho) {
+                        comprobante = txtdespacho_numero.getText();
+                    }
+                    String total = "0";
+                    String por_iva = "0";
+                    String tipo_iva = "0";
+                    String dato[] = {orden, descripcion, comprobante, total, por_iva, tipo_iva, idliqui, idcomprobante_liquidacion};
+                    eveJtab.cargar_tabla_datos(tblitem_liquidacion_final, model_item_liquidacion, dato);
+                }
+                ancho_item_liquidacion_final();
+                sumar_item_liquidacion_final();
+            } catch (Exception e) {
+                evemen.mensaje_error(e, sql, titulo);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "CARGAR UN NUMERO DE DESPACHO", "ERROR", JOptionPane.ERROR_MESSAGE);
+            eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            txtdespacho_numero.grabFocus();
+        }
+    }
+
+    boolean validar_item_pre_item_liquidacion() {
+        if (tblitem_liquidacion_final.getSelectedRow() < 0) {
+            JOptionPane.showMessageDialog(null, "SELECCIONE EN ITEM");
+            return false;
+        }
+        if (evejtf.getBoo_JTextField_vacio(txtdespacho_numero_item, "SE DEBE CARGAR UN NUMERO COMPROBANTE")) {
+            return false;
+        }
+        if (evejtf.getBoo_JTextField_vacio(txtbucar_comprobante, "SE DEBE CARGAR UN NOMBRE COMPROBANTE")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    void calcular_iva_desdemonto() {
+        if (txtmonto_guarani_item.getText().trim().length() > 0) {
+            String total = txtmonto_guarani_item.getText();
+            lbltipo_iva.setText(ENTcl.getC4tipo_iva());
+            double por_iva = 0;
+            double Itotal = 0;
+            double Isolo_iva = 0;
+            double Isin_iva = 0;
+            if (ENTcl.getC3por_iva() == 10) {
+                por_iva = 11;
+            }
+            if (ENTcl.getC3por_iva() == 5) {
+                por_iva = 21;
+            }
+            sin_iva = "0";
+            solo_iva = "0";
+            if (ENTcl.getC4tipo_iva().equals(tipo_SIN_IVA)) {
+                sin_iva = total;
+            }
+            if (ENTcl.getC4tipo_iva().equals(tipo_SOLO_IVA)) {
+                solo_iva = total;
+            }
+            if (ENTcl.getC4tipo_iva().equals(tipo_SIN_Y_SOLO_IVA)) {
+                Itotal = Double.parseDouble(total);
+                Isolo_iva = Itotal / por_iva;
+                Isin_iva = Itotal - Isolo_iva;
+                sin_iva = String.valueOf((int) Isin_iva);
+                solo_iva = String.valueOf((int) Isolo_iva);
+            }
+            jFsin_iva.setValue(Integer.parseInt(sin_iva));
+            jFsolo_iva.setValue(Integer.parseInt(solo_iva));
+        }
+    }
+
+    private void update_item_pre_item_liquidacion() {
+        if (validar_item_pre_item_liquidacion()) {
+            if(txtmonto_guarani_item.getText().trim().length()==0){
+                txtmonto_guarani_item.setText("0");
+            }
+            int row = tblitem_liquidacion_final.getSelectedRow();
+            int idcomprobante_liquidacion = eveJtab.getInt_select(tblitem_liquidacion_final, 7);
+            DAOcl.cargar_comprobante_liquidacion(conn, ENTcl, idcomprobante_liquidacion);
+            fila_select_item_orden_lab++;
+            tblitem_liquidacion_final.requestFocus();
+            System.out.println("fila_select_item_orden_lab:" + fila_select_item_orden_lab);
+            if (fila_select_item_orden_lab >= tblitem_liquidacion_final.getRowCount()) {
+                fila_select_item_orden_lab = 0;
+            }
+            tblitem_liquidacion_final.changeSelection(fila_select_item_orden_lab, 0, false, false);
+            String total = txtmonto_guarani_item.getText();
+            String comprobante = txtdespacho_numero_item.getText();
+            String descripcion = txtbucar_comprobante.getText();
+            calcular_iva_desdemonto();
+            model_item_liquidacion.setValueAt(solo_iva, row, 5);
+            model_item_liquidacion.setValueAt(sin_iva, row, 4);
+            model_item_liquidacion.setValueAt(total, row, 3);
+            model_item_liquidacion.setValueAt(comprobante, row, 2);
+            model_item_liquidacion.setValueAt(descripcion, row, 1);
+            seleccionar_pre_item_liquidacion();
+            sumar_item_liquidacion_final();
+        }
+    }
+
+    void seleccionar_pre_item_liquidacion() {
+        if (tblitem_liquidacion_final.getSelectedRow() >= 0) {
+            fila_select_item_orden_lab = tblitem_liquidacion_final.getSelectedRow();
+            String descripcion = eveJtab.getString_select(tblitem_liquidacion_final, 1);
+            String comprobante = eveJtab.getString_select(tblitem_liquidacion_final, 2);
+            String monto = eveJtab.getString_select(tblitem_liquidacion_final, 3);
+            String sin_iva = eveJtab.getString_select(tblitem_liquidacion_final, 4);
+            String solo_iva = eveJtab.getString_select(tblitem_liquidacion_final, 5);
+            int idcomprobante_liquidacion = eveJtab.getInt_select(tblitem_liquidacion_final, 7);
+            lblidcomprobante.setText(String.valueOf(idcomprobante_liquidacion));
+            DAOcl.cargar_comprobante_liquidacion(conn, ENTcl, idcomprobante_liquidacion);
+            lbltipo_iva.setText(ENTcl.getC4tipo_iva());
+            txtbucar_comprobante.setText(descripcion);
+            txtdespacho_numero_item.setText(comprobante);
+            if (monto.equals("0")) {
+                txtmonto_guarani_item.setText(null);
+            } else {
+                txtmonto_guarani_item.setText(monto);
+            }
+            jFsin_iva.setValue(Integer.parseInt(sin_iva));
+            jFsolo_iva.setValue(Integer.parseInt(solo_iva));
+            txtmonto_guarani_item.grabFocus();
+        }
+    }
+
+    private void abrir_buscar(int tipo, String nombre, JTextField txtbuscar) {
+        vbus.setTipo_tabla(tipo);
+        vbus.setNombre_tabla(nombre);
+        vbus.setPre_busqueda(txtbuscar.getText());
+        JDiaBuscarDosColumnas frm = new JDiaBuscarDosColumnas(null, true);
+        frm.setVisible(true);
+    }
+
     public FrmLiquidacion_final() {
         initComponents();
         abrir_formulario();
@@ -689,12 +879,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         panel_encabezado = new javax.swing.JPanel();
         jRimportacion = new javax.swing.JRadioButton();
         jRexportacion = new javax.swing.JRadioButton();
-        jLabel8 = new javax.swing.JLabel();
-        cmbtercero_importador = new javax.swing.JComboBox<>();
-        jLabel9 = new javax.swing.JLabel();
-        txtruc_importador = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        cmbtercero_exportador = new javax.swing.JComboBox<>();
         jLabel11 = new javax.swing.JLabel();
         txtruc_exportador = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
@@ -723,21 +908,30 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jLabel3 = new javax.swing.JLabel();
         txtlp_contenedor_nro = new javax.swing.JTextField();
         lblmercaderia = new javax.swing.JLabel();
-        cmbtc_mercaderia = new javax.swing.JComboBox<>();
         lbldestino = new javax.swing.JLabel();
-        cmbdestino = new javax.swing.JComboBox<>();
         jLabel5 = new javax.swing.JLabel();
         cmbvia_transporte = new javax.swing.JComboBox<>();
         lbladuana = new javax.swing.JLabel();
-        cmbaduana = new javax.swing.JComboBox<>();
         lbltransportadora_empresa = new javax.swing.JLabel();
-        cmbtransporte_empresa = new javax.swing.JComboBox<>();
         jLabel4 = new javax.swing.JLabel();
         cmbcontenedor_tipo = new javax.swing.JComboBox<>();
         lblregimen = new javax.swing.JLabel();
-        cmbregimen = new javax.swing.JComboBox<>();
-        cmbincoterms = new javax.swing.JComboBox<>();
         lblincoterms = new javax.swing.JLabel();
+        btnbuscar_mercaderia = new javax.swing.JButton();
+        txtbuscar_mercaderia = new javax.swing.JTextField();
+        txtbuscar_destino = new javax.swing.JTextField();
+        txtbuscar_aduana = new javax.swing.JTextField();
+        txtbuscar_transportadora = new javax.swing.JTextField();
+        txtbuscar_regimen = new javax.swing.JTextField();
+        txtbuscar_incoterm = new javax.swing.JTextField();
+        txtregimen_descripcion = new javax.swing.JTextField();
+        txtincoterm_descripcion = new javax.swing.JTextField();
+        btnbuscar_destino = new javax.swing.JButton();
+        btnbuscar_aduana = new javax.swing.JButton();
+        txtsigla_aduana = new javax.swing.JTextField();
+        btnbuscar_regimen = new javax.swing.JButton();
+        btnbuscar_incoterm = new javax.swing.JButton();
+        btnbuscar_transportadora = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -757,12 +951,24 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         cmbdespachozona = new javax.swing.JComboBox<>();
         btnguardar1 = new javax.swing.JButton();
         btnnuevo1 = new javax.swing.JButton();
+        txtbuscar_exportador = new javax.swing.JTextField();
+        jLabel25 = new javax.swing.JLabel();
+        btnbuscar_exportador = new javax.swing.JButton();
+        panel_cliente = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        txtbuscar_importador = new javax.swing.JTextField();
+        jLabel9 = new javax.swing.JLabel();
+        txtruc_importador = new javax.swing.JTextField();
+        btnbuscar_importador = new javax.swing.JButton();
+        jLabel26 = new javax.swing.JLabel();
+        txtimportador_rubro = new javax.swing.JTextField();
+        jLabel28 = new javax.swing.JLabel();
+        jFimportador_saldo = new javax.swing.JFormattedTextField();
         panel_item_liquidacion = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblitem_liquidacion_final = new javax.swing.JTable();
         panel_cargar_item = new javax.swing.JPanel();
-        jList_comprobante = new javax.swing.JList<>();
         lblcomprobante = new javax.swing.JLabel();
         txtbucar_comprobante = new javax.swing.JTextField();
         jLabel30 = new javax.swing.JLabel();
@@ -771,7 +977,18 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jLabel32 = new javax.swing.JLabel();
         txtmonto_guarani_item = new javax.swing.JTextField();
         btnnro_despacho = new javax.swing.JButton();
+        lbltipo_iva = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jFsin_iva = new javax.swing.JFormattedTextField();
+        jLabel16 = new javax.swing.JLabel();
+        jFsolo_iva = new javax.swing.JFormattedTextField();
+        lblidcomprobante = new javax.swing.JLabel();
         btneliminar_item_liquidacion = new javax.swing.JButton();
+        btncargar_pre_item = new javax.swing.JButton();
+        jLabel17 = new javax.swing.JLabel();
+        jFsuma_solo_iva = new javax.swing.JFormattedTextField();
+        jFsuma_sin_iva = new javax.swing.JFormattedTextField();
+        jLabel18 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jFmonto_total_despacho = new javax.swing.JFormattedTextField();
         jFmonto_pagar = new javax.swing.JFormattedTextField();
@@ -832,27 +1049,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel8.setText("IMPORTADOR:");
-
-        cmbtercero_importador.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbtercero_importador.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbtercero_importadorActionPerformed(evt);
-            }
-        });
-
-        jLabel9.setText("RUC:");
-
         jLabel10.setText("EXPORTADOR:");
 
-        cmbtercero_exportador.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbtercero_exportador.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbtercero_exportadorActionPerformed(evt);
-            }
-        });
-
         jLabel11.setText("RUC:");
+
+        txtruc_exportador.setEditable(false);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("MONTOS"));
 
@@ -860,6 +1061,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jLabel14.setText("FACTURA NRO:");
 
         txtfactura_numero.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtfactura_numero.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtfactura_numeroKeyPressed(evt);
+            }
+        });
 
         jLabel15.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel15.setText("M. FACTURA:");
@@ -986,7 +1192,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtmonto_seguro, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                            .addComponent(txtmonto_seguro, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                             .addComponent(txtmonto_factura))
                         .addGap(32, 32, 32)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -994,7 +1200,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                             .addComponent(jLabel21))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtmonto_ajuste, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                            .addComponent(txtmonto_ajuste, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                             .addComponent(txtmonto_flete)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel14)
@@ -1064,6 +1270,12 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
         jLabel3.setText("NUMERO:");
 
+        txtlp_contenedor_nro.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtlp_contenedor_nroKeyPressed(evt);
+            }
+        });
+
         lblmercaderia.setText("MERCADERIA:");
         lblmercaderia.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
@@ -1079,13 +1291,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
-        cmbtc_mercaderia.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbtc_mercaderia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbtc_mercaderiaActionPerformed(evt);
-            }
-        });
-
         lbldestino.setText("DESTINO:");
         lbldestino.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
@@ -1098,13 +1303,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 lbldestinoMouseExited(evt);
-            }
-        });
-
-        cmbdestino.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbdestino.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbdestinoActionPerformed(evt);
             }
         });
 
@@ -1127,14 +1325,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
-        cmbaduana.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbaduana.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbaduanaActionPerformed(evt);
-            }
-        });
-
-        lbltransportadora_empresa.setText("TRANSPORTADORA:");
+        lbltransportadora_empresa.setText("TRANSPOR.:");
         lbltransportadora_empresa.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 lbltransportadora_empresaMouseMoved(evt);
@@ -1146,13 +1337,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 lbltransportadora_empresaMouseExited(evt);
-            }
-        });
-
-        cmbtransporte_empresa.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "-SELECCIONAR-", "AEREO", "FLUVIAL", "MARITIMO", "TERRESTRE" }));
-        cmbtransporte_empresa.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbtransporte_empresaActionPerformed(evt);
             }
         });
 
@@ -1175,20 +1359,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
-        cmbregimen.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbregimen.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbregimenActionPerformed(evt);
-            }
-        });
-
-        cmbincoterms.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbincoterms.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbincotermsActionPerformed(evt);
-            }
-        });
-
         lblincoterms.setText("INCOTERM:");
         lblincoterms.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
@@ -1204,6 +1374,105 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
+        btnbuscar_mercaderia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_mercaderia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_mercaderiaActionPerformed(evt);
+            }
+        });
+
+        txtbuscar_mercaderia.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtbuscar_mercaderiaMouseEntered(evt);
+            }
+        });
+        txtbuscar_mercaderia.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_mercaderiaKeyPressed(evt);
+            }
+        });
+
+        txtbuscar_destino.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtbuscar_destinoMouseEntered(evt);
+            }
+        });
+        txtbuscar_destino.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_destinoKeyPressed(evt);
+            }
+        });
+
+        txtbuscar_aduana.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                txtbuscar_aduanaMouseEntered(evt);
+            }
+        });
+        txtbuscar_aduana.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_aduanaKeyPressed(evt);
+            }
+        });
+
+        txtbuscar_transportadora.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_transportadoraKeyPressed(evt);
+            }
+        });
+
+        txtbuscar_regimen.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_regimenKeyPressed(evt);
+            }
+        });
+
+        txtbuscar_incoterm.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_incotermKeyPressed(evt);
+            }
+        });
+
+        txtregimen_descripcion.setEditable(false);
+
+        txtincoterm_descripcion.setEditable(false);
+
+        btnbuscar_destino.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_destino.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_destinoActionPerformed(evt);
+            }
+        });
+
+        btnbuscar_aduana.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_aduana.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_aduanaActionPerformed(evt);
+            }
+        });
+
+        txtsigla_aduana.setEditable(false);
+
+        btnbuscar_regimen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_regimen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_regimenActionPerformed(evt);
+            }
+        });
+
+        btnbuscar_incoterm.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_incoterm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_incotermActionPerformed(evt);
+            }
+        });
+
+        btnbuscar_transportadora.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_transportadora.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_transportadoraActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
@@ -1212,38 +1481,59 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(lblregimen, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbregimen, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblincoterms)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbincoterms, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblincoterms)
+                            .addComponent(lblregimen, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(lbltransportadora_empresa)
-                            .addComponent(jLabel4))
-                        .addGap(22, 22, 22)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cmbtransporte_empresa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cmbcontenedor_tipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblmercaderia)
-                            .addComponent(lbldestino)
-                            .addComponent(jLabel5)
                             .addComponent(lbladuana)
+                            .addComponent(lbldestino)
+                            .addComponent(lblmercaderia)
                             .addComponent(jLabel3))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cmbaduana, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cmbvia_transporte, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cmbtc_mercaderia, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(cmbdestino, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel4Layout.createSequentialGroup()
+                                        .addComponent(txtbuscar_aduana)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtsigla_aduana, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(txtbuscar_destino)
+                                    .addComponent(txtbuscar_mercaderia, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnbuscar_destino, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                    .addComponent(btnbuscar_mercaderia, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnbuscar_aduana, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtbuscar_regimen, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE)
+                                    .addComponent(txtbuscar_incoterm))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtregimen_descripcion, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+                                    .addComponent(txtincoterm_descripcion))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnbuscar_regimen, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                    .addComponent(btnbuscar_incoterm, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addComponent(txtlp_contenedor_nro, javax.swing.GroupLayout.PREFERRED_SIZE, 172, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addGap(105, 105, 105))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addComponent(txtbuscar_transportadora, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnbuscar_transportadora, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addContainerGap())
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel5)
+                        .addGap(418, 418, 418))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(74, 74, 74)
+                        .addComponent(cmbvia_transporte, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbcontenedor_tipo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1251,36 +1541,55 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(txtlp_contenedor_nro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(lblmercaderia)
-                    .addComponent(cmbtc_mercaderia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(9, 9, 9)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnbuscar_mercaderia, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblmercaderia)
+                                        .addComponent(txtbuscar_mercaderia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lbldestino)
+                                    .addComponent(txtbuscar_destino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnbuscar_destino, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbladuana)
+                            .addComponent(txtbuscar_aduana, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtsigla_aduana, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnbuscar_aduana, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(lbldestino)
-                    .addComponent(cmbdestino, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel5)
-                    .addComponent(cmbvia_transporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(lbladuana)
-                    .addComponent(cmbaduana, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lbltransportadora_empresa)
-                    .addComponent(cmbtransporte_empresa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(jLabel4)
-                    .addComponent(cmbcontenedor_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbregimen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblregimen)
-                    .addComponent(cmbincoterms, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblincoterms))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lbltransportadora_empresa)
+                            .addComponent(txtbuscar_transportadora, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(lblregimen)
+                                        .addComponent(txtbuscar_regimen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(txtregimen_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(btnbuscar_regimen, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lblincoterms)
+                                    .addComponent(txtbuscar_incoterm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtincoterm_descripcion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(btnbuscar_incoterm, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(jLabel5)
+                            .addComponent(cmbvia_transporte, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(cmbcontenedor_tipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnbuscar_transportadora, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1369,9 +1678,18 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                     .addComponent(txtlp_tasa_cambio_mercado, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel1.setText("ID:");
 
+        txtidliquidacion_final.setBackground(new java.awt.Color(255, 255, 51));
+        txtidliquidacion_final.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtidliquidacion_final.setForeground(new java.awt.Color(0, 0, 204));
+        txtidliquidacion_final.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel2.setText("FEC. DESPACHO:");
+
+        txtfecha_despacho.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
         txtobservacion.setColumns(20);
         txtobservacion.setRows(5);
@@ -1426,6 +1744,89 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
+        txtbuscar_exportador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_exportadorKeyPressed(evt);
+            }
+        });
+
+        jLabel25.setText("aaaa-MM-dd");
+
+        btnbuscar_exportador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_exportador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_exportadorActionPerformed(evt);
+            }
+        });
+
+        panel_cliente.setBorder(javax.swing.BorderFactory.createTitledBorder("CLIENTE / IMPORTADOR"));
+
+        jLabel8.setText("IMPORTADOR:");
+
+        txtbuscar_importador.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_importadorKeyPressed(evt);
+            }
+        });
+
+        jLabel9.setText("RUC:");
+
+        txtruc_importador.setEditable(false);
+
+        btnbuscar_importador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_importador.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_importadorActionPerformed(evt);
+            }
+        });
+
+        jLabel26.setText("RUBRO:");
+
+        jLabel28.setText("SALDO:");
+
+        javax.swing.GroupLayout panel_clienteLayout = new javax.swing.GroupLayout(panel_cliente);
+        panel_cliente.setLayout(panel_clienteLayout);
+        panel_clienteLayout.setHorizontalGroup(
+            panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_clienteLayout.createSequentialGroup()
+                .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel26))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtbuscar_importador)
+                    .addComponent(txtimportador_rubro))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel28)
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(panel_clienteLayout.createSequentialGroup()
+                        .addComponent(txtruc_importador, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnbuscar_importador, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jFimportador_saldo)))
+        );
+        panel_clienteLayout.setVerticalGroup(
+            panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_clienteLayout.createSequentialGroup()
+                .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel8)
+                        .addComponent(txtbuscar_importador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtruc_importador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel9))
+                    .addComponent(btnbuscar_importador, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_clienteLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel26)
+                    .addComponent(txtimportador_rubro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFimportador_saldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel28))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout panel_encabezadoLayout = new javax.swing.GroupLayout(panel_encabezado);
         panel_encabezado.setLayout(panel_encabezadoLayout);
         panel_encabezadoLayout.setHorizontalGroup(
@@ -1436,49 +1837,34 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                     .addGroup(panel_encabezadoLayout.createSequentialGroup()
                         .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_encabezadoLayout.createSequentialGroup()
-                                .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_encabezadoLayout.createSequentialGroup()
-                                        .addComponent(jLabel10)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cmbtercero_exportador, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_encabezadoLayout.createSequentialGroup()
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cmbtercero_importador, javax.swing.GroupLayout.PREFERRED_SIZE, 315, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(panel_encabezadoLayout.createSequentialGroup()
-                                        .addComponent(jLabel11)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtruc_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(panel_encabezadoLayout.createSequentialGroup()
-                                        .addComponent(jLabel9)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtruc_importador, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_encabezadoLayout.createSequentialGroup()
-                                .addComponent(jRimportacion)
+                                .addComponent(txtbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jRexportacion)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jLabel1)
+                                .addComponent(jLabel11)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtidliquidacion_final, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtruc_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtfecha_despacho, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1))
-                        .addGap(67, 67, 67)
+                            .addComponent(panel_cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
+                        .addGap(65, 65, 65)
                         .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(panel_encabezadoLayout.createSequentialGroup()
                                 .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(panel_encabezadoLayout.createSequentialGroup()
                                         .addComponent(btnnuevo1)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(btnguardar1)))
+                                        .addComponent(btnguardar1))
+                                    .addGroup(panel_encabezadoLayout.createSequentialGroup()
+                                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel2)
+                                            .addComponent(txtfecha_despacho, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel25))))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(14, 14, 14))
                     .addGroup(panel_encabezadoLayout.createSequentialGroup()
@@ -1488,7 +1874,15 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lbldespacho_zona)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbdespachozona, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cmbdespachozona, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtidliquidacion_final, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jRimportacion)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jRexportacion)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         panel_encabezadoLayout.setVerticalGroup(
@@ -1499,11 +1893,23 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                     .addComponent(jLabel12)
                     .addComponent(txtdespacho_numero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbldespacho_zona)
-                    .addComponent(cmbdespachozona, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cmbdespachozona, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(txtidliquidacion_final, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jRimportacion)
+                        .addComponent(jRexportacion)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_encabezadoLayout.createSequentialGroup()
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panel_encabezadoLayout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtfecha_despacho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel25)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1511,30 +1917,20 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                             .addComponent(btnnuevo1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnguardar1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(panel_encabezadoLayout.createSequentialGroup()
-                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jRimportacion)
-                            .addComponent(jRexportacion)
-                            .addComponent(jLabel1)
-                            .addComponent(txtidliquidacion_final, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2)
-                            .addComponent(txtfecha_despacho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(panel_cliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(cmbtercero_importador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel9)
-                            .addComponent(txtruc_importador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(cmbtercero_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel11)
-                            .addComponent(txtruc_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel10)
+                                .addComponent(jLabel11)
+                                .addComponent(txtruc_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnbuscar_exportador, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(79, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(40, Short.MAX_VALUE))
         );
 
         jTab_liquidacion.addTab("ENCABEZADO LIQUIDACION", panel_encabezado);
@@ -1552,25 +1948,16 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblitem_liquidacion_final.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblitem_liquidacion_finalMouseReleased(evt);
+            }
+        });
         jScrollPane2.setViewportView(tblitem_liquidacion_final);
 
         panel_cargar_item.setBorder(javax.swing.BorderFactory.createTitledBorder("CARGAR ITEM"));
 
-        jList_comprobante.setBackground(new java.awt.Color(204, 204, 255));
-        jList_comprobante.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jList_comprobante.setSelectionBackground(new java.awt.Color(255, 51, 51));
-        jList_comprobante.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                jList_comprobanteMouseReleased(evt);
-            }
-        });
-        jList_comprobante.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jList_comprobanteKeyPressed(evt);
-            }
-        });
-
-        lblcomprobante.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        lblcomprobante.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         lblcomprobante.setText("COMPROBANTE:");
         lblcomprobante.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
@@ -1586,6 +1973,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
+        txtbucar_comprobante.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         txtbucar_comprobante.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtbucar_comprobanteKeyPressed(evt);
@@ -1608,6 +1996,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jLabel31.setForeground(new java.awt.Color(255, 0, 0));
         jLabel31.setText("( F1 = cargar Nro despacho)");
 
+        jLabel32.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         jLabel32.setText("TOTAL EN GUARANI:");
 
         txtmonto_guarani_item.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
@@ -1615,6 +2004,9 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         txtmonto_guarani_item.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtmonto_guarani_itemKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtmonto_guarani_itemKeyReleased(evt);
             }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtmonto_guarani_itemKeyTyped(evt);
@@ -1628,6 +2020,29 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
+        lbltipo_iva.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        lbltipo_iva.setForeground(new java.awt.Color(0, 0, 204));
+        lbltipo_iva.setText("jLabel13");
+
+        jLabel13.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel13.setText("SIN IVA:");
+
+        jFsin_iva.setEditable(false);
+        jFsin_iva.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
+        jFsin_iva.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsin_iva.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        jLabel16.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel16.setText("SOLO IVA:");
+
+        jFsolo_iva.setEditable(false);
+        jFsolo_iva.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
+        jFsolo_iva.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsolo_iva.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        lblidcomprobante.setForeground(new java.awt.Color(0, 0, 204));
+        lblidcomprobante.setText("jLabel17");
+
         javax.swing.GroupLayout panel_cargar_itemLayout = new javax.swing.GroupLayout(panel_cargar_item);
         panel_cargar_item.setLayout(panel_cargar_itemLayout);
         panel_cargar_itemLayout.setHorizontalGroup(
@@ -1636,47 +2051,67 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_cargar_itemLayout.createSequentialGroup()
-                        .addComponent(txtdespacho_numero_item)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnnro_despacho))
-                    .addGroup(panel_cargar_itemLayout.createSequentialGroup()
-                        .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(jList_comprobante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(panel_cargar_itemLayout.createSequentialGroup()
-                                    .addComponent(lblcomprobante)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtbucar_comprobante, javax.swing.GroupLayout.PREFERRED_SIZE, 201, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel32, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(lbltipo_iva, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtmonto_guarani_item)
+                            .addGroup(panel_cargar_itemLayout.createSequentialGroup()
+                                .addComponent(txtdespacho_numero_item, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnnro_despacho))
                             .addGroup(panel_cargar_itemLayout.createSequentialGroup()
                                 .addComponent(jLabel30)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel31))
-                            .addComponent(jLabel32)
-                            .addComponent(txtmonto_guarani_item, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                            .addComponent(txtbucar_comprobante)
+                            .addGroup(panel_cargar_itemLayout.createSequentialGroup()
+                                .addComponent(lblcomprobante)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lblidcomprobante)))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(panel_cargar_itemLayout.createSequentialGroup()
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel16)
+                        .addGap(94, 94, 94))
+                    .addGroup(panel_cargar_itemLayout.createSequentialGroup()
+                        .addComponent(jFsin_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jFsolo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())))
         );
         panel_cargar_itemLayout.setVerticalGroup(
             panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_cargar_itemLayout.createSequentialGroup()
                 .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblcomprobante)
-                    .addComponent(txtbucar_comprobante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(lblidcomprobante))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jList_comprobante, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtbucar_comprobante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel30)
-                    .addComponent(jLabel31))
+                .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_cargar_itemLayout.createSequentialGroup()
+                        .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel30)
+                            .addComponent(jLabel31))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtdespacho_numero_item, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnnro_despacho, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(btnnro_despacho)
-                    .addComponent(txtdespacho_numero_item, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel32)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtmonto_guarani_item, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(lbltipo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel16))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jFsin_iva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jFsolo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
 
         btneliminar_item_liquidacion.setText("ELIMINAR ITEM");
@@ -1686,18 +2121,50 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         });
 
+        btncargar_pre_item.setText("CARGAR PRE ITEM");
+        btncargar_pre_item.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btncargar_pre_itemActionPerformed(evt);
+            }
+        });
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel17.setText("SUMA SIN IVA:");
+
+        jFsuma_solo_iva.setEditable(false);
+        jFsuma_solo_iva.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
+        jFsuma_solo_iva.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_solo_iva.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
+        jFsuma_sin_iva.setEditable(false);
+        jFsuma_sin_iva.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#,##0"))));
+        jFsuma_sin_iva.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_sin_iva.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+
+        jLabel18.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
+        jLabel18.setText("SUMA SOLO IVA:");
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addComponent(panel_cargar_item, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(panel_cargar_item, javax.swing.GroupLayout.PREFERRED_SIZE, 327, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 782, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(btneliminar_item_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 202, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addComponent(btneliminar_item_liquidacion)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btncargar_pre_item)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_sin_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_solo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
@@ -1708,7 +2175,13 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                     .addGroup(jPanel6Layout.createSequentialGroup()
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btneliminar_item_liquidacion)))
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btneliminar_item_liquidacion)
+                            .addComponent(btncargar_pre_item)
+                            .addComponent(jLabel17)
+                            .addComponent(jFsuma_solo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jFsuma_sin_iva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel18))))
                 .addContainerGap())
         );
 
@@ -1740,6 +2213,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
         jLabel33.setText("MONTO LETRA:");
 
+        txtmonto_letra.setEditable(false);
         txtmonto_letra.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -1806,7 +2280,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addComponent(btnnuevo)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnguardar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 331, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panel_item_liquidacionLayout.setVerticalGroup(
@@ -1818,7 +2292,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                     .addComponent(btnnuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnguardar, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 75, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTab_liquidacion.addTab("ITEM LIQUIDACION", panel_item_liquidacion);
@@ -1851,7 +2325,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 326, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 284, Short.MAX_VALUE)
         );
 
         btnimprimir_liquidacion.setText("IMPRIMIR LIQUIDACION");
@@ -1887,7 +2361,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 652, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1899,7 +2373,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         panel_filtro_liquidacionLayout.setHorizontalGroup(
             panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_filtro_liquidacionLayout.createSequentialGroup()
+            .addGroup(panel_filtro_liquidacionLayout.createSequentialGroup()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -1931,29 +2405,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTab_liquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, 622, Short.MAX_VALUE)
+            .addComponent(jTab_liquidacion)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void cmbtercero_importadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbtercero_importadorActionPerformed
-        // TODO add your handling code here:
-        if (hab_cargar_tercero_importador) {
-            fk_idtercero_importador = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbtercero_importador, "idtercero", "nombre", "tercero");
-            DAOter.cargar_tercero(conn, ENTter, fk_idtercero_importador);
-            txtruc_importador.setText(ENTter.getC5ruc());
-        }
-    }//GEN-LAST:event_cmbtercero_importadorActionPerformed
-
-    private void cmbtercero_exportadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbtercero_exportadorActionPerformed
-        // TODO add your handling code here:
-        if (hab_cargar_tercero_exportador) {
-            fk_idtercero_exportador = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbtercero_exportador, "idtercero", "nombre", "tercero");
-            DAOter.cargar_tercero(conn, ENTter, fk_idtercero_exportador);
-            txtruc_exportador.setText(ENTter.getC5ruc());
-        }
-    }//GEN-LAST:event_cmbtercero_exportadorActionPerformed
 
     private void txtlp_tasa_cambio_aduanaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtlp_tasa_cambio_aduanaKeyReleased
         // TODO add your handling code here:
@@ -1984,54 +2440,12 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_cmbmoneda_cambioActionPerformed
 
-    private void cmbaduanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbaduanaActionPerformed
-        // TODO add your handling code here:
-        if (hab_cargar_aduana) {
-            fk_idaduana = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbaduana, "idaduana", "nombre", "aduana");
-        }
-    }//GEN-LAST:event_cmbaduanaActionPerformed
-
-    private void cmbtransporte_empresaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbtransporte_empresaActionPerformed
-        // TODO add your handling code here:
-        if (hab_cargar_transporte_empresa) {
-            fk_idtransporte_empresa = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbtransporte_empresa, "idtransporte_empresa", "nombre", "transporte_empresa");
-        }
-    }//GEN-LAST:event_cmbtransporte_empresaActionPerformed
-
     private void cmbdespachozonaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbdespachozonaActionPerformed
         // TODO add your handling code here:
         if (hab_cargar_despachozona) {
             fk_iddespacho_zona = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbdespachozona, "iddespacho_zona", "nombre", "despacho_zona");
         }
     }//GEN-LAST:event_cmbdespachozonaActionPerformed
-
-    private void cmbtc_mercaderiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbtc_mercaderiaActionPerformed
-        // TODO add your handling code here:
-        if (hab_cargar_tc_mercaderia) {
-            fk_idtc_mercaderia = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbtc_mercaderia, "idtipo_comprobante", "descripcion", "tipo_comprobante");
-        }
-    }//GEN-LAST:event_cmbtc_mercaderiaActionPerformed
-
-    private void cmbdestinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbdestinoActionPerformed
-        // TODO add your handling code here:
-        if (hab_combo_ciudad) {
-            fk_idtercero_ciudad = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbdestino, "idtercero_ciudad", "nombre", "tercero_ciudad");
-        }
-    }//GEN-LAST:event_cmbdestinoActionPerformed
-
-    private void cmbregimenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbregimenActionPerformed
-        // TODO add your handling code here:
-        if (hab_combo_regimen) {
-            fk_idregimen = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbregimen, "idregimen", "nombre", "regimen");
-        }
-    }//GEN-LAST:event_cmbregimenActionPerformed
-
-    private void cmbincotermsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbincotermsActionPerformed
-        // TODO add your handling code here:
-        if (hab_combo_incoterms) {
-            fk_idincoterms = evecomb.getInt_seleccionar_COMBOBOX(conn, cmbincoterms, "idincoterms", "nombre", "incoterms");
-        }
-    }//GEN-LAST:event_cmbincotermsActionPerformed
 
     private void btncalcular_montoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncalcular_montoActionPerformed
         // TODO add your handling code here:
@@ -2120,30 +2534,18 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         cargar_colores_impor_export();
     }//GEN-LAST:event_jRexportacionActionPerformed
 
-    private void jList_comprobanteMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jList_comprobanteMouseReleased
-        // TODO add your handling code here:
-        seleccionar_cargar_comprobante();
-    }//GEN-LAST:event_jList_comprobanteMouseReleased
-
-    private void jList_comprobanteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jList_comprobanteKeyPressed
-        // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            seleccionar_cargar_comprobante();
-        }
-    }//GEN-LAST:event_jList_comprobanteKeyPressed
-
     private void txtbucar_comprobanteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbucar_comprobanteKeyPressed
         // TODO add your handling code here:
-        if (txtbucar_comprobante.getText().trim().length() > 1) {
-            evejtf.seleccionar_lista(evt, jList_comprobante);
-        }
+//        if (txtbucar_comprobante.getText().trim().length() > 1) {
+//            evejtf.seleccionar_lista(evt, jList_comprobante);
+//        }
     }//GEN-LAST:event_txtbucar_comprobanteKeyPressed
 
     private void txtbucar_comprobanteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbucar_comprobanteKeyReleased
         // TODO add your handling code here:
-        if (txtbucar_comprobante.getText().trim().length() > 1) {
-            eveconn.buscar_cargar_condicion_Jlista(conn, txtbucar_comprobante, jList_comprobante, "tipo_comprobante", "descripcion", "descripcion", "");
-        }
+//        if (txtbucar_comprobante.getText().trim().length() > 1) {
+//            eveconn.buscar_cargar_condicion_Jlista(conn, txtbucar_comprobante, jList_comprobante, "tipo_comprobante", "descripcion", "descripcion", "");
+//        }
     }//GEN-LAST:event_txtbucar_comprobanteKeyReleased
 
     private void txtdespacho_numero_itemKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdespacho_numero_itemKeyPressed
@@ -2170,7 +2572,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private void txtmonto_guarani_itemKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmonto_guarani_itemKeyPressed
         // TODO add your handling code here:
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            boton_cargar_item_liquidacion_final();
+//            boton_cargar_item_liquidacion_final();
+            update_item_pre_item_liquidacion();
         }
     }//GEN-LAST:event_txtmonto_guarani_itemKeyPressed
 
@@ -2375,18 +2778,165 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private void btnnro_despachoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnnro_despachoActionPerformed
         // TODO add your handling code here:
         if (txtdespacho_numero.getText().trim().length() == 0) {
-                eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
-                txtdespacho_numero.grabFocus();
-            } else {
-                txtdespacho_numero_item.setText(txtdespacho_numero.getText());
-                txtmonto_guarani_item.grabFocus();
-            }
+            eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            txtdespacho_numero.grabFocus();
+        } else {
+            txtdespacho_numero_item.setText(txtdespacho_numero.getText());
+            txtmonto_guarani_item.grabFocus();
+        }
     }//GEN-LAST:event_btnnro_despachoActionPerformed
+
+    private void btncargar_pre_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncargar_pre_itemActionPerformed
+        // TODO add your handling code here:
+        cargar_pre_item_liquidacion();
+    }//GEN-LAST:event_btncargar_pre_itemActionPerformed
+
+    private void tblitem_liquidacion_finalMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblitem_liquidacion_finalMouseReleased
+        // TODO add your handling code here:
+        seleccionar_pre_item_liquidacion();
+    }//GEN-LAST:event_tblitem_liquidacion_finalMouseReleased
+
+    private void txtmonto_guarani_itemKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtmonto_guarani_itemKeyReleased
+        // TODO add your handling code here:
+        calcular_iva_desdemonto();
+    }//GEN-LAST:event_txtmonto_guarani_itemKeyReleased
+
+    private void btnbuscar_mercaderiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_mercaderiaActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(1, "MERCADERIA", txtbuscar_mercaderia);
+    }//GEN-LAST:event_btnbuscar_mercaderiaActionPerformed
+
+    private void txtbuscar_mercaderiaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtbuscar_mercaderiaMouseEntered
+        // TODO add your handling code here:
+
+    }//GEN-LAST:event_txtbuscar_mercaderiaMouseEntered
+
+    private void txtbuscar_mercaderiaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_mercaderiaKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(1, "MERCADERIA", txtbuscar_mercaderia);
+        }
+    }//GEN-LAST:event_txtbuscar_mercaderiaKeyPressed
+
+    private void txtbuscar_destinoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtbuscar_destinoMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtbuscar_destinoMouseEntered
+
+    private void txtbuscar_destinoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_destinoKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(2, "DESTINO", txtbuscar_destino);
+        }
+    }//GEN-LAST:event_txtbuscar_destinoKeyPressed
+
+    private void txtbuscar_importadorKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_importadorKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(3, "IMPORTADOR", txtbuscar_importador);
+        }
+    }//GEN-LAST:event_txtbuscar_importadorKeyPressed
+
+    private void txtbuscar_exportadorKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_exportadorKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(4, "EXPORTADOR", txtbuscar_exportador);
+        }
+    }//GEN-LAST:event_txtbuscar_exportadorKeyPressed
+
+    private void txtbuscar_aduanaMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtbuscar_aduanaMouseEntered
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtbuscar_aduanaMouseEntered
+
+    private void txtbuscar_aduanaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_aduanaKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(5, "ADUANA", txtbuscar_aduana);
+        }
+    }//GEN-LAST:event_txtbuscar_aduanaKeyPressed
+
+    private void txtbuscar_transportadoraKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_transportadoraKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(6, "TRANSPORTADORA", txtbuscar_transportadora);
+        }
+    }//GEN-LAST:event_txtbuscar_transportadoraKeyPressed
+
+    private void txtbuscar_regimenKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_regimenKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(7, "REGIMEN", txtbuscar_regimen);
+        }
+    }//GEN-LAST:event_txtbuscar_regimenKeyPressed
+
+    private void txtbuscar_incotermKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_incotermKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(8, "INCOTERMS", txtbuscar_incoterm);
+        }
+    }//GEN-LAST:event_txtbuscar_incotermKeyPressed
+
+    private void txtlp_contenedor_nroKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtlp_contenedor_nroKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtbuscar_mercaderia.grabFocus();
+        }
+    }//GEN-LAST:event_txtlp_contenedor_nroKeyPressed
+
+    private void txtfactura_numeroKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtfactura_numeroKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            txtmonto_factura.grabFocus();
+        }
+    }//GEN-LAST:event_txtfactura_numeroKeyPressed
+
+    private void btnbuscar_destinoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_destinoActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(2, "DESTINO", txtbuscar_destino);
+    }//GEN-LAST:event_btnbuscar_destinoActionPerformed
+
+    private void btnbuscar_aduanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_aduanaActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(5, "ADUANA", txtbuscar_aduana);
+    }//GEN-LAST:event_btnbuscar_aduanaActionPerformed
+
+    private void btnbuscar_regimenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_regimenActionPerformed
+        // TODO add your handling code here:
+         abrir_buscar(7, "REGIMEN", txtbuscar_regimen);
+    }//GEN-LAST:event_btnbuscar_regimenActionPerformed
+
+    private void btnbuscar_incotermActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_incotermActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(8, "INCOTERMS", txtbuscar_incoterm);
+    }//GEN-LAST:event_btnbuscar_incotermActionPerformed
+
+    private void btnbuscar_transportadoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_transportadoraActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(6, "TRANSPORTADORA", txtbuscar_transportadora);
+    }//GEN-LAST:event_btnbuscar_transportadoraActionPerformed
+
+    private void btnbuscar_exportadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_exportadorActionPerformed
+        // TODO add your handling code here:
+         abrir_buscar(4, "EXPORTADOR", txtbuscar_exportador);
+    }//GEN-LAST:event_btnbuscar_exportadorActionPerformed
+
+    private void btnbuscar_importadorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_importadorActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(3, "IMPORTADOR", txtbuscar_importador);
+    }//GEN-LAST:event_btnbuscar_importadorActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnanular;
+    private javax.swing.JButton btnbuscar_aduana;
+    private javax.swing.JButton btnbuscar_destino;
+    private javax.swing.JButton btnbuscar_exportador;
+    private javax.swing.JButton btnbuscar_importador;
+    private javax.swing.JButton btnbuscar_incoterm;
+    private javax.swing.JButton btnbuscar_mercaderia;
+    private javax.swing.JButton btnbuscar_regimen;
+    private javax.swing.JButton btnbuscar_transportadora;
     private javax.swing.JButton btncalcular_monto;
+    private javax.swing.JButton btncargar_pre_item;
     private javax.swing.JButton btneliminar_item_liquidacion;
     private javax.swing.JButton btnguardar;
     private javax.swing.JButton btnguardar1;
@@ -2394,30 +2944,31 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnnro_despacho;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JButton btnnuevo1;
-    private javax.swing.JComboBox<String> cmbaduana;
     private javax.swing.JComboBox<String> cmbcontenedor_tipo;
     private javax.swing.JComboBox<String> cmbdespachozona;
-    private javax.swing.JComboBox<String> cmbdestino;
-    private javax.swing.JComboBox<String> cmbincoterms;
     private javax.swing.JComboBox<String> cmbmoneda_cambio;
-    private javax.swing.JComboBox<String> cmbregimen;
-    private javax.swing.JComboBox<String> cmbtc_mercaderia;
-    private javax.swing.JComboBox<String> cmbtercero_exportador;
-    private javax.swing.JComboBox<String> cmbtercero_importador;
-    private javax.swing.JComboBox<String> cmbtransporte_empresa;
     private javax.swing.JComboBox<String> cmbvia_transporte;
     private javax.swing.ButtonGroup gru_impexp;
+    public static javax.swing.JFormattedTextField jFimportador_saldo;
     private javax.swing.JFormattedTextField jFmonto_cif;
     private javax.swing.JFormattedTextField jFmonto_imponible;
     private javax.swing.JFormattedTextField jFmonto_pagar;
     private javax.swing.JFormattedTextField jFmonto_total;
     private javax.swing.JFormattedTextField jFmonto_total_despacho;
+    private javax.swing.JFormattedTextField jFsin_iva;
+    private javax.swing.JFormattedTextField jFsolo_iva;
+    private javax.swing.JFormattedTextField jFsuma_sin_iva;
+    private javax.swing.JFormattedTextField jFsuma_solo_iva;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
@@ -2425,7 +2976,10 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
+    private javax.swing.JLabel jLabel28;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel30;
     private javax.swing.JLabel jLabel31;
@@ -2437,7 +2991,6 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList_comprobante;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -2457,14 +3010,17 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblcomprobante;
     private javax.swing.JLabel lbldespacho_zona;
     private javax.swing.JLabel lbldestino;
+    private javax.swing.JLabel lblidcomprobante;
     private javax.swing.JLabel lblincoterms;
     private javax.swing.JLabel lblmercaderia;
     private javax.swing.JLabel lblmoneda;
     private javax.swing.JLabel lblmoneda1;
     private javax.swing.JLabel lblmoneda2;
     private javax.swing.JLabel lblregimen;
+    private javax.swing.JLabel lbltipo_iva;
     private javax.swing.JLabel lbltransportadora_empresa;
     private javax.swing.JPanel panel_cargar_item;
+    private javax.swing.JPanel panel_cliente;
     private javax.swing.JPanel panel_encabezado;
     private javax.swing.JPanel panel_filtro_liquidacion;
     private javax.swing.JPanel panel_item_liquidacion;
@@ -2472,12 +3028,22 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblitem_liquidacion_final_id;
     private javax.swing.JTable tblliquidacion;
     private javax.swing.JTextField txtbucar_comprobante;
+    public static javax.swing.JTextField txtbuscar_aduana;
+    public static javax.swing.JTextField txtbuscar_destino;
+    public static javax.swing.JTextField txtbuscar_exportador;
+    public static javax.swing.JTextField txtbuscar_importador;
+    public static javax.swing.JTextField txtbuscar_incoterm;
+    public static javax.swing.JTextField txtbuscar_mercaderia;
+    public static javax.swing.JTextField txtbuscar_regimen;
+    public static javax.swing.JTextField txtbuscar_transportadora;
     private javax.swing.JTextField txtdespacho_numero;
     private javax.swing.JTextField txtdespacho_numero_item;
     private javax.swing.JTextField txtfactura_numero;
     private javax.swing.JTextField txtfecha_despacho;
     private javax.swing.JTextField txtidliquidacion_final;
-    private javax.swing.JTextField txtlp_contenedor_nro;
+    public static javax.swing.JTextField txtimportador_rubro;
+    public static javax.swing.JTextField txtincoterm_descripcion;
+    public static javax.swing.JTextField txtlp_contenedor_nro;
     private javax.swing.JTextField txtlp_tasa_cambio_aduana;
     private javax.swing.JTextField txtlp_tasa_cambio_mercado;
     private javax.swing.JTextField txtmonto_adelanto;
@@ -2488,7 +3054,9 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtmonto_letra;
     private javax.swing.JTextField txtmonto_seguro;
     private javax.swing.JTextArea txtobservacion;
-    private javax.swing.JTextField txtruc_exportador;
-    private javax.swing.JTextField txtruc_importador;
+    public static javax.swing.JTextField txtregimen_descripcion;
+    public static javax.swing.JTextField txtruc_exportador;
+    public static javax.swing.JTextField txtruc_importador;
+    public static javax.swing.JTextField txtsigla_aduana;
     // End of variables declaration//GEN-END:variables
 }

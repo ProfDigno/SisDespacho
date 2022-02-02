@@ -60,23 +60,26 @@ public class DAO_item_liquidacion_final {
 
     public void insertar_item_liquidacion_final_de_tabla_mercaderia(Connection conn, JTable tblitem_producto) {
         String titulo = "insertar_item_comprobante_de_tabla";
-        //String dato[] = {"ord", "descripcion", "comprobante", "total", "idliqui", "idcompro"};
+        //String dato[] = {"ord", "descripcion", "comprobante", "total", "sin_iva", "solo_iva", "idliqui", "idcompro"};
         for (int row = 0; row < tblitem_producto.getRowCount(); row++) {
             item_liquidacion_final itemfin = new item_liquidacion_final();
             String ord = ((tblitem_producto.getModel().getValueAt(row, 0).toString()));
             String descripcion = ((tblitem_producto.getModel().getValueAt(row, 1).toString()));
             String comprobante = ((tblitem_producto.getModel().getValueAt(row, 2).toString()));
-            String total = ((tblitem_producto.getModel().getValueAt(row, 3).toString()));
-            String idliqui = ((tblitem_producto.getModel().getValueAt(row, 4).toString()));
-            String idcompro = ((tblitem_producto.getModel().getValueAt(row, 5).toString()));
-            double sin_iva = 0;
-            double solo_iva = 0;
+            String Stotal = ((tblitem_producto.getModel().getValueAt(row, 3).toString()));
+            String Ssin_iva = ((tblitem_producto.getModel().getValueAt(row, 4).toString()));
+            String Ssolo_iva = ((tblitem_producto.getModel().getValueAt(row, 5).toString()));
+            String idliqui = ((tblitem_producto.getModel().getValueAt(row, 6).toString()));
+            String idcompro = ((tblitem_producto.getModel().getValueAt(row, 7).toString()));
+            double total = Double.parseDouble(Stotal);
+            double sin_iva = Double.parseDouble(Ssin_iva);
+            double solo_iva = Double.parseDouble(Ssolo_iva);
             try {
                 itemfin.setC3creado_por(creado_por);
                 itemfin.setC4orden(Integer.parseInt(ord));
                 itemfin.setC5descripcion(descripcion);
                 itemfin.setC6comprobante_nro(comprobante);
-                itemfin.setC7total_guarani(Double.parseDouble(total));
+                itemfin.setC7total_guarani(total);
                 itemfin.setC8sin_iva(sin_iva);
                 itemfin.setC9solo_iva(solo_iva);
                 itemfin.setC10fk_idliquidacion_final(Integer.parseInt(idliqui));
@@ -144,7 +147,10 @@ public class DAO_item_liquidacion_final {
     }
 
     public void actualizar_tabla_item_liquidacion_final_por_id(Connection conn, JTable tbltabla,int fk_idliquidacion_final) {
-        String sql = "select ilf.orden, ilf.descripcion,ilf.comprobante_nro,to_char(ilf.total_guarani,'999G999G999') as total_guarani \n"
+        String sql = "select ilf.orden, ilf.descripcion,ilf.comprobante_nro,"
+                + "to_char(ilf.total_guarani,'999G999G999') as total, \n"
+                + "to_char(ilf.sin_iva,'999G999G999') as sin_iva, \n"
+                + "to_char(ilf.solo_iva,'999G999G999') as solo_iva \n"
                 + "from item_liquidacion_final ilf \n"
                 + "where ilf.fk_idliquidacion_final="+fk_idliquidacion_final
                 + " order by 1 asc;";
@@ -153,7 +159,7 @@ public class DAO_item_liquidacion_final {
     }
 
     public void ancho_tabla_item_liquidacion_final(JTable tbltabla) {
-        int Ancho[] = {10,40, 30, 20};
+        int Ancho[] = {5,30, 20, 15,15,15};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 }

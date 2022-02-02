@@ -145,7 +145,7 @@ public class DAO_tercero {
     }
 
     public void ancho_tabla_tercero(JTable tbltabla) {
-        int Ancho[] = {5, 22, 12, 12, 23,16, 10};
+        int Ancho[] = {5, 22, 12, 12, 23, 16, 10};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
@@ -163,18 +163,81 @@ public class DAO_tercero {
             evemen.mensaje_error(e, sql_update_saldo + "\n" + cli.toString(), titulo);
         }
     }
-     public double getDouble_sumar_monto_credito_cliente(Connection conn) {
-         double monto=0;
+
+    public double getDouble_sumar_monto_credito_cliente(Connection conn) {
+        double monto = 0;
         String titulo = "sumar_monto_credito_cliente";
         String sql = "select sum(saldo_credito) as monto from tercero; ";
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
-                 monto = rs.getDouble("monto");
+                monto = rs.getDouble("monto");
             }
         } catch (SQLException e) {
             evemen.Imprimir_serial_sql_error(e, sql, titulo);
         }
         return monto;
+    }
+
+    public void actualizar_tabla_tercero_liquidacion(Connection conn, JTable tbltabla, int idtercero, String filtro) {
+        String sql = "select lf.idliquidacion_final as idlf,\n"
+                + "to_char(lf.fecha_despacho,'dd-MM-yyyy') as fec_despacho,"
+                + "lf.despacho_numero ,"
+                + "lf.factura_numero as nro_factura,"
+                + "TRIM(to_char(lf.monto_pagar,'999G999G999')) as mon_pagar,"
+                + "TRIM(to_char(lf.monto_pagado,'999G999G999')) as mon_pagado,\n"
+                + "TRIM(to_char((lf.monto_pagado-lf.monto_pagar),'999G999G999')) as saldo,\n"
+                + "case when (lf.monto_pagado-lf.monto_pagar)=0 then lf.estado \n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then 'CREDITO'\n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then 'P.PARCIAL' else 'error' end as estado,\n"
+                + "case when lf.estado='PAGADO' then to_char(lf.fecha_pagado,'dd-MM-yyyy') else 'FALTA-PAGAR' end as fec_pago,"
+                + "(lf.monto_pagado-lf.monto_pagar) as isaldo,lf.monto_pagar,lf.monto_pagado  \n"
+                + "from tercero ter,liquidacion_final lf \n"
+                + "where lf.fk_idtercero_importador=ter.idtercero \n"
+                + "and lf.estado!='ANULADO'\n"
+                + "and ter.idtercero=" + idtercero + filtro
+                + " order by lf.idliquidacion_final desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_tercero_liquidacion(tbltabla);
+        evejt.ocultar_columna(tbltabla, 9);
+        evejt.ocultar_columna(tbltabla, 10);
+        evejt.ocultar_columna(tbltabla, 11);
+    }
+
+    public void ancho_tabla_tercero_liquidacion(JTable tbltabla) {
+        int Ancho[] = {5, 10, 20, 14, 10, 10, 10, 10, 10, 1, 1, 1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void actualizar_tabla_tercero_recibo(Connection conn, JTable tbltabla, int idtercero, String filtro) {
+        String sql = "select re.idrecibo_pago_tercero as idre,to_char(re.fecha_emision,'dd-MM-yyyy HH24:MI') as fec_emision,\n"
+                + "re.descripcion, TRIM(to_char(re.monto_recibo_pago,'999G999G999')) as monto,re.estado,\n"
+                + "re.monto_recibo_pago\n"
+                + "from recibo_pago_tercero re\n"
+                + "where re.estado!='ANULADO'\n"
+                + "and re.fk_idtercero =" + idtercero + filtro
+                + " order by re.idrecibo_pago_tercero desc;";
+        eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        ancho_tabla_tercero_recibo(tbltabla);
+        evejt.ocultar_columna(tbltabla, 5);
+    }
+
+    public void ancho_tabla_tercero_recibo(JTable tbltabla) {
+        int Ancho[] = {10, 15, 50, 15, 14, 1};
+        evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void imprimir_rep_recibo(Connection conn, int id) {
+        String sql = "select re.idrecibo_pago_tercero as idre,\n"
+                + "ter.nombre as cliente,ter.ruc as ruc,\n"
+                + "to_char(re.fecha_emision,'dd-MM-yyyy') as fec_emision,\n"
+                + "re.descripcion as concepto,\n"
+                + "re.monto_recibo_pago as monto,re.monto_letra as letra \n"
+                + "from recibo_pago_tercero re,tercero ter\n"
+                + "where re.fk_idtercero=ter.idtercero \n"
+                + "and re.idrecibo_pago_tercero=" + id;
+        String titulonota = "RECIBO";
+        String direccion = "src/REPORTE/RECIBO/repRecibo.jrxml";
+        rep.imprimirjasper(conn, sql, titulonota, direccion);
     }
 }
