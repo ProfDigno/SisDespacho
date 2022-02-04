@@ -23,12 +23,17 @@ public class VariablesBD {
     public static void setPsNombreConexion(String aPsNombreConexion) {
         PsNombreConexion = aPsNombreConexion;
     }
+
     private static String PsNombreConexion;
     public static String PsLocalhost;
     public static String PsPort;
     public static String PsNomBD;
     public static String PsUsuario;
     public static String PsContrasena;
+    public static String Psdirec_dump;
+    public static String Psdirec_backup;
+    public static String Psnombre_backup;
+    public static String PsCrea_backup;
     public static String avilitar;
 
 
@@ -115,4 +120,37 @@ public class VariablesBD {
     public static void setAvilitar(String aAvilitar) {
         avilitar = aAvilitar;
     }
+
+    public static String getPsdirec_dump() {
+        return Psdirec_dump;
+    }
+
+    public static void setPsdirec_dump(String Psdirec_dump) {
+        VariablesBD.Psdirec_dump = Psdirec_dump;
+    }
+
+    public static String getPsdirec_backup() {
+        return Psdirec_backup;
+    }
+
+    public static void setPsdirec_backup(String Psdirec_backup) {
+        VariablesBD.Psdirec_backup = Psdirec_backup;
+    }
+
+    public static String getPsnombre_backup() {
+        return Psnombre_backup;
+    }
+
+    public static void setPsnombre_backup(String Psnombre_backup) {
+        VariablesBD.Psnombre_backup = Psnombre_backup;
+    }
+
+    public static String getPsCrea_backup() {
+        return PsCrea_backup;
+    }
+
+    public static void setPsCrea_backup(String PsCrea_backup) {
+        VariablesBD.PsCrea_backup = PsCrea_backup;
+    }
+    
 }

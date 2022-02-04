@@ -566,6 +566,9 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
             return false;
         }
+        if (eveJtab.getBoolean_validar_cant_cargado(tblitem_liquidacion_final)) {
+            cargar_pre_item_liquidacion();
+        }
         if (monto_pagar == 0) {
             JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN VALOR PAGA PAGAR");
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 1);

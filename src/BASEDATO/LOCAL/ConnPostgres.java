@@ -49,11 +49,19 @@ public class ConnPostgres {
             String basedato = (String) jsonObject.get("basedato");
             String usuario = (String) jsonObject.get("usuario");
             String password = (String) jsonObject.get("password");
+            String direc_dump = (String) jsonObject.get("direc_dump");
+            String direc_backup = (String) jsonObject.get("direc_backup");
+            String nombre_backup = (String) jsonObject.get("nombre_backup");
+            String crear_backup = (String) jsonObject.get("crear_backup");
             var.setPsLocalhost(localhost);
             var.setPsPort(port);
             var.setPsNomBD(basedato);
             var.setPsUsuario(usuario);
             var.setPsContrasena(password);
+            var.setPsdirec_dump(direc_dump);
+            var.setPsdirec_backup(direc_backup);
+            var.setPsnombre_backup(nombre_backup);
+            var.setPsCrea_backup(crear_backup);
             System.out.println("Json Conexion:" + jsonObject);
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString());

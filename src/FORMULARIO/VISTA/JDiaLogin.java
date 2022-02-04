@@ -7,6 +7,7 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
+import BASEDATO.LOCAL.VariablesBD;
 import Evento.Color.cla_color_palete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
@@ -34,6 +35,7 @@ public class JDiaLogin extends javax.swing.JDialog {
     Connection conn = ConnPostgres.getConnPosgres();
     Connection connser = ConnPostgres.getConnPosgres();
     EvenConexion eveconn = new EvenConexion();
+    VariablesBD var = new VariablesBD();
 //    entidad_caja_cierre cjcie = new entidad_caja_cierre();
 //    dao_caja_cierre cjcie_dao = new dao_caja_cierre();
     cla_color_palete clacolor = new cla_color_palete();
@@ -69,6 +71,9 @@ public class JDiaLogin extends javax.swing.JDialog {
         if (dao_usu.getBoolean_buscar_usuario_existente(conn, ENTusu)) {
             JOptionPane.showMessageDialog(this, "BIENVENIDO\n" + ENTusu.getGlobal_nombre());
             habilitar_evento_menu();
+            if(var.getPsCrea_backup().equals("SI")){
+                evetbl.abrir_TablaJinternal(new FrmCrearBackup());
+            }
             this.dispose();
 //            if (bdao.getBoolean_backup_creado_hoy(conn)) {
 //                evetbl.abrir_TablaJinternal(new FrmCrearBackup());
