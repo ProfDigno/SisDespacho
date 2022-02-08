@@ -8,8 +8,10 @@ package BASEDATO.LOCAL;
 //import ClaseUTIL.SQLejecucion;
 //import ClaseUTIL.SQLprepar;
 import BASEDATO.EvenConexion;
+import Evento.Fecha.EvenFecha;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.sql.*;
 import java.util.Iterator;
 import javax.swing.JOptionPane;
@@ -38,11 +40,14 @@ public class ConnPostgres {
     VariablesBD var = new VariablesBD();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
     EvenConexion evconn = new EvenConexion();
+    EvenFecha evefec = new EvenFecha();
+    String ruta_json_conexion_leer = "src\\json_conexion.json";
+    String ruta_json_conexion_escribir = "src\\json_conexion_escribir.json";
 
     void cargar_jsom_conexion() {
         JSONParser parser = new JSONParser();
         try {
-            Object obj = parser.parse(new FileReader("src\\json_conexion.json"));
+            Object obj = parser.parse(new FileReader(ruta_json_conexion_leer));
             JSONObject jsonObject = (JSONObject) obj;
             String localhost = (String) jsonObject.get("localhost");
             String port = (String) jsonObject.get("port");
@@ -62,6 +67,7 @@ public class ConnPostgres {
             var.setPsdirec_backup(direc_backup);
             var.setPsnombre_backup(nombre_backup);
             var.setPsCrea_backup(crear_backup);
+//            jsonObject.put("fecha_hoy", evefec.getFormato_fecha());
             System.out.println("Json Conexion:" + jsonObject);
         } catch (Exception ex) {
             System.err.println("Error: " + ex.toString());
@@ -70,6 +76,30 @@ public class ConnPostgres {
 
         }
     }
+
+//    void crear_jsom_escribir() {
+//        JSONObject obj = new JSONObject();
+//        obj.put("localhost", var.getPsLocalhost());
+//        obj.put("port", var.getPsPort());
+//        obj.put("basedato", var.getPsNomBD());
+//        obj.put("usuario", var.getPsUsuario());
+//        obj.put("password", var.getPsContrasena());
+//        obj.put("direc_dump", var.getPsdirec_dump());
+//        obj.put("direc_backup",var.getPsdirec_backup());
+//        obj.put("nombre_backup", var.getPsnombre_backup());
+//        obj.put("crear_backup", var.getPsCrea_backup());
+//        obj.put("fecha_hoy", evefec.getString_formato_fecha_hora_backup());
+//        try {
+//            FileWriter file = new FileWriter(ruta_json_conexion_escribir);
+//            file.write(obj.toJSONString());
+//            file.flush();
+//            file.close();
+//        } catch (Exception ex) {
+//            System.out.println("Error: " + ex.toString());
+//        } finally {
+//            System.out.print(obj);
+//        }
+//    }
 
     void cargarVariables() {
         PsDriver = "org.postgresql.Driver";
@@ -101,6 +131,7 @@ public class ConnPostgres {
                 if (msj) {
                     JOptionPane.showMessageDialog(null, "++Conection a posgrest suceso++" + "\n" + PsDriver + "\n" + connectString + "\n" + PsUsuario);
                 }
+//                crear_jsom_escribir();
             }
             setConnPostgres(connLocal);
         } catch (Exception e) {

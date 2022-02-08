@@ -31,12 +31,12 @@ public class CargaDirectoCombobox {
 
     public void cargarCombobox_via_transporte(JComboBox combo) {
         String titulo = "cargarCombobox_via_transporte";
-        String datos[] = {"-SELECCIONAR-", "AEREO", "FLUVIAL", "MARITIMO", "TERRESTRE"};
+        String datos[] = {"-SELECCIONAR-", "AEREO", "FLUVIAL", "MARITIMO", "TERRESTRE","MULTI-MODAL"};
         cargar_combobox(combo, datos, titulo);
     }
     public void cargarCombobox_modo_transporte(JComboBox combo) {
         String titulo = "cargarCombobox_via_transporte";
-        String datos[] = {"-SELECCIONAR-", "SIN-TIPO", "CONSOLIDADA o LCL", "COMPLETA o FCL"};
+        String datos[] = {"-SELECCIONAR-", "SIN-TIPO", "L.C.L.", "F.C.L."};
         cargar_combobox(combo, datos, titulo);
     }
 }

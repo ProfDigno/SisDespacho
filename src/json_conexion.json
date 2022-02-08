@@ -4,8 +4,8 @@
 "basedato":"bddespacho_1",
 "usuario":"postgres",
 "password":"4650586",
-"direc_dump":"C:/Program Files/PostgreSQL/9.5/bin/pg_dump.exe",
-"direc_backup":"C:/backup/",
+"direc_dump":"C:\\Program Files\\PostgreSQL\\9.5\\bin\\pg_dump.exe",
+"direc_backup":"C:\\backup\\",
 "nombre_backup":"bddespacho_",
-"crear_backup":"SI"
+"crear_backup":"NO"
 }

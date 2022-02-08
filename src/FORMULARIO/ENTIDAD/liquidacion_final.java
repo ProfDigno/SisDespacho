@@ -40,6 +40,8 @@ private int C35fk_idregimen;
 private int C36fk_idincoterms;
 private String C37fecha_pagado;
 private double C38monto_pagado;
+private String C39otro_nombre;
+private double C40otro_monto;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -291,6 +293,22 @@ private static String nom_idtabla;
 
     public void setC38monto_pagado(double C38monto_pagado) {
         this.C38monto_pagado = C38monto_pagado;
+    }
+
+    public String getC39otro_nombre() {
+        return C39otro_nombre;
+    }
+
+    public void setC39otro_nombre(String C39otro_nombre) {
+        this.C39otro_nombre = C39otro_nombre;
+    }
+
+    public double getC40otro_monto() {
+        return C40otro_monto;
+    }
+
+    public void setC40otro_monto(double C40otro_monto) {
+        this.C40otro_monto = C40otro_monto;
     }
         
 	public String toString() {

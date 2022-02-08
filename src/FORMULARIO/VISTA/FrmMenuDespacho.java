@@ -10,6 +10,7 @@ import BASEDATO.LOCAL.ConnPostgres;
 import BASEDATO.LOCAL.VariablesBD;
 import Config_JSON.json_config;
 import Config_JSON.json_imprimir_pos;
+import Config_JSON.json_sql_actualizar;
 import Evento.Color.cla_color_palete;
 import Evento.Fecha.EvenFecha;
 import Evento.Jframe.EvenJFRAME;
@@ -28,6 +29,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     ConnPostgres conPs = new ConnPostgres();
     VariablesBD var = new VariablesBD();
     json_config config = new json_config();
+    json_sql_actualizar json_sql=new json_sql_actualizar();
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenFecha evefec = new EvenFecha();
     cla_color_palete clacolor = new cla_color_palete();
@@ -39,6 +41,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     void abrir_formulario() {
         config.cargar_jsom_configuracion();
         jsprint.cargar_jsom_imprimir_pos();
+        json_sql.cargar_jsom_sql_actualizar();
         conPs.ConnectDBpostgres(false);
         conn = conPs.getConnPosgres();
         this.setExtendedState(MAXIMIZED_BOTH);
@@ -80,23 +83,8 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         String sql = "DO $$ \n"
                 + "    BEGIN\n"
                 + "        BEGIN\n "
-//                + "ALTER TABLE item_liquidacion_final RENAME COLUMN fk_idtipo_comprobante TO fk_idcomprobante_liquidacion; \n"
-//                + "ALTER TABLE item_liquidacion_final RENAME COLUMN desglose TO sin_iva; \n"
-//                + "ALTER TABLE item_liquidacion_final RENAME COLUMN descriminacion_iva TO solo_iva; \n"
-                + "CREATE TABLE \"comprobante_liquidacion\" (\n"
-                + "	\"idcomprobante_liquidacion\" INTEGER NOT NULL ,\n"
-                + "	\"descripcion\" TEXT NOT NULL ,\n"
-                + "	\"por_iva\" NUMERIC(5,0) NOT NULL ,\n"
-                + "	\"tipo_iva\" TEXT NOT NULL  ,\n"
-                + "	\"nro_despacho\" BOOLEAN NOT NULL ,\n"
-                + "	PRIMARY KEY(\"idcomprobante_liquidacion\")\n"
-                + ");"
-//                + "CREATE TABLE \"pre_item_liquidacion_final\" (\n"
-//                + "	\"idpre_item_liquidacion_final\" INTEGER NOT NULL ,\n"
-//                + "	\"orden\" INTEGER NOT NULL ,\n"
-//                + "	\"fk_idcomprobante_liquidacion\" INTEGER NOT NULL ,\n"
-//                + "	PRIMARY KEY(\"idpre_item_liquidacion_final\")\n"
-//                + ");"
+                + json_sql.getSql_ahora()+"\n"
+                + json_sql.getUlt_sql()+"\n"
                 + "        EXCEPTION\n"
                 + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
                 + "        END;\n"

@@ -1,0 +1,12 @@
+{
+"ejecutar_sql":"NO",
+"sql_ahora":"",
+"sql_2022_02_04":
+	"CREATE TABLE tabla_temp (
+		idtabla_temp INTEGER NOT NULL ,
+		descripcion TEXT NOT NULL ,
+		PRIMARY KEY(idtabla_temp)
+	);",
+"sql_2022_02_05":"ALTER TABLE tabla_temp ADD COLUMN nombre TEXT  NULL DEFAULT '---';"
+
+}
