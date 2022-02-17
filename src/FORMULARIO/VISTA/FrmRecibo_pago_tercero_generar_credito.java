@@ -28,7 +28,7 @@ import javax.swing.JOptionPane;
  *
  * @author Digno
  */
-public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
+public class FrmRecibo_pago_tercero_generar_credito extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable evejta = new EvenJtable();
@@ -52,14 +52,10 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     private DAO_grupo_credito_cliente gccDAO = new DAO_grupo_credito_cliente();
     private grupo_credito_cliente gcc = new grupo_credito_cliente();
     private saldo_credito_cliente sccli = new saldo_credito_cliente();
-    private caja_detalle ENTcaja=new caja_detalle();
-    private DAO_caja_detalle DAOcaja=new DAO_caja_detalle();
 //    private caja_detalle caja = new caja_detalle();
 //    caja_detalle_alquilado cdalq = new caja_detalle_alquilado();
 //    private DAO_caja_detalle_alquilado cdalq_dao = new DAO_caja_detalle_alquilado();
-//    private entidad_usuario usu = new entidad_usuario();
-    private entidad_usuario ENTusu = new entidad_usuario();
-    private String creado_por = ENTusu.getGlobal_idusuario() + "-" + ENTusu.getGlobal_nombre();
+    private entidad_usuario usu = new entidad_usuario();
     private EvenNumero_a_Letra nroletra = new EvenNumero_a_Letra();
     private boolean hab_guardar;
     private int fk_idcliente;
@@ -69,15 +65,15 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     private double monto_recibo_pago;
     private double monto_saldo_credito;
     private String monto_letra;
-    private String tabla_origen = "RECIBO"; //caja.getTabla_origen_recibo();
-//    private int fk_idusuario;
+    private String tabla_origen = "SALDO"; //caja.getTabla_origen_recibo();
+    private int fk_idusuario;
     private int idrecibo_pago_cliente;
     private double Lmonto_saldo_credito;
 
     private void abrir_formulario() {
-        this.setTitle("RECIBO PAGO TERCERO");
+        this.setTitle("RECIBO PAGO TERCERO CREAR CREDITO");
         evetbl.centrar_formulario_internalframa(this);
-//        fk_idusuario = ENTusu.getGlobal_idusuario();
+        fk_idusuario = usu.getGlobal_idusuario();
         cargar_cliente();
         reestableser();
         rpcli_dao.actualizar_tabla_recibo_pago_cliente(conn, tblpro_recibo);
@@ -97,13 +93,13 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         if (evejtf.getBoo_JTextField_vacio(txtrec_monto_recibo_pago, "DEBE CARGAR UN MONTO")) {
             return false;
         }
-        if (monto_recibo_pago > (Math.abs(clie.getC17saldo_credito()))) {
-            JOptionPane.showMessageDialog(null, "EL MONTO EXEDE EL MONTO MAXIMO DE PAGO", "ERROR", JOptionPane.ERROR_MESSAGE);
-            monto_recibo_pago = Math.abs(clie.getC17saldo_credito());
-            txtrec_monto_recibo_pago.setText(String.valueOf((int) monto_recibo_pago));
-            cargar_monto();
-            return false;
-        }
+//        if (monto_recibo_pago > (Math.abs(clie.getC17saldo_credito()))) {
+//            JOptionPane.showMessageDialog(null, "EL MONTO EXEDE EL MONTO MAXIMO DE PAGO", "ERROR", JOptionPane.ERROR_MESSAGE);
+//            monto_recibo_pago = Math.abs(clie.getC17saldo_credito());
+//            txtrec_monto_recibo_pago.setText(String.valueOf((int) monto_recibo_pago));
+//            cargar_monto();
+//            return false;
+//        }
         return true;
     }
 
@@ -113,7 +109,8 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
             monto_recibo_pago = Double.parseDouble(monto_recibo);
             monto_letra = nroletra.Convertir(monto_recibo, true);
             txtrec_monto_letra.setText(monto_letra);
-            Lmonto_saldo_credito = clie.getC17saldo_credito() + monto_recibo_pago;
+//            Lmonto_saldo_credito = clie.getC17saldo_credito() + monto_recibo_pago;
+            Lmonto_saldo_credito =  monto_recibo_pago;
             jFnuevo_saldo.setValue(Lmonto_saldo_credito);
             monto_saldo_credito = Math.abs(Lmonto_saldo_credito);
             if (Lmonto_saldo_credito >= 0) {
@@ -130,7 +127,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
         rpcli.setC5monto_letra(monto_letra);
         rpcli.setC6estado(estado_EMITIDO);
         rpcli.setC7fk_idcliente(fk_idcliente);
-        rpcli.setC8fk_idusuario(ENTusu.getGlobal_idusuario());
+        rpcli.setC8fk_idusuario(fk_idusuario);
     }
 
     private void cargar_credito_cliente_recibo() {
@@ -150,7 +147,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     }
 
     private void cargar_credito_cliente_saldo() {
-        ccli2.setC3descripcion("SALDO DEL CIERRE ANTERIOR");
+        ccli2.setC3descripcion("SALDO CARGADO MANUALMENTE");
         ccli2.setC4estado(estado_EMITIDO);
         ccli2.setC5monto_contado(0);
         ccli2.setC6monto_credito(monto_saldo_credito);
@@ -162,23 +159,15 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
     }
 
     private void cargar_saldo_credito_cliente() {
-        sccli.setC3descripcion("SALDO DEL CIERRE ANTERIOR");
+        sccli.setC3descripcion("SALDO CARGADO MANUALMENTE");
         sccli.setC4monto_saldo_credito(monto_saldo_credito);
         String Smonto_saldo_credito = String.valueOf(monto_saldo_credito);
         sccli.setC5monto_letra(nroletra.Convertir(Smonto_saldo_credito, true));
         sccli.setC6estado(estado_EMITIDO);
         sccli.setC7fk_idcliente(fk_idcliente);
-        sccli.setC8fk_idusuario(ENTusu.getGlobal_idusuario());
+        sccli.setC8fk_idusuario(fk_idusuario);
     }
-    private void cargar_dato_caja_detalle(){
-        DAOcaja.vaciar_caja_detalle(ENTcaja);
-        ENTcaja.setC3creado_por(creado_por);
-        ENTcaja.setC4descripcion("RECIBO TERCERO: "+txtrec_descripcion.getText());
-        ENTcaja.setC5estado(estado_EMITIDO);
-        ENTcaja.setC7monto_recibo_pago(monto_recibo_pago);
-        ENTcaja.setC14fk_recibo_pago_tercero(idrecibo_pago_cliente);
-        ENTcaja.setC10fk_idusuario(ENTusu.getGlobal_idusuario());
-    }
+
     private void boton_guardar() {
         if (hab_guardar) {
             if (validar_guardar()) {
@@ -186,10 +175,8 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                 cargar_credito_cliente_recibo();
                 cargar_saldo_credito_cliente();
                 cargar_credito_cliente_saldo();
-                cargar_dato_caja_detalle();
                 clie.setC1idtercero(fk_idcliente);
-                rpcli.setC1idrecibo_pago_cliente(idrecibo_pago_cliente);
-                if (clBO.getBoolean_insertar_cliente_con_recibo_pago1(clie, ccli, ccli2, gcc, rpcli, sccli,ENTcaja)) {
+                if (clBO.getBoolean_insertar_recibo_pago_generar_credito(clie, ccli, ccli2, gcc, rpcli, sccli)) {
                     reestableser();
                     rpcli_dao.actualizar_tabla_recibo_pago_cliente(conn, tblpro_recibo);
                     cdao.actualizar_tabla_tercero(conn, FrmTercero.tbltercero);
@@ -197,10 +184,11 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
                     gcfina_dao.cargar_grupo_credito_cliente_id(conn, gcfina, fk_idcliente);
                     cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, FrmTercero.tblcredito_cliente, gcfina.getC1idgrupo_credito_cliente());
                     FrmTercero.jFsaldo_credito_total.setValue(cdao.getDouble_sumar_monto_credito_cliente(conn));
-                    cdao.imprimir_rep_recibo(conn, idrecibo_pago_cliente);
-//                    if (evemen.MensajeGeneral_question("DESEA CERRAR EL RECIBO", "RECIBO", "CERRAR", "CANCELAR")) {
-//                        this.dispose();
-//                    }
+                    JOptionPane.showMessageDialog(this,"SALDO CREDITO INSERTADO CORRECTAMENTE");
+//                    cdao.imprimir_rep_recibo(conn, idrecibo_pago_cliente);
+                    if (evemen.MensajeGeneral_question("DESEA CERRAR EL SALDO CREDITO", "SALDO CREDITO", "CERRAR", "CANCELAR")) {
+                        this.dispose();
+                    }
                 }
             }
         }
@@ -287,7 +275,7 @@ public class FrmRecibo_pago_tercero extends javax.swing.JInternalFrame {
 //        }
 //    }
 
-    public FrmRecibo_pago_tercero() {
+    public FrmRecibo_pago_tercero_generar_credito() {
         initComponents();
         abrir_formulario();
     }

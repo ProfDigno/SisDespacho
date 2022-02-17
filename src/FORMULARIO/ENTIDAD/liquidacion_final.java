@@ -42,6 +42,8 @@ private String C37fecha_pagado;
 private double C38monto_pagado;
 private String C39otro_nombre;
 private double C40otro_monto;
+private int C41fk_idtercero_despachante;
+private int C42fk_idrecibo_pago_tercero;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -309,6 +311,22 @@ private static String nom_idtabla;
 
     public void setC40otro_monto(double C40otro_monto) {
         this.C40otro_monto = C40otro_monto;
+    }
+
+    public int getC41fk_idtercero_despachante() {
+        return C41fk_idtercero_despachante;
+    }
+
+    public void setC41fk_idtercero_despachante(int C41fk_idtercero_despachante) {
+        this.C41fk_idtercero_despachante = C41fk_idtercero_despachante;
+    }
+
+    public int getC42fk_idrecibo_pago_tercero() {
+        return C42fk_idrecibo_pago_tercero;
+    }
+
+    public void setC42fk_idrecibo_pago_tercero(int C42fk_idrecibo_pago_tercero) {
+        this.C42fk_idrecibo_pago_tercero = C42fk_idrecibo_pago_tercero;
     }
         
 	public String toString() {

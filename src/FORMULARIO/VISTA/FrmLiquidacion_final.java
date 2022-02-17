@@ -31,6 +31,7 @@ import FORMULARIO.BO.BO_regimen;
 import FORMULARIO.BO.BO_tercero_ciudad;
 import FORMULARIO.BO.BO_transporte_empresa;
 import FORMULARIO.DAO.DAO_aduana;
+import FORMULARIO.DAO.DAO_caja_detalle;
 import FORMULARIO.DAO.DAO_comprobante_liquidacion;
 import FORMULARIO.DAO.DAO_despacho_zona;
 import FORMULARIO.DAO.DAO_grupo_credito_cliente;
@@ -48,6 +49,7 @@ import FORMULARIO.DAO.DAO_tipo_comprobante;
 import FORMULARIO.DAO.DAO_transporte_empresa;
 import FORMULARIO.DAO.dao_usuario;
 import FORMULARIO.ENTIDAD.aduana;
+import FORMULARIO.ENTIDAD.caja_detalle;
 import FORMULARIO.ENTIDAD.comprobante_liquidacion;
 import FORMULARIO.ENTIDAD.credito_cliente;
 import FORMULARIO.ENTIDAD.despacho_zona;
@@ -111,6 +113,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private DAO_item_liquidacion_final DAOifin = new DAO_item_liquidacion_final();
     private tipo_comprobante ENTtc = new tipo_comprobante();
     private DAO_tipo_comprobante DAOtc = new DAO_tipo_comprobante();
+    private caja_detalle ENTcaja = new caja_detalle();
+    private DAO_caja_detalle DAOcaja = new DAO_caja_detalle();
     private String creado_por = ENTusu.getGlobal_idusuario() + "-" + ENTusu.getGlobal_nombre();
     private DefaultTableModel model_item_liquidacion = new DefaultTableModel();
     private DefaultTableModel model_texte = new DefaultTableModel();
@@ -153,6 +157,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private static int fk_idtercero_ciudad;
     private boolean hab_combo_regimen;
     private boolean hab_combo_incoterms;
+    private static int fk_idtercero_despachante;
     private static int fk_idregimen;
     private static int fk_idincoterms;
     private String tipo_tasa_cambio;
@@ -256,6 +261,14 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
     public void setFk_iddespacho_zona(int fk_iddespacho_zona) {
         this.fk_iddespacho_zona = fk_iddespacho_zona;
+    }
+
+    public static int getFk_idtercero_despachante() {
+        return fk_idtercero_despachante;
+    }
+
+    public static void setFk_idtercero_despachante(int fk_idtercero_despachante) {
+        FrmLiquidacion_final.fk_idtercero_despachante = fk_idtercero_despachante;
     }
 
     private void abrir_formulario() {
@@ -393,6 +406,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         txtruc_importador.setText(null);
         txtruc_exportador.setText(null);
         txtimportador_rubro.setText(null);
+        txtbuscar_despachante.setText(null);
+        txtruc_despachante.setText(null);
         txtotros_nombre.setText("OTROS");
         txtotro_monto.setText("0");
         jFimportador_saldo.setValue(0);
@@ -525,6 +540,12 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             txtbuscar_exportador.grabFocus();
             return false;
         }
+        if (getFk_idtercero_despachante() == 0) {
+            eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR UN DESPACHANTE", "ERROR", JOptionPane.ERROR_MESSAGE);
+            txtbuscar_despachante.grabFocus();
+            return false;
+        }
         if (evejtf.getBoo_JTextField_vacio(txtlp_contenedor_nro, "SE DEBE CARGAR UN NUMERO DE CONTENEDOR")) {
             eveJtab.mostrar_JTabbedPane(jTab_liquidacion, 0);
             return false;
@@ -649,6 +670,16 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         }
     }
 
+    private void cargar_dato_caja_detalle() {
+        DAOcaja.vaciar_caja_detalle(ENTcaja);
+        ENTcaja.setC3creado_por(creado_por);
+        ENTcaja.setC4descripcion("DESPACHO: " + txtdespacho_numero.getText());
+        ENTcaja.setC5estado(estado_emitido);
+        ENTcaja.setC6monto_liquidacion_credito(monto_pagar);
+        ENTcaja.setC13fk_idliquidacion_final(idliquidacion_final);
+        ENTcaja.setC10fk_idusuario(ENTusu.getGlobal_idusuario());
+    }
+
     void cargar_dato_liquidacion_final() {
         liqfin.setC3creado_por(creado_por);
         liqfin.setC4fecha_despacho(txtfecha_despacho.getText());
@@ -687,6 +718,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         liqfin.setC38monto_pagado(0);
         liqfin.setC39otro_nombre(txtotros_nombre.getText());
         liqfin.setC40otro_monto(Double.parseDouble(txtotro_monto.getText()));
+        liqfin.setC41fk_idtercero_despachante(getFk_idtercero_despachante());
+        liqfin.setC42fk_idrecibo_pago_tercero(0);
     }
 
     void cargar_dato_select_liquidacion_final() {
@@ -716,7 +749,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         if (validar_liquidacion_final()) {
             cargar_dato_liquidacion_final();
             cargar_credito_cliente();
-            if (BOliqfin.getBoolean_insertar_liquidacion_final(liqfin, tblitem_liquidacion_final, cclie, ENTter)) {
+            cargar_dato_caja_detalle();
+            if (BOliqfin.getBoolean_insertar_liquidacion_final(liqfin, tblitem_liquidacion_final, cclie, ENTter, ENTcaja)) {
                 DAOliqfin.imprimir_rep_liquidacion_final(conn, idliquidacion_final);
                 reestableser_liquidacion();
             }
@@ -846,12 +880,15 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             if (!eveJtab.getBoolean_validar_select(tblliquidacion)) {
                 liqfin.setC7estado(estado_anulado);
                 liqfin.setC1idliquidacion_final(idliquidacion_final_select);
-                int idventa_alquiler = eveJtab.getInt_select_id(tblliquidacion);
-                int fk_idcliente = eveJtab.getInt_select(tblliquidacion, 1);
+                int idliquidacion_final = eveJtab.getInt_select_id(tblliquidacion);
+                int fk_idtercero = eveJtab.getInt_select(tblliquidacion, 1);
                 cclie.setC4estado(estado_anulado);
-                cclie.setC11fk_idventa_alquiler(idventa_alquiler);
-                ENTter.setC1idtercero(fk_idcliente);
-                if (BOliqfin.getBoolean_update_venta_alquiler_anular(liqfin, cclie, ENTter)) {
+                cclie.setC11fk_idventa_alquiler(idliquidacion_final);
+                ENTter.setC1idtercero(fk_idtercero);
+                ENTcaja.setC5estado(estado_anulado);
+                ENTcaja.setNom_campo_todos("fk_idliquidacion_final");
+                ENTcaja.setFk_idtodos(idliquidacion_final);
+                if (BOliqfin.getBoolean_update_venta_alquiler_anular(liqfin, cclie, ENTter, ENTcaja)) {
                     DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion, "");
                 }
             }
@@ -871,6 +908,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     }
 
     public void cargar_pre_item_liquidacion() {
+
         if (txtdespacho_numero.getText().trim().length() > 0) {
             String titulo = "cargar_pre_item_liquidacion";
             String sql = "select cl.idcomprobante_liquidacion, \n"
@@ -1012,6 +1050,23 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         }
     }
 
+    private void buscar_nro_despacho_separar() {
+        if (txtdespacho_numero.getText().trim().length() > 0) {
+            String despacho_numero = txtdespacho_numero.getText();
+            String ano = despacho_numero.substring(0, 2);
+            String sigla_aduana = despacho_numero.substring(2, 5);
+            String regimen = despacho_numero.substring(5, 9);
+            String numero = despacho_numero.substring(9, despacho_numero.length());
+            System.out.println("despacho_numero:" + despacho_numero);
+            System.out.println("ano:" + ano);
+            System.out.println("sigla_aduana:" + sigla_aduana);
+            System.out.println("regimen:" + regimen);
+            System.out.println("numero:" + numero);
+            buscar_por_despacho_aduana(sigla_aduana);
+            buscar_por_despacho_regimen(regimen);
+        }
+    }
+
     private void abrir_buscar(int tipo, String nombre, JTextField txtbuscar) {
         vbus.setTipo_tabla(tipo);
         vbus.setNombre_tabla(nombre);
@@ -1020,6 +1075,44 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         frm.setVisible(true);
     }
 
+    void buscar_por_despacho_aduana(String sigla_aduana) {
+        String titulo = "buscar_por_despacho_aduana";
+        String sql = "select idaduana,nombre,sigla  \n"
+                + "from aduana   \n"
+                + "where  sigla='" + sigla_aduana + "';";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                int idaduana = rs.getInt("idaduana");
+                String nombre = rs.getString("nombre");
+                String sigla = rs.getString("sigla");
+                txtbuscar_aduana.setText(nombre);
+                txtsigla_aduana.setText(sigla);
+                setFk_idaduana(idaduana);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+void buscar_por_despacho_regimen(String regimen) {
+        String titulo = "buscar_por_despacho_regimen";
+        String sql = "select idregimen,nombre,sigla  \n"
+                + "from regimen   \n"
+                + "where  sigla='" + regimen + "';";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+            if (rs.next()) {
+                int idregimen = rs.getInt("idregimen");
+                String nombre = rs.getString("nombre");
+                String sigla = rs.getString("sigla");
+                txtbuscar_regimen.setText(sigla);
+                txtregimen_descripcion.setText(nombre);
+                setFk_idregimen(idregimen);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
     public FrmLiquidacion_final() {
         initComponents();
         abrir_formulario();
@@ -1123,6 +1216,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         txtimportador_rubro = new javax.swing.JTextField();
         jLabel28 = new javax.swing.JLabel();
         jFimportador_saldo = new javax.swing.JFormattedTextField();
+        jLabel35 = new javax.swing.JLabel();
+        txtbuscar_despachante = new javax.swing.JTextField();
+        jLabel36 = new javax.swing.JLabel();
+        txtruc_despachante = new javax.swing.JTextField();
+        btnbuscar_despachante = new javax.swing.JButton();
         panel_item_liquidacion = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -1142,6 +1240,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jLabel16 = new javax.swing.JLabel();
         jFsolo_iva = new javax.swing.JFormattedTextField();
         lblidcomprobante = new javax.swing.JLabel();
+        btneditar_item_comprobante = new javax.swing.JButton();
         btneliminar_item_liquidacion = new javax.swing.JButton();
         btncargar_pre_item = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
@@ -1349,7 +1448,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                             .addComponent(jLabel15))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtmonto_seguro, javax.swing.GroupLayout.DEFAULT_SIZE, 133, Short.MAX_VALUE)
+                            .addComponent(txtmonto_seguro, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
                             .addComponent(txtmonto_factura))
                         .addGap(32, 32, 32)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1357,7 +1456,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                             .addComponent(jLabel21))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtmonto_ajuste, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                            .addComponent(txtmonto_ajuste, javax.swing.GroupLayout.DEFAULT_SIZE, 145, Short.MAX_VALUE)
                             .addComponent(txtmonto_flete)))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addComponent(jLabel14)
@@ -1855,6 +1954,11 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jLabel12.setText("DESPACHO NUMERO:");
 
         txtdespacho_numero.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        txtdespacho_numero.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtdespacho_numeroKeyPressed(evt);
+            }
+        });
 
         lbldespacho_zona.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         lbldespacho_zona.setText("ZONA:");
@@ -1902,6 +2006,9 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         txtbuscar_exportador.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtbuscar_exportadorKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtbuscar_exportadorKeyReleased(evt);
             }
         });
 
@@ -1982,6 +2089,25 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        jLabel35.setText("DESPACHANTE:");
+
+        txtbuscar_despachante.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtbuscar_despachanteKeyPressed(evt);
+            }
+        });
+
+        jLabel36.setText("RUC:");
+
+        txtruc_despachante.setEditable(false);
+
+        btnbuscar_despachante.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/ABM/mini_lupa.png"))); // NOI18N
+        btnbuscar_despachante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_despachanteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_encabezadoLayout = new javax.swing.GroupLayout(panel_encabezado);
         panel_encabezado.setLayout(panel_encabezadoLayout);
         panel_encabezadoLayout.setHorizontalGroup(
@@ -1990,21 +2116,32 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_encabezadoLayout.createSequentialGroup()
-                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_encabezadoLayout.createSequentialGroup()
-                                .addComponent(jLabel10)
+                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panel_encabezadoLayout.createSequentialGroup()
+                                    .addComponent(jLabel10)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(txtbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(jLabel11)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtruc_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(btnbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(panel_cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addGroup(panel_encabezadoLayout.createSequentialGroup()
+                                .addComponent(jLabel35)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtbuscar_despachante, javax.swing.GroupLayout.PREFERRED_SIZE, 268, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel11)
+                                .addComponent(jLabel36)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtruc_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtruc_despachante, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(panel_cliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(65, 65, 65)
+                                .addComponent(btnbuscar_despachante, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(71, 71, 71)
                         .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(panel_encabezadoLayout.createSequentialGroup()
@@ -2082,10 +2219,18 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                                 .addComponent(txtbuscar_exportador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(btnbuscar_exportador, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_encabezadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel35)
+                                .addComponent(jLabel36)
+                                .addComponent(txtruc_despachante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(txtbuscar_despachante, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnbuscar_despachante, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(9, 9, 9)
                         .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(40, Short.MAX_VALUE))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         jTab_liquidacion.addTab("ENCABEZADO LIQUIDACION", panel_encabezado);
@@ -2198,6 +2343,13 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         lblidcomprobante.setForeground(new java.awt.Color(0, 0, 204));
         lblidcomprobante.setText("jLabel17");
 
+        btneditar_item_comprobante.setText("EDITAR ITEM COMPROBANTE");
+        btneditar_item_comprobante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btneditar_item_comprobanteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout panel_cargar_itemLayout = new javax.swing.GroupLayout(panel_cargar_item);
         panel_cargar_item.setLayout(panel_cargar_itemLayout);
         panel_cargar_itemLayout.setHorizontalGroup(
@@ -2233,7 +2385,10 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                         .addComponent(jFsin_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jFsolo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(panel_cargar_itemLayout.createSequentialGroup()
+                        .addComponent(btneditar_item_comprobante)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         panel_cargar_itemLayout.setVerticalGroup(
             panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2266,7 +2421,9 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                 .addGroup(panel_cargar_itemLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jFsin_iva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jFsolo_iva, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(84, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btneditar_item_comprobante)
+                .addContainerGap(50, Short.MAX_VALUE))
         );
 
         btneliminar_item_liquidacion.setText("ELIMINAR ITEM");
@@ -2978,7 +3135,14 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
     private void btncargar_pre_itemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncargar_pre_itemActionPerformed
         // TODO add your handling code here:
-        cargar_pre_item_liquidacion();
+        if (monto_total_despacho > 0) {
+            if (evemen.MensajeGeneral_warning("ESTAS SEGURO DE LIMPIAR POR QUE YA TIENE MONTO\nTOTAL MONTO:" + monto_total_despacho, "ITEM CARGADO", "RE-CARGAR", "CANCELAR")) {
+                cargar_pre_item_liquidacion();
+            }
+        } else {
+            cargar_pre_item_liquidacion();
+        }
+
     }//GEN-LAST:event_btncargar_pre_itemActionPerformed
 
     private void tblitem_liquidacion_finalMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblitem_liquidacion_finalMouseReleased
@@ -3124,10 +3288,40 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         boton_recargar_liquidacion_final();
     }//GEN-LAST:event_btnrecargar_liquidacionActionPerformed
 
+    private void btneditar_item_comprobanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btneditar_item_comprobanteActionPerformed
+        // TODO add your handling code here:
+        evetbl.abrir_TablaJinternal(new FrmPre_item_liquidacion_final());
+    }//GEN-LAST:event_btneditar_item_comprobanteActionPerformed
+
+    private void txtdespacho_numeroKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtdespacho_numeroKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            buscar_nro_despacho_separar();
+            txtbuscar_importador.grabFocus();
+        }
+    }//GEN-LAST:event_txtdespacho_numeroKeyPressed
+
+    private void txtbuscar_despachanteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_despachanteKeyPressed
+        // TODO add your handling code here:
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            abrir_buscar(11, "DESPACHANTE", txtbuscar_despachante);
+        }
+    }//GEN-LAST:event_txtbuscar_despachanteKeyPressed
+
+    private void btnbuscar_despachanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_despachanteActionPerformed
+        // TODO add your handling code here:
+        abrir_buscar(11, "DESPACHANTE", txtbuscar_despachante);
+    }//GEN-LAST:event_btnbuscar_despachanteActionPerformed
+
+    private void txtbuscar_exportadorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtbuscar_exportadorKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtbuscar_exportadorKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnanular;
     private javax.swing.JButton btnbuscar_aduana;
+    private javax.swing.JButton btnbuscar_despachante;
     private javax.swing.JButton btnbuscar_destino;
     private javax.swing.JButton btnbuscar_exportador;
     private javax.swing.JButton btnbuscar_importador;
@@ -3136,6 +3330,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnbuscar_regimen;
     private javax.swing.JButton btnbuscar_transportadora;
     private javax.swing.JButton btncargar_pre_item;
+    private javax.swing.JButton btneditar_item_comprobante;
     private javax.swing.JButton btneliminar_item_liquidacion;
     private javax.swing.JButton btnguardar;
     private javax.swing.JButton btnguardar1;
@@ -3187,6 +3382,8 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
+    private javax.swing.JLabel jLabel35;
+    private javax.swing.JLabel jLabel36;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -3231,6 +3428,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblliquidacion;
     private javax.swing.JTextField txtbucar_comprobante;
     public static javax.swing.JTextField txtbuscar_aduana;
+    public static javax.swing.JTextField txtbuscar_despachante;
     public static javax.swing.JTextField txtbuscar_destino;
     public static javax.swing.JTextField txtbuscar_exportador;
     public static javax.swing.JTextField txtbuscar_importador;
@@ -3259,6 +3457,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtotro_monto;
     private javax.swing.JTextField txtotros_nombre;
     public static javax.swing.JTextField txtregimen_descripcion;
+    public static javax.swing.JTextField txtruc_despachante;
     public static javax.swing.JTextField txtruc_exportador;
     public static javax.swing.JTextField txtruc_importador;
     public static javax.swing.JTextField txtsigla_aduana;

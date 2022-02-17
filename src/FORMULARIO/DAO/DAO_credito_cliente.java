@@ -22,7 +22,8 @@ public class DAO_credito_cliente {
     private String mensaje_update = "CREDITO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO credito_tercero(idcredito_tercero,fecha_emision,descripcion,estado,"
             + "monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_tercero,"
-            + "fk_idsaldo_credito_tercero,fk_idrecibo_pago_tercero,fk_idliquidacion_final,vence,fecha_vence) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            + "fk_idsaldo_credito_tercero,fk_idrecibo_pago_tercero,fk_idliquidacion_final,vence,fecha_vence) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE credito_tercero SET fecha_emision=?,descripcion=?,estado=?,monto_contado=?,monto_credito=?,tabla_origen=?,fk_idgrupo_credito_tercero=?,fk_idsaldo_credito_tercero=?,fk_idrecibo_pago_tercero=?,fk_idliquidacion_final=? WHERE idcredito_tercero=?;";
     private String sql_select = "SELECT idcredito_tercero,fecha_emision,descripcion,estado,monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_tercero,fk_idsaldo_credito_tercero,fk_idrecibo_pago_tercero,fk_idliquidacion_final FROM credito_tercero order by 1 desc;";
     private String sql_cargar = "SELECT idcredito_tercero,fecha_emision,descripcion,estado,monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_tercero,fk_idsaldo_credito_tercero,fk_idrecibo_pago_tercero,fk_idliquidacion_final FROM credito_tercero WHERE idcredito_tercero=";

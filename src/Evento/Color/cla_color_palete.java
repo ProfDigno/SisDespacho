@@ -171,7 +171,7 @@ public class cla_color_palete {
         return color_tabla;
     }
 
-    public static void setColor_tabla(Color color_tabla) {
+    public static void setColor_tabla1(Color color_tabla) {
         cla_color_palete.color_tabla = color_tabla;
     }
 

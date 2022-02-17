@@ -461,7 +461,7 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
 
     private void lblcomprobanteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblcomprobanteMouseClicked
         // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmTipo_comprobante());
+        evetbl.abrir_TablaJinternal(new FrmComprobante_liquidacion());
     }//GEN-LAST:event_lblcomprobanteMouseClicked
 
     private void lblcomprobanteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblcomprobanteMouseExited

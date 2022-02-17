@@ -28,8 +28,9 @@ public class DAO_liquidacion_final {
             + "factura_numero,monto_letra,\n"
             + "fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,\n"
             + "fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,\n"
-            + "fk_idmoneda_cambio,fk_idregimen,fk_idincoterms,fecha_pagado,monto_pagado,otro_nombre,otro_monto) \n"
-            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);\n";
+            + "fk_idmoneda_cambio,fk_idregimen,fk_idincoterms,fecha_pagado,monto_pagado,otro_nombre,otro_monto,"
+            + "fk_idtercero_despachante,fk_idrecibo_pago_tercero) \n"
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);\n";
 
     private String sql_cargar = "SELECT idliquidacion_final,fecha_creado,creado_por,fecha_despacho,despacho_numero,tipo_liquidacion,estado,observacion,"
             + "contenedor_nro,contenedor_tipo,via_transporte,transporte_condicion,"
@@ -97,6 +98,8 @@ public class DAO_liquidacion_final {
             pst.setDouble(38, liqfin.getC38monto_pagado());
             pst.setString(39, liqfin.getC39otro_nombre());
             pst.setDouble(40, liqfin.getC40otro_monto());
+            pst.setInt(41, liqfin.getC41fk_idtercero_despachante());
+            pst.setInt(42, liqfin.getC42fk_idrecibo_pago_tercero());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + liqfin.toString(), titulo);
@@ -284,7 +287,7 @@ public class DAO_liquidacion_final {
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 
-    public void imprimir_rep_cuenta_liquidacion(Connection conn, int idtercero,String filtrofecha, int formatArchivo) {
+    public void imprimir_rep_cuenta_liquidacion(Connection conn, int idtercero,String filtrofecha) {
         String sql = "select ter.idtercero as idter,ter.nombre as cliente,ter.direccion as direccion,\n"
                 + "ter.ruc as ruc,ter.telefono as telefono,tr.nombre as rubro,\n"
                 + "lf.idliquidacion_final as idlf,trim(to_char(lf.fecha_despacho,'dd-MM-yyyy')) as fec_despacho,\n"
@@ -305,7 +308,6 @@ public class DAO_liquidacion_final {
         String titulonota = "CUENTA LIQUIDACION";
         String direccion = "src/REPORTE/TERCERO/repTerceroLiquidacionPagado.jrxml";
         String rutatemp="Cuenta_liquidacion_"+evefec.getString_formato_fecha()+"_"+idtercero;
-//        rep.imprimirjasper(conn, sql, titulonota, direccion);
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 }

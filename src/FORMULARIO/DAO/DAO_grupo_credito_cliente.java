@@ -154,18 +154,20 @@ public class DAO_grupo_credito_cliente {
             evemen.mensaje_error(e, sql_update_cerrar + "\n" + gcc.toString(), titulo);
         }
     }
-    private void update_liquidacion_final_monto_pagado(Connection conn, double monto_pagado, int idliquidacion_final) {
+    private void update_liquidacion_final_monto_pagado(Connection conn, double monto_pagado, int idliquidacion_final,int idrecibo_pago_tercero) {
         String titulo = "update_liquidacion_final_monto_pagado";
-         String sql_update_monto_pagado = "update liquidacion_final set estado='PAGADO',monto_pagado=(monto_pagado + ?) where idliquidacion_final=?;";
+         String sql_update_monto_pagado = "update liquidacion_final set estado='PAGADO',fecha_pagado='now()',"
+                 + "monto_pagado=(monto_pagado + ?),fk_idrecibo_pago_tercero=? "
+                 + "where estado='EMITIDO' and idliquidacion_final=?;";
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update_monto_pagado);
             pst.setDouble(1, monto_pagado);
-            pst.setInt(2, idliquidacion_final);
+            pst.setInt(2, idrecibo_pago_tercero);
+            pst.setInt(3, idliquidacion_final);
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update_monto_pagado , titulo);
-//            evemen.modificado_correcto(mensaje_update, true);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_update_monto_pagado , titulo);
         }
@@ -181,17 +183,18 @@ public class DAO_grupo_credito_cliente {
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             double monto_recibo = rpcli.getC4monto_recibo_pago();
+            int idrecibo_pago_cliente=rpcli.getC1idrecibo_pago_cliente();
             while (rs.next()) {
                 double saldo = (rs.getDouble(2));
                 int idliquidacion_final = (rs.getInt(3));
                 if (monto_recibo > 0) {
                     if (monto_recibo >= saldo) {
                         System.out.println("=======>>>>>>>monto_pagado=" + saldo + ", monto_pagar=" + saldo + ", idliquidacion_final=" + idliquidacion_final);
-                        update_liquidacion_final_monto_pagado(conn, saldo, idliquidacion_final);
+                        update_liquidacion_final_monto_pagado(conn, saldo, idliquidacion_final,idrecibo_pago_cliente);
                         monto_recibo = monto_recibo - saldo;
                     } else {
                         System.out.println("=======>>>>>>>monto_pagado=" + monto_recibo + ", monto_pagar=" + saldo + ", idliquidacion_final=" + idliquidacion_final);
-                        update_liquidacion_final_monto_pagado(conn, monto_recibo, idliquidacion_final);
+                        update_liquidacion_final_monto_pagado(conn, monto_recibo, idliquidacion_final,idrecibo_pago_cliente);
                         monto_recibo = 0;
                     }
                 }

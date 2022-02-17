@@ -14,7 +14,9 @@ import Evento.Jtable.EvenJtable;
 import FORMULARIO.BO.BO_tercero_ciudad;
 import FORMULARIO.DAO.DAO_tercero_ciudad;
 import FORMULARIO.ENTIDAD.tercero_ciudad;
+import FORMULARIO.VISTA.FrmGasto;
 import FORMULARIO.VISTA.FrmLiquidacion_final;
+import FORMULARIO.VISTA.FrmVale;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import javax.swing.JTable;
@@ -106,6 +108,28 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
             int Ancho1[] = {10, 20, 70};
             Ancho = Ancho1;
         }
+        if (vbus.getTipo_tabla() == 9) {
+            sql = "select idgasto_tipo  as idgt,nombre  \n"
+                    + "from gasto_tipo   \n"
+                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "and activar=true "
+                    + "order by 2 desc;";
+        }
+        if (vbus.getTipo_tabla() == 10) {
+            sql = "select idfuncionario  as idfu,nombre  \n"
+                    + "from funcionario   \n"
+                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "order by 2 desc;";
+        }
+        if (vbus.getTipo_tabla() == 11) {
+            sql = "select idtercero  as idt,nombre,ruc  \n"
+                    + "from tercero  \n"
+                    + "where despachante=true \n"
+                    + "and nombre  ilike'%" + buscar + "%' \n"
+                    + "order by 2 desc;";
+            int Ancho1[] = {10, 70, 20};
+            Ancho = Ancho1;
+        }
         if (vbus.getTipo_tabla() == 3) {
             eveconn.Select_cargar_jtable(conn, sql, tblbuscar);
             eveJtab.setAnchoColumnaJtable(tblbuscar, Ancho);
@@ -167,6 +191,20 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                 FrmLiquidacion_final.txtincoterm_descripcion.setText(descrip);
                 FrmLiquidacion_final.setFk_idincoterms(id);
             }
+            if (vbus.getTipo_tabla() == 9) {
+                FrmGasto.txtbuscar_gasto_tipo.setText(nombre);
+                FrmGasto.setFk_idgasto_tipo(id);
+            }
+            if (vbus.getTipo_tabla() == 10) {
+                FrmVale.txtbuscar_funcionario.setText(nombre);
+                FrmVale.setFk_idfuncionario(id);
+            }
+            if (vbus.getTipo_tabla() == 11) {
+                String ruc = eveJtab.getString_select(tblbuscar, 2);
+                FrmLiquidacion_final.txtbuscar_despachante.setText(nombre);
+                FrmLiquidacion_final.txtruc_despachante.setText(ruc);
+                FrmLiquidacion_final.setFk_idtercero_despachante(id);
+            }
         }
     }
 
@@ -181,7 +219,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
             FrmLiquidacion_final.txtbuscar_exportador.grabFocus();
         }
         if (vbus.getTipo_tabla() == 4) {
-            FrmLiquidacion_final.txtlp_contenedor_nro.grabFocus();
+            FrmLiquidacion_final.txtbuscar_despachante.grabFocus();
         }
         if (vbus.getTipo_tabla() == 5) {
             FrmLiquidacion_final.txtbuscar_transportadora.grabFocus();
@@ -194,6 +232,15 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         }
         if (vbus.getTipo_tabla() == 8) {
             FrmLiquidacion_final.txtbuscar_importador.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 9) {
+            FrmGasto.txtadescripcion.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 10) {
+            FrmVale.txtadescripcion.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 11) {
+            FrmLiquidacion_final.txtlp_contenedor_nro.grabFocus();
         }
     }
 

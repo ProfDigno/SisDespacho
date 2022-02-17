@@ -3,11 +3,13 @@ package FORMULARIO.BO;
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import FORMULARIO.DAO.DAO_caja_detalle;
 import FORMULARIO.DAO.DAO_credito_cliente;
 import FORMULARIO.DAO.DAO_grupo_credito_cliente;
 import FORMULARIO.DAO.DAO_recibo_pago_cliente;
 import FORMULARIO.DAO.DAO_saldo_credito_cliente;
 import FORMULARIO.DAO.DAO_tercero;
+import FORMULARIO.ENTIDAD.caja_detalle;
 import FORMULARIO.ENTIDAD.credito_cliente;
 import FORMULARIO.ENTIDAD.grupo_credito_cliente;
 import FORMULARIO.ENTIDAD.recibo_pago_cliente;
@@ -28,6 +30,7 @@ public class BO_tercero {
     private DAO_recibo_pago_cliente rpcli_dao = new DAO_recibo_pago_cliente();
     private grupo_credito_cliente gcc2 = new grupo_credito_cliente();
     private grupo_credito_cliente gcc3 = new grupo_credito_cliente();
+    private DAO_caja_detalle caja_dao = new DAO_caja_detalle();
     private String estado_EMITIDO = "EMITIDO";
     private String estado_ABIERTO = "ABIERTO";
     private String estado_CERRADO = "CERRADO";
@@ -85,7 +88,6 @@ public class BO_tercero {
             sccli_dao.insertar_saldo_credito_cliente(conn, sccli);
             gcc_dao.insertar_grupo_credito_cliente(conn, gcc);
             ccli_dao.insertar_credito_cliente1(conn, ccli);
-
             conn.commit();
             insert = true;
         } catch (SQLException e) {
@@ -106,12 +108,10 @@ public class BO_tercero {
             if (conn.getAutoCommit()) {
                 conn.setAutoCommit(false);
             }
-//            pidao.insertar_cliente(conn, cli);  
             ter_dao.insertar_tercero(conn, ter);
             sccli_dao.insertar_saldo_credito_cliente(conn, sccli);
             gcc_dao.insertar_grupo_credito_cliente(conn, gcc);
             ccli_dao.insertar_credito_cliente1(conn, ccli);
-            
             conn.commit();
             insert=true;
         } catch (SQLException e) {
@@ -125,7 +125,7 @@ public class BO_tercero {
         return insert;
     }
     public boolean getBoolean_insertar_cliente_con_recibo_pago1(tercero cli, credito_cliente ccli, credito_cliente ccli2,
-            grupo_credito_cliente gcc, recibo_pago_cliente rpcli, saldo_credito_cliente sccli) {
+            grupo_credito_cliente gcc, recibo_pago_cliente rpcli, saldo_credito_cliente sccli,caja_detalle caja) {
         String titulo = "getBoolean_insertar_cliente_con_recibo_pago";
         Connection conn = ConnPostgres.getConnPosgres();
         boolean insert = false;
@@ -134,7 +134,6 @@ public class BO_tercero {
                 conn.setAutoCommit(false);
             }
             gcc_dao.cargar_liquidacion_final_pago_auto(conn, rpcli, cli.getC1idtercero());
-            
             rpcli_dao.insertar_recibo_pago_cliente(conn, rpcli);
             ccli_dao.insertar_credito_cliente1(conn, ccli);
             gcc_dao.cargar_grupo_credito_cliente_id(conn, gcc2, cli.getC1idtercero());
@@ -150,7 +149,44 @@ public class BO_tercero {
             ccli2.setC9fk_idsaldo_credito_cliente(idsaldo_credito_cliente);
             ccli_dao.insertar_credito_cliente1(conn, ccli2);
             cli_dao.update_cliente_saldo_credito(conn, cli);
-            
+            caja_dao.insertar_caja_detalle(conn, caja);
+            conn.commit();
+            insert = true;
+        } catch (SQLException e) {
+            evmen.mensaje_error(e, cli.toString(), titulo);
+            try {
+                conn.rollback();
+            } catch (SQLException e1) {
+                evmen.Imprimir_serial_sql_error(e1, cli.toString(), titulo);
+            }
+        }
+        return insert;
+    }
+     public boolean getBoolean_insertar_recibo_pago_generar_credito(tercero cli, credito_cliente ccli, credito_cliente ccli2,
+            grupo_credito_cliente gcc, recibo_pago_cliente rpcli, saldo_credito_cliente sccli) {
+        String titulo = "getBoolean_insertar_recibo_pago_generar_credito";
+        Connection conn = ConnPostgres.getConnPosgres();
+        boolean insert = false;
+        try {
+            if (conn.getAutoCommit()) {
+                conn.setAutoCommit(false);
+            }
+//            gcc_dao.cargar_liquidacion_final_pago_auto(conn, rpcli, cli.getC1idtercero());
+//            rpcli_dao.insertar_recibo_pago_cliente(conn, rpcli);
+//            ccli_dao.insertar_credito_cliente1(conn, ccli);
+//            gcc_dao.cargar_grupo_credito_cliente_id(conn, gcc2, cli.getC1idtercero());
+//            gcc2.setC4estado(estado_CERRADO);
+//            gcc_dao.cerrar_grupo_credito_cliente(conn, gcc2);
+//            gcc2.setC4estado(estado_ABIERTO);
+//            gcc2.setC5fk_idcliente(cli.getC1idtercero());
+//            gcc_dao.insertar_grupo_credito_cliente(conn, gcc2);
+            sccli_dao.insertar_saldo_credito_cliente(conn, sccli);
+            gcc_dao.cargar_grupo_credito_cliente_id(conn, gcc3, cli.getC1idtercero());
+            int idsaldo_credito_cliente = (eveconn.getInt_ultimoID_max(conn, sccli.getTb_saldo_credito_cliente(), sccli.getId_idsaldo_credito_cliente()));
+            ccli2.setC8fk_idgrupo_credito_cliente(gcc3.getC1idgrupo_credito_cliente());
+            ccli2.setC9fk_idsaldo_credito_cliente(idsaldo_credito_cliente);
+            ccli_dao.insertar_credito_cliente1(conn, ccli2);
+            cli_dao.update_cliente_saldo_credito(conn, cli);
             conn.commit();
             insert = true;
         } catch (SQLException e) {
