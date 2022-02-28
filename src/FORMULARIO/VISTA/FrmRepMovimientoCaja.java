@@ -38,18 +38,19 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
     private void abrir_formulario() {
         this.setTitle("DATOS CAJA");
         evetbl.centrar_formulario_internalframa(this);
-        actualizar_tabla_todos();
+//        actualizar_tabla_todos();
         actualizar_tabla_suma();
         evefec.cargar_combobox_directo(cmbfecha_caja);
     }
 
-    void actualizar_tabla_todos() {
-        DAOcd.actualizar_caja_detalle_todos(conn, tbltablatodos);
-    }
+//    void actualizar_tabla_todos() {
+//        DAOcd.actualizar_caja_detalle_todos(conn, tbltablatodos);
+//    }
 
     void actualizar_tabla_suma() {
         String fecha = evefec.getFechaDirecto_combobox(cmbfecha_caja, " cd.fecha_creado ");
         DAOcd.actualizar_caja_detalle_suma(conn, tblcaja_suma, fecha);
+        DAOcd.actualizar_caja_detalle_todos(conn, tbltablatodos,fecha);
         cargar_sumas_caja(fecha);
     }
 
@@ -59,7 +60,10 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
                 + "sum(cd.monto_liquidacion_credito) as liquidacion_credito,\n"
                 + "sum(cd.monto_recibo_pago) as recibo_pago,\n"
                 + "sum(cd.monto_gasto) as gasto,\n"
-                + "sum(cd.monto_vale)  as vale\n"
+                + "sum(cd.monto_vale)  as vale,\n"
+                + "sum(cd.monto_recibo_pago) as ingreso,\n"
+                + "sum(cd.monto_gasto+cd.monto_vale) as egreso,\n"
+                + "(sum(cd.monto_recibo_pago)-sum(cd.monto_gasto+cd.monto_vale))  as diferencia \n"
                 + "from caja_detalle cd\n"
                 + "where cd.estado='EMITIDO' " + fecha;
         try {
@@ -69,16 +73,25 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
                 double recibo_pago=rs.getDouble("recibo_pago");
                 double gasto=rs.getDouble("gasto");
                 double vale=rs.getDouble("vale");
+                double ingreso=rs.getDouble("ingreso");
+                double egreso=rs.getDouble("egreso");
+                double diferencia=rs.getDouble("diferencia");
                 jFsuma_liquidacion_credito.setValue(liquidacion_credito);
                 jFsuma_recibo.setValue(recibo_pago);
                 jFsuma_gasto.setValue(gasto);
                 jFsuma_vale.setValue(vale);
+                jFsuma_ingreso.setValue(ingreso);
+                jFsuma_egreso.setValue(egreso);
+                jFsuma_diferencia.setValue(diferencia);
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
         }
     }
-
+    void boton_imprimir_caja_todos(){
+        String fecha = evefec.getFechaDirecto_combobox(cmbfecha_caja, " cd.fecha_creado ");
+        DAOcd.imprimir_caja_detalle_todos(conn, fecha);
+    }
     public FrmRepMovimientoCaja() {
         initComponents();
         abrir_formulario();
@@ -98,16 +111,22 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltablatodos = new javax.swing.JTable();
+        btnimprimir_caja_todos = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        cmbfecha_caja = new javax.swing.JComboBox<>();
         jPanel3 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblcaja_suma = new javax.swing.JTable();
-        cmbfecha_caja = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
         jFsuma_recibo = new javax.swing.JFormattedTextField();
         jFsuma_vale = new javax.swing.JFormattedTextField();
         jFsuma_gasto = new javax.swing.JFormattedTextField();
         jFsuma_liquidacion_credito = new javax.swing.JFormattedTextField();
+        jSeparator1 = new javax.swing.JSeparator();
+        jFsuma_egreso = new javax.swing.JFormattedTextField();
+        jFsuma_ingreso = new javax.swing.JFormattedTextField();
+        jFsuma_diferencia = new javax.swing.JFormattedTextField();
+        jLabel2 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -146,17 +165,46 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         ));
         jScrollPane1.setViewportView(tbltablatodos);
 
+        btnimprimir_caja_todos.setText("IMPRIMIR CAJA TODOS");
+        btnimprimir_caja_todos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_caja_todosActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("FECHA:");
+
+        cmbfecha_caja.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbfecha_cajaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 891, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnimprimir_caja_todos)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbfecha_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 387, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 70, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cmbfecha_caja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimprimir_caja_todos, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -187,69 +235,85 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         ));
         jScrollPane2.setViewportView(tblcaja_suma);
 
-        cmbfecha_caja.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbfecha_cajaActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("FECHA:");
-
-        jFsuma_recibo.setBorder(javax.swing.BorderFactory.createTitledBorder("RECIBO"));
+        jFsuma_recibo.setBorder(javax.swing.BorderFactory.createTitledBorder("RECIBO-INGRESO"));
         jFsuma_recibo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jFsuma_recibo.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jFsuma_recibo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jFsuma_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("VALE"));
+        jFsuma_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("VALE-EGRESO"));
         jFsuma_vale.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jFsuma_vale.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jFsuma_vale.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
-        jFsuma_gasto.setBorder(javax.swing.BorderFactory.createTitledBorder("GASTO"));
+        jFsuma_gasto.setBorder(javax.swing.BorderFactory.createTitledBorder("GASTO-EGRESO"));
         jFsuma_gasto.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jFsuma_gasto.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jFsuma_gasto.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
         jFsuma_liquidacion_credito.setBorder(javax.swing.BorderFactory.createTitledBorder("LIQUIDACION CREDITO"));
         jFsuma_liquidacion_credito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        jFsuma_liquidacion_credito.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jFsuma_liquidacion_credito.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jFsuma_egreso.setBorder(javax.swing.BorderFactory.createTitledBorder("EGRESO"));
+        jFsuma_egreso.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_egreso.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jFsuma_ingreso.setBorder(javax.swing.BorderFactory.createTitledBorder("INGRESO"));
+        jFsuma_ingreso.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_ingreso.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jFsuma_diferencia.setBorder(javax.swing.BorderFactory.createTitledBorder("DIFERENCIA"));
+        jFsuma_diferencia.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsuma_diferencia.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel2.setText("RESUMEN:");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jScrollPane2)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jFsuma_ingreso, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cmbfecha_caja, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGap(133, 133, 133)
+                        .addComponent(jFsuma_egreso, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jFsuma_diferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jFsuma_liquidacion_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
                         .addComponent(jFsuma_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFsuma_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
+                        .addGap(6, 6, 6)
                         .addComponent(jFsuma_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                .addGap(4, 4, 4))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jFsuma_liquidacion_credito)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jFsuma_vale)
+                        .addComponent(jFsuma_gasto)
+                        .addComponent(jFsuma_recibo)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbfecha_caja, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(3, 3, 3)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 365, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jFsuma_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jFsuma_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jFsuma_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jFsuma_liquidacion_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 13, Short.MAX_VALUE))
+                    .addComponent(jFsuma_egreso)
+                    .addComponent(jFsuma_ingreso)
+                    .addComponent(jFsuma_diferencia)
+                    .addComponent(jLabel2))
+                .addGap(19, 19, 19))
         );
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -290,20 +354,31 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         actualizar_tabla_suma();
     }//GEN-LAST:event_cmbfecha_cajaActionPerformed
 
+    private void btnimprimir_caja_todosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_caja_todosActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_caja_todos();
+    }//GEN-LAST:event_btnimprimir_caja_todosActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnimprimir_caja_todos;
     private javax.swing.JComboBox<String> cmbfecha_caja;
+    private javax.swing.JFormattedTextField jFsuma_diferencia;
+    private javax.swing.JFormattedTextField jFsuma_egreso;
     private javax.swing.JFormattedTextField jFsuma_gasto;
+    private javax.swing.JFormattedTextField jFsuma_ingreso;
     private javax.swing.JFormattedTextField jFsuma_liquidacion_credito;
     private javax.swing.JFormattedTextField jFsuma_recibo;
     private javax.swing.JFormattedTextField jFsuma_vale;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable tblcaja_suma;
     private javax.swing.JTable tbltablatodos;

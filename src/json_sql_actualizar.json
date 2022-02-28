@@ -1,14 +1,7 @@
 {
 "ejecutar_sql":"SI",
 "sql_ahora":"",
-"sql_2022_02_04":
-	"CREATE TABLE tabla_temp (
-		idtabla_temp INTEGER NOT NULL ,
-		descripcion TEXT NOT NULL ,
-		PRIMARY KEY(idtabla_temp)
-	);",
-"sql_2022_02_05":"ALTER TABLE tabla_temp ADD COLUMN nombre TEXT  NULL DEFAULT '---';",
-"sql_2022_02_11":"CREATE TABLE gasto (
+"sql_2022_02_17":"CREATE TABLE gasto (
 	idgasto INTEGER NOT NULL ,
 	fecha_creado TIMESTAMP NOT NULL ,
 	creado_por TEXT NOT NULL ,
@@ -25,8 +18,8 @@ CREATE TABLE gasto_tipo (
 	nombre TEXT NOT NULL ,
 	activar BOOLEAN NOT NULL ,
 	PRIMARY KEY(idgasto_tipo)
-);",
-"sql_2022_02_14":"CREATE TABLE funcionario (
+);
+CREATE TABLE funcionario (
 	idfuncionario INTEGER NOT NULL ,
 	fecha_creado TIMESTAMP NOT NULL ,
 	creado_por TEXT NOT NULL ,
@@ -49,8 +42,8 @@ CREATE TABLE vale (
 	fk_idfuncionario INTEGER NOT NULL ,
 	fk_idusuario INTEGER NOT NULL ,
 	PRIMARY KEY(idvale)
-);",
-"sql_2022_02_15":"CREATE TABLE caja_detalle (
+);
+CREATE TABLE caja_detalle (
 	idcaja_detalle INTEGER NOT NULL ,
 	fecha_creado TIMESTAMP NOT NULL ,
 	creado_por TEXT NOT NULL ,
@@ -66,8 +59,7 @@ CREATE TABLE vale (
 	fk_idliquidacion_final INTEGER NOT NULL ,
 	fk_recibo_pago_tercero INTEGER NOT NULL ,
 	PRIMARY KEY(idcaja_detalle)
-);",
-"sql_2022_02_16":"
+);
 ALTER TABLE liquidacion_final ADD COLUMN fk_idtercero_despachante INTEGER NOT NULL DEFAULT 1;
 ALTER TABLE liquidacion_final ADD COLUMN fk_idrecibo_pago_tercero INTEGER NOT NULL DEFAULT 0;"
 }

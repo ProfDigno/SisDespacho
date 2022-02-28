@@ -109,7 +109,7 @@ public class FrmVale extends javax.swing.JInternalFrame {
     private void cargar_dato_caja_detalle() {
         DAOcaja.vaciar_caja_detalle(ENTcaja);
         ENTcaja.setC3creado_por(creado_por);
-        ENTcaja.setC4descripcion("VALE: " + txtadescripcion.getText());
+        ENTcaja.setC4descripcion("VALE PARA:"+txtbuscar_funcionario.getText()+" \n"+txtadescripcion.getText());
         ENTcaja.setC5estado(estado_EMITIDO);
         ENTcaja.setC9monto_vale(monto_vale);
         ENTcaja.setC11fk_idvale(idvale);
@@ -182,9 +182,9 @@ private void boton_imprimir() {
         String filtro = "";
         String estado = "";
         if (jCanulado.isSelected()) {
-            estado = " and v.estado='ANULADO' ";
+            estado = " and v.estado='"+estado_ANULADO+"' ";
         } else {
-            estado = " and v.estado='EMITIDO' ";
+            estado = " and v.estado='"+estado_EMITIDO+"' ";
         }
         String fecha = evefec.getFechaDirecto_combobox(cmbfecha_vale, " v.fecha_creado ");
         filtro = fecha + estado;

@@ -62,6 +62,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         clacolor.setColor_insertar_secundario(new Color(205, 201, 195));
         clacolor.setColor_importacion(new Color(255, 253, 162));
         clacolor.setColor_exportacion(new Color(163, 218, 141));
+        clacolor.setColor_proforma(new Color(168, 159, 158));
     }
 
     void titulo_sistema() {

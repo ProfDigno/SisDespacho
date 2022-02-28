@@ -194,7 +194,7 @@ public class DAO_tercero {
                 + "(lf.monto_pagado-lf.monto_pagar) as isaldo,lf.monto_pagar,lf.monto_pagado  \n"
                 + "from tercero ter,liquidacion_final lf \n"
                 + "where lf.fk_idtercero_importador=ter.idtercero \n"
-                + "and lf.estado!='ANULADO'\n"
+                + "and (lf.estado='PAGADO' or lf.estado='EMITIDO') \n"
                 + "and ter.idtercero=" + idtercero + filtro
                 + " order by lf.idliquidacion_final desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);

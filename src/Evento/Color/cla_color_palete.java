@@ -151,6 +151,16 @@ public class cla_color_palete {
     private static Color color_base;
     private static Color color_importacion;
     private static Color color_exportacion;
+    private static Color color_proforma;
+
+    public static Color getColor_proforma() {
+        return color_proforma;
+    }
+
+    public static void setColor_proforma(Color color_proforma) {
+        cla_color_palete.color_proforma = color_proforma;
+    }
+    
     public static Color getColor_insertar_primario() {
         return color_insertar_primario;
     }

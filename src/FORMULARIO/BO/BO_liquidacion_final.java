@@ -13,6 +13,7 @@ import FORMULARIO.ENTIDAD.liquidacion_final;
 import FORMULARIO.ENTIDAD.tercero;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 
 public class BO_liquidacion_final {
@@ -24,8 +25,11 @@ public class BO_liquidacion_final {
     private DAO_caja_detalle caja_dao = new DAO_caja_detalle();
     EvenMensajeJoptionpane evmen = new EvenMensajeJoptionpane();
 
-    public boolean getBoolean_insertar_liquidacion_final(liquidacion_final liqfin, JTable tblitem, credito_cliente ccli, tercero clie,caja_detalle caja) {
+    public boolean getBoolean_insertar_liquidacion_final(liquidacion_final liqfin, JTable tblitem, credito_cliente ccli, tercero clie,caja_detalle caja,boolean esImpoExp) {
         boolean insert = false;
+        if (!esImpoExp) {
+            JOptionPane.showMessageDialog(null,"EN LA PROFORMA NO SE INGRESA A LA CAJA\nNO SE CREA EL CREDITO AL CLIENTE");
+        }
         String titulo = "getBoolean_insertar_liquidacion_final";
         Connection conn = ConnPostgres.getConnPosgres();
         try {
@@ -34,8 +38,8 @@ public class BO_liquidacion_final {
             }
             liqfin_dao.insertar_liquidacion_final(conn, liqfin);
             itemfin_dao.insertar_item_liquidacion_final_de_tabla_mercaderia(conn, tblitem);
-            caja_dao.insertar_caja_detalle(conn, caja);
-            if (true) {
+            if (esImpoExp) {
+                caja_dao.insertar_caja_detalle(conn, caja);
                 ccli_dao.insertar_credito_cliente1(conn, ccli);
                 cli_dao.update_cliente_saldo_credito(conn, clie);
             }
@@ -46,11 +50,11 @@ public class BO_liquidacion_final {
             insert = false;
             try {
                 conn.rollback();
-
             } catch (SQLException e1) {
                 evmen.Imprimir_serial_sql_error(e1, liqfin.toString(), titulo);
             }
         }
+        
         return insert;
     }
 

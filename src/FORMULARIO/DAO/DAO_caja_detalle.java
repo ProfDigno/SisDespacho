@@ -18,6 +18,8 @@ public class DAO_caja_detalle {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+        private String estado_emitido = "EMITIDO";
+    private String estado_anulado = "ANULADO";
     private String mensaje_insert = "CAJA_DETALLE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CAJA_DETALLE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO caja_detalle(idcaja_detalle,fecha_creado,creado_por,descripcion,estado,monto_liquidacion_credito,monto_recibo_pago,monto_gasto,monto_vale,fk_idusuario,fk_idvale,fk_idgasto,fk_idliquidacion_final,fk_recibo_pago_tercero) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
@@ -48,7 +50,7 @@ public class DAO_caja_detalle {
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + caja.toString(), titulo);
-            evemen.guardado_correcto(mensaje_insert, true);
+            evemen.guardado_correcto(mensaje_insert, false);
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_insert + "\n" + caja.toString(), titulo);
         }
@@ -118,7 +120,7 @@ public class DAO_caja_detalle {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
-    public void actualizar_caja_detalle_todos(Connection conn, JTable tbltabla) {
+    public void actualizar_caja_detalle_todos(Connection conn, JTable tbltabla, String fecha) {
         String sql = "select cd.idcaja_detalle as idcd,to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
                 + "cd.descripcion,cd.estado,\n"
                 + "cd.monto_liquidacion_credito as liquidacion_credito,\n"
@@ -126,6 +128,7 @@ public class DAO_caja_detalle {
                 + "cd.monto_gasto as gasto,\n"
                 + "cd.monto_vale  as vale\n"
                 + "from caja_detalle cd\n"
+                + "where cd.estado='"+estado_emitido+"' \n" + fecha
                 + "order by cd.idcaja_detalle desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_detalle_todos(tbltabla);
@@ -136,7 +139,7 @@ public class DAO_caja_detalle {
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
-    public void actualizar_caja_detalle_suma(Connection conn, JTable tbltabla,String fecha) {
+    public void actualizar_caja_detalle_suma(Connection conn, JTable tbltabla, String fecha) {
         String sql = "select to_char(cd.fecha_creado,'yyyy-MM') as fecha,\n"
                 + "case when cd.fk_idliquidacion_final>0 then 'LIQUIDACION-CREDITO'\n"
                 + "     when cd.fk_recibo_pago_tercero >0 then 'RECIBO'\n"
@@ -148,7 +151,7 @@ public class DAO_caja_detalle {
                 + "trim(to_char(sum(cd.monto_gasto),'999G999G999G999')) as gasto,\n"
                 + "trim(to_char(sum(cd.monto_vale),'999G999G999G999'))  as vale\n"
                 + "from caja_detalle cd\n"
-                + "where cd.estado='EMITIDO' \n"+fecha
+                + "where cd.estado='"+estado_emitido+"' \n" + fecha
                 + " group by 1,2\n"
                 + "order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -156,7 +159,7 @@ public class DAO_caja_detalle {
     }
 
     public void ancho_tabla_caja_detalle_suma(JTable tbltabla) {
-        int Ancho[] = {15,25, 13, 13, 12, 12};
+        int Ancho[] = {15, 25, 13, 13, 12, 12};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
@@ -190,5 +193,25 @@ public class DAO_caja_detalle {
         } catch (Exception e) {
             evemen.mensaje_error(e, sql_estado + "\n" + cdalq.toString(), titulo);
         }
+    }
+
+    public void imprimir_caja_detalle_todos(Connection conn, String filtrofecha) {
+        String sql = "select cd.idcaja_detalle as idcd,\n"
+                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+                + "cd.descripcion,cd.estado,\n"
+                + "cd.monto_liquidacion_credito as liquidacion_credito,\n"
+                + "cd.monto_recibo_pago as recibo_pago,\n"
+                + "cd.monto_gasto as gasto,\n"
+                + "cd.monto_vale  as vale,\n  "
+                + "cd.monto_recibo_pago as ingreso,\n" 
+                + "(cd.monto_gasto+cd.monto_vale) as egreso,\n" 
+                + "(cd.monto_recibo_pago-(cd.monto_gasto+cd.monto_vale)) as diferencia "
+                + "from caja_detalle cd\n"
+                + "where cd.estado='"+estado_emitido+"' \n" + filtrofecha
+                + "order by cd.idcaja_detalle desc;";
+        String titulonota = "CAJA DETALLE";
+        String direccion = "src/REPORTE/CAJA/repDetalleCajaTodos.jrxml";
+        String rutatemp = "Caja_Detalle_" + evefec.getString_formato_fecha();
+        rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 }

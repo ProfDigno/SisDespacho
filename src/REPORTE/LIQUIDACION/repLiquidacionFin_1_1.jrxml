@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
-	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="288"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<queryString>
 		<![CDATA[select lf.idliquidacion_final as idlqui,lf.tipo_liquidacion as tipo,lf.fecha_despacho as fec_despacho,
 ti.nombre as importa,lf.contenedor_nro as contene_nro,tc.descripcion as merca,tc2.nombre as destino,
@@ -87,9 +87,9 @@ order by ilf.orden asc]]>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="127" splitType="Stretch">
+		<band height="46" splitType="Stretch">
 			<textField>
-				<reportElement x="155" y="75" width="207" height="26"/>
+				<reportElement x="155" y="0" width="207" height="26"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -97,13 +97,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="18"/>
+				<textElement textAlignment="Center">
+					<font size="18"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="75" width="155" height="26" backcolor="#FF9933"/>
+				<reportElement x="0" y="0" width="155" height="26" backcolor="#FF9933"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -111,13 +111,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="18" isBold="true"/>
+				<textElement textAlignment="Center">
+					<font size="18" isBold="true"/>
 				</textElement>
 				<text><![CDATA[LIQUIDACION]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="362" y="75" width="61" height="16"/>
+				<reportElement x="362" y="0" width="61" height="16"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -125,13 +125,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="12" isBold="true"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[FECHA]]></text>
 			</staticText>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="423" y="75" width="100" height="16"/>
+				<reportElement x="423" y="0" width="100" height="16"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -139,13 +139,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.5"/>
 					<rightPen lineWidth="0.5"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="12"/>
+				<textElement textAlignment="Center">
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fec_despacho}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="101" width="100" height="20"/>
+				<reportElement x="0" y="26" width="100" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -154,12 +154,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="14"/>
+					<font size="14"/>
 				</textElement>
 				<text><![CDATA[Despacho Nro:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="100" y="101" width="173" height="20"/>
+				<reportElement x="100" y="26" width="173" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -168,12 +168,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="14" isBold="true"/>
+					<font size="14" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{despacho_nro}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="273" y="101" width="89" height="20"/>
+				<reportElement x="273" y="26" width="89" height="20"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -182,19 +182,19 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="10"/>
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{zona}]]></textFieldExpression>
 			</textField>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="107" splitType="Stretch">
+		<band height="115" splitType="Stretch">
 			<line>
 				<reportElement x="0" y="3" width="555" height="1"/>
 			</line>
 			<staticText>
-				<reportElement x="0" y="4" width="82" height="15"/>
+				<reportElement x="0" y="4" width="83" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -202,13 +202,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="12" isBold="false"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Cliente:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="4" width="178" height="15"/>
+				<reportElement x="83" y="4" width="179" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -216,13 +216,14 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{importa}]]></textFieldExpression>
 			</textField>
+			<rectangle>
+				<reportElement x="0" y="20" width="262" height="91"/>
+			</rectangle>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="20" width="82" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="20" width="83" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -231,12 +232,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Contenedor Nro:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="20" width="178" height="15"/>
+				<reportElement x="83" y="20" width="179" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -245,12 +246,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="12"/>
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{contene_nro}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="36" width="82" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="36" width="83" height="15" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -258,13 +259,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Mercaderia/Destino:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="36" width="84" height="15"/>
+				<reportElement x="83" y="36" width="85" height="15"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -272,13 +273,11 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{merca}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="168" y="36" width="93" height="15"/>
+				<reportElement x="168" y="36" width="94" height="15"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -286,13 +285,11 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{destino}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="52" width="82" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="51" width="83" height="15" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -301,12 +298,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Via / Aduana:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="52" width="84" height="15"/>
+				<reportElement x="83" y="51" width="85" height="15"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -314,13 +311,11 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{via}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="168" y="52" width="93" height="15"/>
+				<reportElement x="168" y="51" width="94" height="15"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -328,13 +323,11 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{aduana}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="68" width="82" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="66" width="83" height="15" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -343,12 +336,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Trans/Modo Trans:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="68" width="84" height="15"/>
+				<reportElement x="83" y="66" width="85" height="15"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -356,13 +349,11 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{trans_emp}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="168" y="68" width="93" height="15"/>
+				<reportElement x="168" y="66" width="94" height="15"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -370,13 +361,14 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{trans_condi}]]></textFieldExpression>
 			</textField>
+			<rectangle radius="10">
+				<reportElement x="262" y="4" width="293" height="107"/>
+			</rectangle>
 			<staticText>
-				<reportElement mode="Opaque" x="262" y="52" width="70" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="262" y="53" width="71" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -385,12 +377,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[   Valor Factura.:]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="333" y="52" width="90" height="15"/>
+				<reportElement x="333" y="53" width="91" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -399,12 +391,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="12"/>
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_factura}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="262" y="36" width="70" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="262" y="37" width="71" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -413,12 +405,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Factura Nro:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="333" y="36" width="90" height="15"/>
+				<reportElement x="333" y="37" width="91" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -426,13 +418,11 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{nro_factura}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="262" y="68" width="70" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="262" y="69" width="71" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -441,12 +431,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Flete:]]></text>
+				<text><![CDATA[Flete Terrestre:]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="333" y="68" width="90" height="15"/>
+				<reportElement x="333" y="69" width="91" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -455,12 +445,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="11"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_flete}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="493" y="68" width="61" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="493" y="69" width="61" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -469,12 +459,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Seguro:]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="424" y="68" width="68" height="15"/>
+				<reportElement x="424" y="69" width="69" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -483,12 +473,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="11"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_seguro}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="262" y="84" width="70" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="262" y="85" width="71" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -497,12 +487,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[C. I. F. :]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="333" y="84" width="90" height="15"/>
+				<reportElement x="333" y="85" width="91" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -511,12 +501,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="12"/>
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_cif}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="262" y="20" width="70" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="262" y="21" width="71" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -525,12 +515,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Ajuste Incluir:]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="333" y="20" width="90" height="15"/>
+				<reportElement x="333" y="21" width="91" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -539,12 +529,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="12"/>
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_ajuste}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="493" y="4" width="61" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="493" y="4" width="61" height="17" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -553,12 +543,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[C.I.F + Ajuste:]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="424" y="4" width="68" height="15"/>
+				<reportElement x="424" y="4" width="69" height="17"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -567,12 +557,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="11"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_cif_ajuste}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="493" y="52" width="61" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="493" y="53" width="61" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -581,12 +571,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[TC Aduana:]]></text>
 			</staticText>
 			<textField pattern="#,##0.00">
-				<reportElement x="424" y="52" width="68" height="15"/>
+				<reportElement x="424" y="53" width="69" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -595,12 +585,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="11"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{tc_aduana}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="262" y="4" width="70" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="262" y="4" width="71" height="17" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -608,13 +598,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[V. Imponible:]]></text>
 			</staticText>
 			<textField pattern="#,##0 Gs">
-				<reportElement x="333" y="4" width="90" height="15"/>
+				<reportElement x="333" y="3" width="91" height="18"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -623,12 +613,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right">
-					<font fontName="Arial" size="11"/>
+					<font size="12"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_imponible}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="493" y="84" width="61" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="493" y="85" width="61" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -637,12 +627,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Moneda:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="424" y="84" width="68" height="15"/>
+				<reportElement x="424" y="85" width="69" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -651,12 +641,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" isBold="true"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{moneda}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="424" y="20" width="68" height="15"/>
+				<reportElement x="424" y="21" width="69" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -665,12 +655,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="11" isBold="false"/>
+					<font size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{regime}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="493" y="20" width="61" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="493" y="21" width="61" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -679,12 +669,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Regimen:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="424" y="36" width="68" height="15"/>
+				<reportElement x="424" y="37" width="69" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -693,12 +683,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="11"/>
+					<font size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{incotern}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="493" y="36" width="61" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="493" y="37" width="61" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -707,12 +697,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="8" isBold="false"/>
+					<font size="8" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Inconterms:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="84" width="82" height="15" backcolor="#CCCCCC"/>
+				<reportElement mode="Opaque" x="0" y="81" width="83" height="16" backcolor="#CCCCCC"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -720,13 +710,13 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="10" isBold="false"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Exportador:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="84" width="178" height="15"/>
+				<reportElement x="83" y="81" width="179" height="16"/>
 				<box>
 					<pen lineWidth="0.25"/>
 					<topPen lineWidth="0.25"/>
@@ -734,9 +724,7 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{exportador}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -752,8 +740,8 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="1.0"/>
 					<rightPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="10" isBold="false"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Total]]></text>
 			</staticText>
@@ -766,8 +754,8 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="1.0"/>
 					<rightPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="10" isBold="false"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Comprobante Nro.]]></text>
 			</staticText>
@@ -780,8 +768,8 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="1.0"/>
 					<rightPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="10" isBold="false"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Descripcion]]></text>
 			</staticText>
@@ -795,7 +783,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="1.0"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="10" isBold="false"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Orden]]></text>
 			</staticText>
@@ -822,8 +810,8 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="1.0"/>
 					<rightPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Desglose]]></text>
 			</staticText>
@@ -836,8 +824,8 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="1.0"/>
 					<rightPen lineWidth="1.0"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Discrim. IVA]]></text>
 			</staticText>
@@ -855,7 +843,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial" size="10"/>
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{i_total}]]></textFieldExpression>
 			</textField>
@@ -869,7 +857,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="9"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{i_comprobante}]]></textFieldExpression>
 			</textField>
@@ -883,7 +871,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Arial" size="9"/>
+					<font size="9"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{i_descrip}]]></textFieldExpression>
 			</textField>
@@ -897,7 +885,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="10"/>
+					<font size="10"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{i_ord}]]></textFieldExpression>
 			</textField>
@@ -922,9 +910,7 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{i_sin_iva}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
@@ -936,9 +922,7 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Arial"/>
-				</textElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{i_solo_iva}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -955,7 +939,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="13"/>
+					<font size="13"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_ttdespacho}]]></textFieldExpression>
 			</textField>
@@ -972,7 +956,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="13"/>
+					<font size="13"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_adelanto}]]></textFieldExpression>
 			</textField>
@@ -986,7 +970,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="13" isBold="true"/>
+					<font size="13" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{m_pagar}]]></textFieldExpression>
 			</textField>
@@ -999,16 +983,12 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold"/>
-				</textElement>
+				<textElement/>
 				<textFieldExpression><![CDATA[$F{m_letra}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="100" y="100" width="455" height="30"/>
-				<textElement>
-					<font fontName="Britannic Bold"/>
-				</textElement>
+				<textElement/>
 				<textFieldExpression><![CDATA[$F{observa}]]></textFieldExpression>
 			</textField>
 			<staticText>
@@ -1021,7 +1001,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL GASTO DESPACHO:]]></text>
 			</staticText>
@@ -1035,7 +1015,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL MONTO ADELANTO:]]></text>
 			</staticText>
@@ -1049,7 +1029,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="12" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[TOTAL A PAGAR:]]></text>
 			</staticText>
@@ -1062,18 +1042,22 @@ order by ilf.orden asc]]>
 					<bottomPen lineWidth="0.25"/>
 					<rightPen lineWidth="0.25"/>
 				</box>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+				<textElement>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[SON GUARANIAES:]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="0" y="100" width="100" height="15"/>
-				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+				<textElement>
+					<font isBold="true"/>
 				</textElement>
 				<text><![CDATA[Observacion:]]></text>
 			</staticText>
+			<image>
+				<reportElement x="4" y="9" width="239" height="50"/>
+				<imageExpression><![CDATA["src\\REPORTE\\LIQUIDACION\\LOGO.png"]]></imageExpression>
+			</image>
 			<textField pattern="#,##0 Gs">
 				<reportElement x="443" y="25" width="112" height="22"/>
 				<box>
@@ -1084,7 +1068,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" size="13"/>
+					<font size="13"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{otro_monto}]]></textFieldExpression>
 			</textField>
@@ -1098,14 +1082,32 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.25"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{otro_nombre}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="91" splitType="Stretch"/>
+		<band height="21" splitType="Stretch">
+			<line>
+				<reportElement x="0" y="2" width="555" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="83" y="3" width="121" height="14"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[www.gruporoyal.com.py]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="249" y="3" width="212" height="14"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Mail: comercioexterior@gruporoyal.com.py]]></text>
+			</staticText>
+		</band>
 	</pageFooter>
 	<summary>
 		<band height="31">
@@ -1119,7 +1121,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{i_solo_iva_1}]]></textFieldExpression>
 			</textField>
@@ -1133,7 +1135,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{i_sin_iva_1}]]></textFieldExpression>
 			</textField>
@@ -1147,12 +1149,12 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.75"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{i_total_1}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="409" y="13" width="145" height="14"/>
+				<reportElement x="409" y="13" width="146" height="14"/>
 				<box>
 					<pen lineWidth="0.5"/>
 					<topPen lineWidth="0.5"/>
@@ -1161,7 +1163,7 @@ order by ilf.orden asc]]>
 					<rightPen lineWidth="0.5"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Britannic Bold" isBold="false"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{utilidad}]]></textFieldExpression>
 			</textField>
