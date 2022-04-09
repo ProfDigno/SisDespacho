@@ -40,7 +40,7 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
 //        actualizar_tabla_todos();
         actualizar_tabla_suma();
-        evefec.cargar_combobox_directo(cmbfecha_caja);
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_caja);
     }
 
 //    void actualizar_tabla_todos() {
@@ -48,7 +48,7 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
 //    }
 
     void actualizar_tabla_suma() {
-        String fecha = evefec.getFechaDirecto_combobox(cmbfecha_caja, " cd.fecha_creado ");
+        String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_caja, " cd.fecha_creado ");
         DAOcd.actualizar_caja_detalle_suma(conn, tblcaja_suma, fecha);
         DAOcd.actualizar_caja_detalle_todos(conn, tbltablatodos,fecha);
         cargar_sumas_caja(fecha);
@@ -89,7 +89,7 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         }
     }
     void boton_imprimir_caja_todos(){
-        String fecha = evefec.getFechaDirecto_combobox(cmbfecha_caja, " cd.fecha_creado ");
+        String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_caja, " cd.fecha_creado ");
         DAOcd.imprimir_caja_detalle_todos(conn, fecha);
     }
     public FrmRepMovimientoCaja() {
@@ -235,30 +235,37 @@ public class FrmRepMovimientoCaja extends javax.swing.JInternalFrame {
         ));
         jScrollPane2.setViewportView(tblcaja_suma);
 
+        jFsuma_recibo.setBackground(new java.awt.Color(153, 255, 153));
         jFsuma_recibo.setBorder(javax.swing.BorderFactory.createTitledBorder("RECIBO-INGRESO"));
         jFsuma_recibo.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_recibo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jFsuma_vale.setBackground(new java.awt.Color(255, 255, 102));
         jFsuma_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("VALE-EGRESO"));
         jFsuma_vale.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_vale.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jFsuma_gasto.setBackground(new java.awt.Color(255, 255, 102));
         jFsuma_gasto.setBorder(javax.swing.BorderFactory.createTitledBorder("GASTO-EGRESO"));
         jFsuma_gasto.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_gasto.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jFsuma_liquidacion_credito.setBackground(new java.awt.Color(204, 204, 204));
         jFsuma_liquidacion_credito.setBorder(javax.swing.BorderFactory.createTitledBorder("LIQUIDACION CREDITO"));
         jFsuma_liquidacion_credito.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_liquidacion_credito.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jFsuma_egreso.setBackground(new java.awt.Color(255, 255, 102));
         jFsuma_egreso.setBorder(javax.swing.BorderFactory.createTitledBorder("EGRESO"));
         jFsuma_egreso.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_egreso.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jFsuma_ingreso.setBackground(new java.awt.Color(153, 255, 153));
         jFsuma_ingreso.setBorder(javax.swing.BorderFactory.createTitledBorder("INGRESO"));
         jFsuma_ingreso.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_ingreso.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
 
+        jFsuma_diferencia.setBackground(new java.awt.Color(102, 204, 255));
         jFsuma_diferencia.setBorder(javax.swing.BorderFactory.createTitledBorder("DIFERENCIA"));
         jFsuma_diferencia.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         jFsuma_diferencia.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N

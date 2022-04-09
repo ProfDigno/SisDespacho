@@ -185,13 +185,6 @@ public class ClaAuxFiltroVenta {
         return sumaestado + fin;
     }
     public String filtro_tipo_comprobante(JCheckBox jCcon_comprobante,JCheckBox jCsin_comprobante,JCheckBox jCboleta_despachante,JCheckBox jCmercaderia,JCheckBox jCtipo_factura) {
-        /**
-         *   con_comprobante boolean NOT NULL,
-           sin_comprobante boolean NOT NULL,
-           boleta_despachante boolean NOT NULL,
-           mercaderia boolean,
-           tipo_factura boolean,
-         */
         String estado = "";
         String sumaestado = "";
         int contestado = 0;
@@ -254,6 +247,60 @@ public class ClaAuxFiltroVenta {
             sumaestado = sumaestado + estado;
         }
         
+        return sumaestado + fin;
+    }
+    
+    public String filtro_liquidacion(JCheckBox jCliq_emitido,JCheckBox jCliq_pagado,JCheckBox jCliq_proforma,JCheckBox jCliq_anulado) {
+        String estado = "";
+        String sumaestado = "";
+        int contestado = 0;
+        String condi = "";
+        String fin = "";
+//        String eswhere = "";
+        if (jCliq_emitido.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + " lf.estado='EMITIDO' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCliq_pagado.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + " lf.estado='PAGADO' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCliq_proforma.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + " lf.estado='PROFORMA' ";
+            sumaestado = sumaestado + estado;
+        }
+        if (jCliq_anulado.isSelected()) {
+            contestado++;
+            if (contestado == 1) {
+                condi = " and(";
+                fin = ") ";
+            } else {
+                condi = " or";
+            }
+            estado = condi + " lf.estado='ANULADO' ";
+            sumaestado = sumaestado + estado;
+        }        
         return sumaestado + fin;
     }
 }

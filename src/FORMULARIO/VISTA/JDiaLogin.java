@@ -11,6 +11,7 @@ import BASEDATO.LOCAL.VariablesBD;
 import Evento.Color.cla_color_palete;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
+import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
@@ -32,6 +33,7 @@ public class JDiaLogin extends javax.swing.JDialog {
     BO_usuario bo_usu = new BO_usuario();
     dao_usuario dao_usu = new dao_usuario();//dao_usuario
     EvenJTextField evejtf = new EvenJTextField();
+    EvenMensajeJoptionpane evemsj =new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
     Connection connser = ConnPostgres.getConnPosgres();
     EvenConexion eveconn = new EvenConexion();
@@ -105,9 +107,16 @@ public class JDiaLogin extends javax.swing.JDialog {
     void habilitar_evento_menu_bloquear() {
         FrmMenuDespacho.btnliquidacion_proforma.setEnabled(false);
         FrmMenuDespacho.btntercero.setEnabled(false);
+        FrmMenuDespacho.btnliquidacion.setEnabled(false);
+        FrmMenuDespacho.btngasto.setEnabled(false);
+        FrmMenuDespacho.btnvale.setEnabled(false);
         FrmMenuDespacho.jMenu_proforma.setEnabled(false);
         FrmMenuDespacho.jMenu_tercero.setEnabled(false);
         FrmMenuDespacho.jMenu_configuracion.setEnabled(false);
+        FrmMenuDespacho.jMenu_liquidacion.setEnabled(false);
+        FrmMenuDespacho.jMenu_gasto.setEnabled(false);
+        FrmMenuDespacho.jMenu_informe.setEnabled(false);
+        FrmMenuDespacho.jMenu_vale.setEnabled(false);
     }
     void habilitar_evento_menu() {
         FrmMenuDespacho.btnliquidacion_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
@@ -115,6 +124,10 @@ public class JDiaLogin extends javax.swing.JDialog {
         FrmMenuDespacho.jMenu_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn,"3"));
         FrmMenuDespacho.jMenu_tercero.setEnabled(dao_usu.getBoolean_hab_evento(conn,"4"));
         FrmMenuDespacho.jMenu_configuracion.setEnabled(dao_usu.getBoolean_hab_evento(conn,"5"));
+        FrmMenuDespacho.jMenu_liquidacion.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
+        FrmMenuDespacho.jMenu_gasto.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
+        FrmMenuDespacho.jMenu_informe.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
+        FrmMenuDespacho.jMenu_vale.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
         FrmMenuDespacho.jMenuItem_nueva_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn,"6"));
         FrmMenuDespacho.jMenuItem_tipo_comprobante.setEnabled(dao_usu.getBoolean_hab_evento(conn,"7"));
         FrmMenuDespacho.jMenuItem_tipo_mercaderia.setEnabled(dao_usu.getBoolean_hab_evento(conn,"8"));
@@ -131,6 +144,10 @@ public class JDiaLogin extends javax.swing.JDialog {
         FrmMenuDespacho.jMenuItem_evento_rol_usuario.setEnabled(dao_usu.getBoolean_hab_evento(conn,"19"));
         FrmMenuDespacho.jMenuItem_usuario_formulario.setEnabled(dao_usu.getBoolean_hab_evento(conn,"20"));
         FrmMenuDespacho.jMenuItem_usuario_tipo_evento.setEnabled(dao_usu.getBoolean_hab_evento(conn,"21"));
+        
+        FrmMenuDespacho.btnliquidacion.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
+        FrmMenuDespacho.btngasto.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
+        FrmMenuDespacho.btnvale.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
     }
 
     public JDiaLogin(java.awt.Frame parent, boolean modal) {
@@ -158,6 +175,11 @@ public class JDiaLogin extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setBackground(new java.awt.Color(102, 204, 255));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         panel_insert.setBackground(new java.awt.Color(153, 204, 255));
         panel_insert.setBorder(javax.swing.BorderFactory.createTitledBorder("INGRESO DE USUARIO"));
@@ -229,7 +251,8 @@ public class JDiaLogin extends javax.swing.JDialog {
                     .addComponent(jPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnentrar, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(btnentrar, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -240,7 +263,9 @@ public class JDiaLogin extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panel_insert, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(panel_insert, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -265,6 +290,13 @@ public class JDiaLogin extends javax.swing.JDialog {
             boton_entrar();
         }
     }//GEN-LAST:event_jPasswordKeyPressed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        if(evemsj.MensajeGeneral_question("DESEAS SALIR DEL SISTEMA","SALIR", "ACEPTAR", "CANCELAR")){
+            System.exit(0);
+        }
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments

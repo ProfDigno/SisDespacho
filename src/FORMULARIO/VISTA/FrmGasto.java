@@ -68,7 +68,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
         color_formulario();
-        evefec.cargar_combobox_directo(cmbfecha_gasto);
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_gasto);
     }
 
     private void color_formulario() {
@@ -173,7 +173,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         } else {
             estado = " and g.estado='EMITIDO' ";
         }
-        String fecha = evefec.getFechaDirecto_combobox(cmbfecha_gasto, " g.fecha ");
+        String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_gasto, " g.fecha ");
         filtro = fecha + estado;
         DAOg.actualizar_tabla_gasto(conn, tbltabla, filtro);
         double suma_gasto = eveJtab.getDouble_sumar_tabla(tbltabla, 5);

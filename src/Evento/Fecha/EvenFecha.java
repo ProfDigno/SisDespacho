@@ -57,8 +57,6 @@ public class EvenFecha {
         return Sfecha;
     }
 
-    
-
     public String getString_validar_fecha_hora(String fechaStr) {
         String Sfecha = "";
         try {
@@ -83,12 +81,13 @@ public class EvenFecha {
         } catch (Exception e) {
             String mensaje = "EL FORMATO DE LA FECHA NO ES CORRECTA\n "
                     + "FORMATO: AñO-MES-DIA HORA:MINUTO\n"
-                    + "FECHA INGRESADO:"+fechaStr +"\n"+ e;
+                    + "FECHA INGRESADO:" + fechaStr + "\n" + e;
             JOptionPane.showMessageDialog(null, mensaje, "ERROR:getDateSQL_fecha_cargado_sinformat", JOptionPane.ERROR_MESSAGE);
             dateSql = java.sql.Date.valueOf(getString_formato_fecha());
         }
         return dateSql;
     }
+
     public java.sql.Date getDateSQL_sistema() {
         java.sql.Date fechaDate;
         try {
@@ -99,6 +98,7 @@ public class EvenFecha {
             return null;
         }
     }
+
     public java.sql.Timestamp getTimestamp_fecha_cargado(String fechaStr) {
         java.sql.Timestamp dateSql = null;
         java.util.Date dateUtil = new java.util.Date();
@@ -113,8 +113,10 @@ public class EvenFecha {
         }
         return dateSql;
     }
+
     /**
      * <H2>Formato fecha<H2/>
+     *
      * @return dd-MM-yyyy
      */
     public String getString_formato_fecha() {
@@ -175,6 +177,7 @@ public class EvenFecha {
         Sfecha = String.valueOf(sdf.format(date));
         return Sfecha;
     }
+
     public String getString_formato_fecha_hora_backup() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
@@ -182,6 +185,7 @@ public class EvenFecha {
         Sfecha = String.valueOf(sdf.format(date));
         return Sfecha;
     }
+
     public java.util.Date getDate_sistema() {
         java.util.Date fechaDate;
         try {
@@ -218,27 +222,6 @@ public class EvenFecha {
         java.sql.Timestamp ts = new java.sql.Timestamp(timeNow);
         return ts;
     }
-//    public boolean getValidar_fecha_hoy_omenos(){
-//         boolean esHoy=false;
-//         java.util.Date dateSistema = new java.util.Date();
-//        java.util.Date dateSumado;
-//        java.util.Calendar calendar = Calendar.getInstance();
-//        try {
-//           
-//            String string1 = "2020-10-01";
-//            String string2 = "2020-10-05";
-//            
-//            SimpleDateFormat sdf = new SimpleDateFormat(formato_fecha);
-//            calendar.setTime(dateSistema);
-//            java.util.Calendar date1 =  sdf.parse(string1);
-//            java.util.Calendar date2 =  sdf.parse(string2);
-//            long diferenciadias = date2.getTime() - date1.getTime();
-//            System.out.println("Diferencia dias:"+diferenciadias);
-//        } catch (ParseException ex) {
-//            Logger.getLogger(EvenFecha.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        return esHoy;
-//    }
 
     public boolean getValidar_fec_menos_de_hoy(Connection conn, String fecha) {
         boolean esMenos = false;
@@ -260,6 +243,7 @@ public class EvenFecha {
         }
         return esMenos;
     }
+
     public String getString_formato_fecha_hora_zona() {
         String Sfecha;
         java.util.Date date = new java.util.Date();
@@ -267,61 +251,92 @@ public class EvenFecha {
         Sfecha = String.valueOf(sdf.format(date));
         return Sfecha;
     }
-     public void cargar_combobox_directo(JComboBox combo){
-        String fechas[]={"HOY","AYER",
-            "ESTA SEMANA","SEMANA  ANTERIOR",
-            "ESTE MES","MES ANTERIOR",
-            "PRIMER TRIMESTRE","SEGUNDO TRIMESTRE","TERCER TRIMESTRE","CUARTO TRIMESTRE","TODO EL AÑO"};
+
+    public void cargar_combobox_intervalo_fecha(JComboBox combo) {
+        String fechas[] = {"HOY", "AYER",
+            "ESTA SEMANA", "SEMANA  ANTERIOR",
+            "ESTE MES", "MES ANTERIOR",
+            "PRIMER TRIMESTRE", "SEGUNDO TRIMESTRE", "TERCER TRIMESTRE", "CUARTO TRIMESTRE", "TODO EL AÑO"};
         for (int i = 0; i < fechas.length; i++) {
             String fecha = fechas[i];
             combo.addItem(fecha);
         }
+        combo.setSelectedIndex(4);
     }
-    public String getFechaDirecto_combobox(JComboBox combo,String campofecha){
+
+    public String getIntervalo_fecha_combobox(JComboBox combo, String campofecha) {
         //date_part('year',(current_date - interval '1 year')) un ano menos
-        
-        String fecha="";
-        if(combo.getSelectedIndex()==0){//HOY
-            fecha="\n and date("+campofecha+")=date(current_date) ";
+
+        String fecha = "";
+        if (combo.getSelectedIndex() == 0) {//HOY
+            fecha = "\n and date(" + campofecha + ")=date(current_date) ";
         }
-        if(combo.getSelectedIndex()==1){//AYER
-            fecha="\n and date("+campofecha+")=date(current_date-1) ";
+        if (combo.getSelectedIndex() == 1) {//AYER
+            fecha = "\n and date(" + campofecha + ")=date(current_date-1) ";
         }
-        if(combo.getSelectedIndex()==2){//ESTA SEMANA
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('week',"+campofecha+")=date_part('week',current_date) ";
+        if (combo.getSelectedIndex() == 2) {//ESTA SEMANA
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('week'," + campofecha + ")=date_part('week',current_date) ";
         }
-        if(combo.getSelectedIndex()==3){//SEMANA  ANTERIOR
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('week',"+campofecha+")=date_part('week',(current_date - interval '1 week')) ";
+        if (combo.getSelectedIndex() == 3) {//SEMANA  ANTERIOR
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('week'," + campofecha + ")=date_part('week',(current_date - interval '1 week')) ";
         }
-        if(combo.getSelectedIndex()==4){//ESTE MES
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('month',"+campofecha+")=date_part('month',current_date) ";
+        if (combo.getSelectedIndex() == 4) {//ESTE MES
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('month'," + campofecha + ")=date_part('month',current_date) ";
         }
-        if(combo.getSelectedIndex()==5){//MES ANTERIOR
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('month',"+campofecha+")=date_part('month',(current_date - interval '1 month')) ";
+        if (combo.getSelectedIndex() == 5) {//MES ANTERIOR
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('month'," + campofecha + ")=date_part('month',(current_date - interval '1 month')) ";
         }
-        if(combo.getSelectedIndex()==6){//PRIMER TRIMESTRE
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('quarter',"+campofecha+")=1 ";
+        if (combo.getSelectedIndex() == 6) {//PRIMER TRIMESTRE
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('quarter'," + campofecha + ")=1 ";
         }
-        if(combo.getSelectedIndex()==7){//SEGUNDO TRIMESTRE
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('quarter',"+campofecha+")=2 ";
+        if (combo.getSelectedIndex() == 7) {//SEGUNDO TRIMESTRE
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('quarter'," + campofecha + ")=2 ";
         }
-        if(combo.getSelectedIndex()==8){//TERCER TRIMESTRE
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('quarter',"+campofecha+")=3 ";
+        if (combo.getSelectedIndex() == 8) {//TERCER TRIMESTRE
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('quarter'," + campofecha + ")=3 ";
         }
-        if(combo.getSelectedIndex()==9){//CUARTO TRIMESTRE
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)"
-                + "\n and date_part('quarter',"+campofecha+")=4 ";
+        if (combo.getSelectedIndex() == 9) {//CUARTO TRIMESTRE
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('quarter'," + campofecha + ")=4 ";
         }
-        if(combo.getSelectedIndex()==10){//todo el año
-            fecha="\n and date_part('year',"+campofecha+")=date_part('year',current_date)";
+        if (combo.getSelectedIndex() == 10) {//todo el año
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)";
         }
         return fecha;
+    }
+
+    public void cargar_combobox_mes(JComboBox combo) {
+        String fechas[] = {"TODOS", "ENERO", "FEBRERO", "MARZO", "ABRIL", "MAYO", "JUNIO", "JULIO", "AGOSTO", "SEPTIEMBRE", "OCTUBRE", "NOVIEMBRE", "DICIEMBRE"};
+        for (int i = 0; i < fechas.length; i++) {
+            String fecha = fechas[i];
+            combo.addItem(fecha);
+        }
+        combo.setSelectedIndex(esteMes());
+    }
+
+    public String getmes_combobox(JComboBox combo, String campofecha) {
+        //date_part('year',(current_date - interval '1 year')) un ano menos
+
+        String fecha = "";
+        if (combo.getSelectedIndex() > 0) {//HOY
+            fecha = "\n and date_part('year'," + campofecha + ")=date_part('year',current_date)"
+                    + "\n and date_part('month'," + campofecha + ")=" + combo.getSelectedIndex();
+        }
+        return fecha;
+    }
+
+    int esteMes() {
+        java.util.Date date = new java.util.Date();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int month = cal.get(Calendar.MONTH);
+        return month+1;
     }
 }

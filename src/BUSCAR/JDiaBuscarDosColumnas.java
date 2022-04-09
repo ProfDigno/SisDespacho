@@ -96,7 +96,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         if (vbus.getTipo_tabla() == 7) {
             sql = "select idregimen  as idr,sigla,nombre  \n"
                     + "from regimen   \n"
-                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "where  sigla  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 20, 70};
             Ancho = Ancho1;
@@ -104,7 +104,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         if (vbus.getTipo_tabla() == 8) {
             sql = "select idincoterms  as idi,sigla,nombre  \n"
                     + "from incoterms   \n"
-                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "where  sigla  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 20, 70};
             Ancho = Ancho1;

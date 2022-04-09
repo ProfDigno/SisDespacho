@@ -37,6 +37,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 //    dao_usuario dao_usu=new dao_usuario();
     cla_InvPro_compra_todos inv_com = new cla_InvPro_compra_todos();
     json_imprimir_pos jsprint = new json_imprimir_pos();
+    private String version_estatica="V:1.1";
 
     void abrir_formulario() {
         config.cargar_jsom_configuracion();
@@ -48,6 +49,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         titulo_sistema();
         cargar_colores();
         actualizacion_version_v1();
+        lblversion.setText(version_estatica);
     }
 
     void cargar_colores() {
@@ -109,11 +111,13 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     private void initComponents() {
 
         escritorio = new javax.swing.JDesktopPane();
-        btnliquidacion_proforma = new javax.swing.JButton();
-        btntercero = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
         btnliquidacion = new javax.swing.JButton();
+        btntercero = new javax.swing.JButton();
         btngasto = new javax.swing.JButton();
         btnvale = new javax.swing.JButton();
+        btnliquidacion_proforma = new javax.swing.JButton();
+        lblversion = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu_proforma = new javax.swing.JMenu();
         jMenuItem_nueva_proforma = new javax.swing.JMenuItem();
@@ -138,7 +142,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         jMenuItem_usuario_formulario = new javax.swing.JMenuItem();
         jMenuItem_usuario_tipo_evento = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu1 = new javax.swing.JMenu();
+        jMenu_liquidacion = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -146,13 +150,13 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         jMenuItem5 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem9 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        jMenu_gasto = new javax.swing.JMenu();
         jMenuItem10 = new javax.swing.JMenuItem();
         jMenuItem11 = new javax.swing.JMenuItem();
-        jMenu3 = new javax.swing.JMenu();
+        jMenu_vale = new javax.swing.JMenu();
         jMenuItem12 = new javax.swing.JMenuItem();
         jMenuItem13 = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
+        jMenu_informe = new javax.swing.JMenu();
         jMenuItem14 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -162,77 +166,110 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
             }
         });
 
-        btnliquidacion_proforma.setText("PROFORMA");
-        btnliquidacion_proforma.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnliquidacion_proformaActionPerformed(evt);
-            }
-        });
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("BOTONES"));
 
-        btntercero.setText("TERCERO");
-        btntercero.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnterceroActionPerformed(evt);
-            }
-        });
-
+        btnliquidacion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/Container.png"))); // NOI18N
         btnliquidacion.setText("LIQUIDACION");
+        btnliquidacion.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnliquidacion.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btnliquidacion.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnliquidacion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnliquidacionActionPerformed(evt);
             }
         });
 
+        btntercero.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/cliente.png"))); // NOI18N
+        btntercero.setText("TERCERO");
+        btntercero.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btntercero.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btntercero.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btntercero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnterceroActionPerformed(evt);
+            }
+        });
+
+        btngasto.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/gasto.png"))); // NOI18N
         btngasto.setText("GASTO");
+        btngasto.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btngasto.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btngasto.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btngasto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btngastoActionPerformed(evt);
             }
         });
 
+        btnvale.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/vale.png"))); // NOI18N
         btnvale.setText("VALE");
+        btnvale.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnvale.setVerticalAlignment(javax.swing.SwingConstants.TOP);
+        btnvale.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnvale.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnvaleActionPerformed(evt);
             }
         });
 
-        escritorio.setLayer(btnliquidacion_proforma, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btntercero, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btnliquidacion, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btngasto, javax.swing.JLayeredPane.DEFAULT_LAYER);
-        escritorio.setLayer(btnvale, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        btnliquidacion_proforma.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/proforma.png"))); // NOI18N
+        btnliquidacion_proforma.setText("PROFORMA");
+        btnliquidacion_proforma.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnliquidacion_proforma.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnliquidacion_proforma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnliquidacion_proformaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(btnliquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btntercero)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btngasto)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnvale, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnliquidacion_proforma)
+                .addGap(0, 401, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(btnliquidacion, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btntercero, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btngasto, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnvale, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnliquidacion_proforma, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        lblversion.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        lblversion.setText("jLabel1");
+
+        escritorio.setLayer(jPanel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        escritorio.setLayer(lblversion, javax.swing.JLayeredPane.DEFAULT_LAYER);
 
         javax.swing.GroupLayout escritorioLayout = new javax.swing.GroupLayout(escritorio);
         escritorio.setLayout(escritorioLayout);
         escritorioLayout.setHorizontalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(escritorioLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(btnliquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnliquidacion_proforma, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btntercero, javax.swing.GroupLayout.DEFAULT_SIZE, 105, Short.MAX_VALUE)
-                    .addComponent(btngasto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnvale, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(598, Short.MAX_VALUE))
+                .addComponent(lblversion, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         escritorioLayout.setVerticalGroup(
             escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(escritorioLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnvale, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
-                    .addComponent(btnliquidacion_proforma, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
-                    .addComponent(btntercero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(escritorioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnliquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
-                    .addComponent(btngasto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(499, Short.MAX_VALUE))
+                .addComponent(lblversion)
+                .addGap(0, 482, Short.MAX_VALUE))
         );
 
         jMenu_proforma.setText("PROFORMA");
@@ -403,7 +440,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu_configuracion);
 
-        jMenu1.setText("LIQUIDACION");
+        jMenu_liquidacion.setText("LIQUIDACION");
 
         jMenuItem6.setText("LIQUIDACION FINAL");
         jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
@@ -411,7 +448,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem6ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem6);
+        jMenu_liquidacion.add(jMenuItem6);
 
         jMenuItem2.setText("REGIMEN");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -419,7 +456,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem2ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem2);
+        jMenu_liquidacion.add(jMenuItem2);
 
         jMenuItem3.setText("INCOTERMS");
         jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
@@ -427,7 +464,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem3ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem3);
+        jMenu_liquidacion.add(jMenuItem3);
 
         jMenuItem4.setText("TRANSPORTE EMPRESA");
         jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
@@ -435,7 +472,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem4ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem4);
+        jMenu_liquidacion.add(jMenuItem4);
 
         jMenuItem5.setText("DESPACHO ZONA");
         jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
@@ -443,7 +480,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem5ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem5);
+        jMenu_liquidacion.add(jMenuItem5);
 
         jMenuItem8.setText("COMPROBANTE");
         jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
@@ -451,7 +488,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem8ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem8);
+        jMenu_liquidacion.add(jMenuItem8);
 
         jMenuItem9.setText("PRE ITEM LIQUIDACION");
         jMenuItem9.addActionListener(new java.awt.event.ActionListener() {
@@ -459,11 +496,11 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem9ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem9);
+        jMenu_liquidacion.add(jMenuItem9);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(jMenu_liquidacion);
 
-        jMenu2.setText("GASTO");
+        jMenu_gasto.setText("GASTO");
 
         jMenuItem10.setText("DATO GASTO");
         jMenuItem10.addActionListener(new java.awt.event.ActionListener() {
@@ -471,7 +508,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem10ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem10);
+        jMenu_gasto.add(jMenuItem10);
 
         jMenuItem11.setText("GASTO TIPO");
         jMenuItem11.addActionListener(new java.awt.event.ActionListener() {
@@ -479,11 +516,11 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem11ActionPerformed(evt);
             }
         });
-        jMenu2.add(jMenuItem11);
+        jMenu_gasto.add(jMenuItem11);
 
-        jMenuBar1.add(jMenu2);
+        jMenuBar1.add(jMenu_gasto);
 
-        jMenu3.setText("VALE");
+        jMenu_vale.setText("VALE");
 
         jMenuItem12.setText("DATO VALE");
         jMenuItem12.addActionListener(new java.awt.event.ActionListener() {
@@ -491,7 +528,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem12ActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem12);
+        jMenu_vale.add(jMenuItem12);
 
         jMenuItem13.setText("FUNCIONARIO");
         jMenuItem13.addActionListener(new java.awt.event.ActionListener() {
@@ -499,11 +536,11 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem13ActionPerformed(evt);
             }
         });
-        jMenu3.add(jMenuItem13);
+        jMenu_vale.add(jMenuItem13);
 
-        jMenuBar1.add(jMenu3);
+        jMenuBar1.add(jMenu_vale);
 
-        jMenu4.setText("INFORMES Y REPORTES");
+        jMenu_informe.setText("INFORMES Y REPORTES");
 
         jMenuItem14.setText("MOVIMIENTO CAJA");
         jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
@@ -511,9 +548,9 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 jMenuItem14ActionPerformed(evt);
             }
         });
-        jMenu4.add(jMenuItem14);
+        jMenu_informe.add(jMenuItem14);
 
-        jMenuBar1.add(jMenu4);
+        jMenuBar1.add(jMenu_informe);
 
         setJMenuBar(jMenuBar1);
 
@@ -599,7 +636,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 
     private void btnliquidacion_proformaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnliquidacion_proformaActionPerformed
         // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmLiquidacion_proforma());
+//        evetbl.abrir_TablaJinternal(new FrmLiquidacion_proforma());
     }//GEN-LAST:event_btnliquidacion_proformaActionPerformed
 
     private void jMenuItem_crear_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_crear_usuarioActionPerformed
@@ -756,16 +793,12 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btngasto;
-    private javax.swing.JButton btnliquidacion;
+    public static javax.swing.JButton btngasto;
+    public static javax.swing.JButton btnliquidacion;
     public static javax.swing.JButton btnliquidacion_proforma;
     public static javax.swing.JButton btntercero;
-    private javax.swing.JButton btnvale;
+    public static javax.swing.JButton btnvale;
     public static javax.swing.JDesktopPane escritorio;
-    private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
@@ -799,8 +832,14 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     public static javax.swing.JMenuItem jMenuItem_usuario_formulario;
     public static javax.swing.JMenuItem jMenuItem_usuario_tipo_evento;
     public static javax.swing.JMenu jMenu_configuracion;
+    public static javax.swing.JMenu jMenu_gasto;
+    public static javax.swing.JMenu jMenu_informe;
+    public static javax.swing.JMenu jMenu_liquidacion;
     public static javax.swing.JMenu jMenu_proforma;
     public static javax.swing.JMenu jMenu_tercero;
     public static javax.swing.JMenu jMenu_usuario;
+    public static javax.swing.JMenu jMenu_vale;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel lblversion;
     // End of variables declaration//GEN-END:variables
 }

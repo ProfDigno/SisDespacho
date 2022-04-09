@@ -21,6 +21,7 @@ import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import Evento.Utilitario.EvenNumero_a_Letra;
+import FILTRO.ClaAuxFiltroVenta;
 import FORMULARIO.BO.BO_comprobante_liquidacion;
 import FORMULARIO.BO.BO_despacho_zona;
 import FORMULARIO.BO.BO_incoterms;
@@ -91,6 +92,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     EvenJasperReport rep = new EvenJasperReport();
     EvenJLabel evelbl = new EvenJLabel();
     CargaDirectoCombobox carcbm = new CargaDirectoCombobox();
+    private ClaAuxFiltroVenta auxfilto=new ClaAuxFiltroVenta();
     private ClaVarBuscar vbus = new ClaVarBuscar();
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenFecha evefec = new EvenFecha();
@@ -450,11 +452,13 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         txtfecha_despacho.setText(evefec.getString_formato_fecha());
         orden_item = 0;
         jRimportacion.setSelected(true);
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_vale);
         DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion, "");
+        DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion_filtro, "");
         sumar_item_liquidacion_final();
         cargar_colores_impor_export();
     }
-
+    
     boolean validar_item_liquidacion_final() {
         if (evejtf.getBoo_JTextField_vacio(txtbucar_comprobante, "DEBE CARGAR UNA DESCRIPCION")) {
             return false;
@@ -912,7 +916,21 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             }
         }
     }
-
+    String getfiltro_liquidacion_reporte(){
+        String filtro = "";
+        String estado=auxfilto.filtro_liquidacion(jCliq_emitido, jCliq_pagado, jCliq_proforma, jCliq_anulado);
+        String fecha=evefec.getIntervalo_fecha_combobox(cmbfecha_vale, " lf.fecha_despacho ");
+        filtro=filtro+estado;
+        filtro=filtro+fecha;
+        return filtro;
+    }
+    private void boton_imprimir_liquidacion_reporte() {
+        
+        DAOliqfin.imprimir_liquidacion_filtro(conn, getfiltro_liquidacion_reporte());
+    }
+    private void actualizar_liquidacion_filtro(){
+        DAOliqfin.actualizar_tabla_liquidacion_final(conn, tblliquidacion_filtro, getfiltro_liquidacion_reporte());
+    }
     private void boton_anular_liquidacion_final() {
         if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
             if (!eveJtab.getBoolean_validar_select(tblliquidacion)) {
@@ -1312,6 +1330,18 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jScrollPane4 = new javax.swing.JScrollPane();
         tblitem_liquidacion_final_id = new javax.swing.JTable();
         btnrecargar_liquidacion = new javax.swing.JButton();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tblliquidacion_filtro = new javax.swing.JTable();
+        btnimprimir_reporte_filtro = new javax.swing.JButton();
+        jLabel37 = new javax.swing.JLabel();
+        cmbfecha_vale = new javax.swing.JComboBox<>();
+        jPanel10 = new javax.swing.JPanel();
+        jCliq_emitido = new javax.swing.JCheckBox();
+        jCliq_pagado = new javax.swing.JCheckBox();
+        jCliq_proforma = new javax.swing.JCheckBox();
+        jCliq_anulado = new javax.swing.JCheckBox();
 
         setClosable(true);
         setIconifiable(true);
@@ -2826,6 +2856,142 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
 
         jTab_liquidacion.addTab("FILTRO LIQUIDACION", panel_filtro_liquidacion);
 
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("LIQUIDACION"));
+
+        tblliquidacion_filtro.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        tblliquidacion_filtro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                tblliquidacion_filtroMouseReleased(evt);
+            }
+        });
+        jScrollPane5.setViewportView(tblliquidacion_filtro);
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 1127, Short.MAX_VALUE)
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 337, Short.MAX_VALUE)
+        );
+
+        btnimprimir_reporte_filtro.setText("IMPRIMIR REPORTE");
+        btnimprimir_reporte_filtro.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_reporte_filtroActionPerformed(evt);
+            }
+        });
+
+        jLabel37.setText("Fecha:");
+
+        cmbfecha_vale.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbfecha_valeItemStateChanged(evt);
+            }
+        });
+
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("ESTADO"));
+
+        jCliq_emitido.setText("EMITIDO");
+        jCliq_emitido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCliq_emitidoActionPerformed(evt);
+            }
+        });
+
+        jCliq_pagado.setText("PAGADO");
+        jCliq_pagado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCliq_pagadoActionPerformed(evt);
+            }
+        });
+
+        jCliq_proforma.setText("PROFORMA");
+        jCliq_proforma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCliq_proformaActionPerformed(evt);
+            }
+        });
+
+        jCliq_anulado.setText("ANULADO");
+        jCliq_anulado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCliq_anuladoActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jCliq_emitido)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCliq_pagado)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCliq_proforma, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCliq_anulado)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jCliq_emitido)
+                    .addComponent(jCliq_pagado)
+                    .addComponent(jCliq_proforma)
+                    .addComponent(jCliq_anulado))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addComponent(jLabel37)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbfecha_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnimprimir_reporte_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel37)
+                    .addComponent(cmbfecha_vale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnimprimir_reporte_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(77, Short.MAX_VALUE))
+        );
+
+        jTab_liquidacion.addTab("FILTRO LIQUIDACION REPORTE", jPanel8);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -3184,6 +3350,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
         DAOliqfin.ancho_tabla_liquidacion_final(tblliquidacion);
+        DAOliqfin.ancho_tabla_liquidacion_final(tblliquidacion_filtro);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tblliquidacionMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblliquidacionMouseReleased
@@ -3401,6 +3568,40 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         cargar_colores_impor_export();
     }//GEN-LAST:event_jRproformaActionPerformed
 
+    private void tblliquidacion_filtroMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblliquidacion_filtroMouseReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tblliquidacion_filtroMouseReleased
+
+    private void btnimprimir_reporte_filtroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_reporte_filtroActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_liquidacion_reporte();
+    }//GEN-LAST:event_btnimprimir_reporte_filtroActionPerformed
+
+    private void cmbfecha_valeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_valeItemStateChanged
+        // TODO add your handling code here:
+        actualizar_liquidacion_filtro();
+    }//GEN-LAST:event_cmbfecha_valeItemStateChanged
+
+    private void jCliq_emitidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCliq_emitidoActionPerformed
+        // TODO add your handling code here:
+        actualizar_liquidacion_filtro();
+    }//GEN-LAST:event_jCliq_emitidoActionPerformed
+
+    private void jCliq_pagadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCliq_pagadoActionPerformed
+        // TODO add your handling code here:
+        actualizar_liquidacion_filtro();
+    }//GEN-LAST:event_jCliq_pagadoActionPerformed
+
+    private void jCliq_proformaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCliq_proformaActionPerformed
+        // TODO add your handling code here:
+        actualizar_liquidacion_filtro();
+    }//GEN-LAST:event_jCliq_proformaActionPerformed
+
+    private void jCliq_anuladoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCliq_anuladoActionPerformed
+        // TODO add your handling code here:
+        actualizar_liquidacion_filtro();
+    }//GEN-LAST:event_jCliq_anuladoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnanular;
@@ -3419,15 +3620,21 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnguardar;
     private javax.swing.JButton btnguardar1;
     private javax.swing.JButton btnimprimir_liquidacion;
+    private javax.swing.JButton btnimprimir_reporte_filtro;
     private javax.swing.JButton btnnro_despacho;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JButton btnnuevo1;
     private javax.swing.JButton btnrecargar_liquidacion;
     private javax.swing.JComboBox<String> cmbcontenedor_tipo;
     private javax.swing.JComboBox<String> cmbdespachozona;
+    private javax.swing.JComboBox<String> cmbfecha_vale;
     private javax.swing.JComboBox<String> cmbmoneda_cambio;
     private javax.swing.JComboBox<String> cmbvia_transporte;
     private javax.swing.ButtonGroup gru_impexp;
+    private javax.swing.JCheckBox jCliq_anulado;
+    private javax.swing.JCheckBox jCliq_emitido;
+    private javax.swing.JCheckBox jCliq_pagado;
+    private javax.swing.JCheckBox jCliq_proforma;
     public static javax.swing.JFormattedTextField jFimportador_saldo;
     private javax.swing.JFormattedTextField jFmonto_cif;
     private javax.swing.JFormattedTextField jFmonto_imponible;
@@ -3468,6 +3675,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel36;
+    private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -3475,12 +3683,15 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JRadioButton jRexportacion;
     private javax.swing.JRadioButton jRimportacion;
     private javax.swing.JRadioButton jRproforma;
@@ -3488,6 +3699,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTab_liquidacion;
     private javax.swing.JLabel lbladuana;
@@ -3511,6 +3723,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private javax.swing.JTable tblitem_liquidacion_final;
     private javax.swing.JTable tblitem_liquidacion_final_id;
     private javax.swing.JTable tblliquidacion;
+    private javax.swing.JTable tblliquidacion_filtro;
     private javax.swing.JTextField txtbucar_comprobante;
     public static javax.swing.JTextField txtbuscar_aduana;
     public static javax.swing.JTextField txtbuscar_despachante;

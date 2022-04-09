@@ -138,7 +138,20 @@ public class DAO_vale {
         String titulonota = "VALE";
         String direccion = "src/REPORTE/VALE/repValeNT.jrxml";
         String rutatemp = "Vale_" + evefec.getString_formato_fecha() + "_" + id;
-//        rep.imprimirjasper(conn, sql, titulonota, direccion);
+        rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
+    }
+
+    public void imprimir_rep_vale_por_fecha(Connection conn,int fk_idfuncionario,String filtro) {
+        String sql = "select v.idvale as idv,to_char(v.fecha_creado,'yyyy-MM-dd HH24:MI') fecha,\n"
+                + "f.nombre as funcionario,f.cedula as cedula,  v.descripcion as descrip_vale,v.monto_vale as monto \n"
+                + "from vale v,funcionario f \n"
+                + "where v.fk_idfuncionario=f.idfuncionario \n"
+                + "and v.estado='EMITIDO'\n"
+                + "and v.fk_idfuncionario="+fk_idfuncionario+filtro
+                + " \n order by 1 desc;";
+        String titulonota = "VALE POR FECHA";
+        String direccion = "src/REPORTE/VALE/repValePorFecha.jrxml";
+        String rutatemp = "ValePorFecha_" + evefec.getString_formato_fecha() + "_" + fk_idfuncionario;
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 }

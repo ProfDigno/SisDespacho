@@ -319,4 +319,27 @@ public class DAO_liquidacion_final {
         String rutatemp="Cuenta_liquidacion_"+evefec.getString_formato_fecha()+"_"+idtercero;
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
+    public void imprimir_liquidacion_filtro(Connection conn,String filtro) {
+        String sql_select = "select lf.idliquidacion_final as idlf,ti.idtercero as idi,ti.nombre as importado,\n"
+                + "to_char(lf.fecha_despacho,'yyyy-MM-dd') as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
+                + "ad.nombre as aduana,re.sigla as regi,\n"
+                + "case when lf.tipo_liquidacion='"+liquidacion_impor+"' then 'IMP'\n"
+                + "     when lf.tipo_liquidacion='"+liquidacion_espor+"' then 'EXP'\n"
+                + "     when lf.tipo_liquidacion='"+liquidacion_profor+"' then 'PRO'\n"
+                + "     else 'error' end as tipo,\n"
+                + "lf.monto_imponible as mon_imponible,\n"
+                + "lf.monto_pagar as mon_pagar,\n"
+                + "lf.monto_pagado as mon_pagado,\n"
+                + "((lf.monto_total_despacho/lf.monto_imponible)*100) as util, "
+                + "lf.estado\n"
+                + "from liquidacion_final lf,tercero ti,aduana ad,regimen re\n"
+                + "where lf.fk_idtercero_importador=ti.idtercero\n"
+                + "and lf.fk_idaduana=ad.idaduana \n"
+                + "and lf.fk_idregimen=re.idregimen \n" + filtro
+                + " order by 1 desc";
+        String titulonota = "FILTRO LIQUIDACION";
+        String direccion = "src/REPORTE/LIQUIDACION/repLiquidacionPorFiltro.jrxml";
+        String rutatemp="Filtr_liquidacion_"+evefec.getString_formato_fecha();
+        rep.imprimir_jasper_o_pdf(conn, sql_select, titulonota, direccion, rutatemp);
+    }
 }

@@ -101,8 +101,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         cargar_tipo_registro();
         cargar_tipo_dependencia();
         cargar_tipo_institucion();
-        evefec.cargar_combobox_directo(cmbfecha_liquidacion);
-        evefec.cargar_combobox_directo(cmbfecha_recibo);
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_liquidacion);
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_recibo);
     }
     private void reestableser_item_tipo_registro(){
         txtfecha_estado.setText(evefec.getString_formato_fecha());
@@ -484,7 +484,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
 //        if (dao_usu.getBoolean_hab_evento_mensaje_error(conn, "24")) {
             if (!eveJtab.getBoolean_validar_select(tbltercero)) {
                 fk_idtercero=eveJtab.getInt_select_id(tbltercero);
-                String fecha=evefec.getFechaDirecto_combobox(cmbfecha_liquidacion," lf.fecha_despacho ");
+                String fecha=evefec.getIntervalo_fecha_combobox(cmbfecha_liquidacion," lf.fecha_despacho ");
                 DAOliqfin.imprimir_rep_cuenta_liquidacion(conn, fk_idtercero,fecha);
             }
 //        }
@@ -526,7 +526,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCpais = new javax.swing.JComboBox<>();
         lblciudad = new javax.swing.JLabel();
         jCciudad = new javax.swing.JComboBox<>();
-        lblpais1 = new javax.swing.JLabel();
+        lblrubro = new javax.swing.JLabel();
         jCrubros = new javax.swing.JComboBox<>();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
@@ -767,19 +767,19 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
         });
 
-        lblpais1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        lblpais1.setText("RUBRO:");
-        lblpais1.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+        lblrubro.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        lblrubro.setText("RUBRO:");
+        lblrubro.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
             public void mouseMoved(java.awt.event.MouseEvent evt) {
-                lblpais1MouseMoved(evt);
+                lblrubroMouseMoved(evt);
             }
         });
-        lblpais1.addMouseListener(new java.awt.event.MouseAdapter() {
+        lblrubro.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblpais1MouseClicked(evt);
+                lblrubroMouseClicked(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                lblpais1MouseExited(evt);
+                lblrubroMouseExited(evt);
             }
         });
 
@@ -804,7 +804,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                         .addComponent(jLabel3)
                         .addComponent(jLabel2)
                         .addComponent(lblpais, javax.swing.GroupLayout.Alignment.TRAILING))
-                    .addComponent(lblpais1))
+                    .addComponent(lblrubro))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(txtdireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
@@ -849,7 +849,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jCrubros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblpais1))
+                    .addComponent(lblrubro))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -2011,17 +2011,20 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         boton_guardar_credito_inicio();
     }//GEN-LAST:event_btncrearcredito_inicioActionPerformed
 
-    private void lblpais1MouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseMoved
+    private void lblrubroMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblrubroMouseMoved
         // TODO add your handling code here:
-    }//GEN-LAST:event_lblpais1MouseMoved
+        evelbl.evento_MouseMoved(lblrubro);
+    }//GEN-LAST:event_lblrubroMouseMoved
 
-    private void lblpais1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseClicked
+    private void lblrubroMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblrubroMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_lblpais1MouseClicked
+         evetbl.abrir_TablaJinternal(new FrmTercero_rubro());
+    }//GEN-LAST:event_lblrubroMouseClicked
 
-    private void lblpais1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblpais1MouseExited
+    private void lblrubroMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblrubroMouseExited
         // TODO add your handling code here:
-    }//GEN-LAST:event_lblpais1MouseExited
+         evelbl.evento_MouseExited(lblrubro);
+    }//GEN-LAST:event_lblrubroMouseExited
 
     private void jCrubrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCrubrosActionPerformed
         // TODO add your handling code here:
@@ -2032,13 +2035,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
 
     private void cmbfecha_reciboItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_reciboItemStateChanged
         // TODO add your handling code here:
-        String fecha=evefec.getFechaDirecto_combobox(cmbfecha_recibo," re.fecha_emision ");
+        String fecha=evefec.getIntervalo_fecha_combobox(cmbfecha_recibo," re.fecha_emision ");
         suma_recibo(fecha);
     }//GEN-LAST:event_cmbfecha_reciboItemStateChanged
 
     private void cmbfecha_liquidacionItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_liquidacionItemStateChanged
         // TODO add your handling code here:
-        String fecha=evefec.getFechaDirecto_combobox(cmbfecha_liquidacion," lf.fecha_despacho ");
+        String fecha=evefec.getIntervalo_fecha_combobox(cmbfecha_liquidacion," lf.fecha_despacho ");
         suma_liquidacion(fecha);
     }//GEN-LAST:event_cmbfecha_liquidacionItemStateChanged
 
@@ -2152,7 +2155,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JLabel lblformatfech_2;
     private javax.swing.JLabel lblformatfech_3;
     private javax.swing.JLabel lblpais;
-    private javax.swing.JLabel lblpais1;
+    private javax.swing.JLabel lblrubro;
     private javax.swing.JLabel lbltipo_dependencia;
     private javax.swing.JLabel lbltipo_institucion;
     private javax.swing.JLabel lbltipo_registro;

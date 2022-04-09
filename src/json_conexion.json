@@ -1,5 +1,5 @@
 {
-"localhost":"localhost",
+"localhost":"192.168.0.175",
 "port":"5432",
 "basedato":"bddespacho_1",
 "usuario":"postgres",

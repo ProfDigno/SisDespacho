@@ -5,15 +5,20 @@
  */
 package FORMULARIO.VISTA;
 
+import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Color.cla_color_palete;
+import Evento.Fecha.EvenFecha;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
+import Evento.Mensaje.EvenMensajeJoptionpane;
 import FORMULARIO.BO.*;
 import FORMULARIO.DAO.*;
 import FORMULARIO.ENTIDAD.*;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -21,28 +26,36 @@ import java.sql.Connection;
  */
 public class FrmFuncionario extends javax.swing.JInternalFrame {
 
+    EvenConexion eveconn = new EvenConexion();
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
+    EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
+    private EvenFecha evefec = new EvenFecha();
     private funcionario entidad = new funcionario();
     private BO_funcionario BO = new BO_funcionario();
     private DAO_funcionario DAO = new DAO_funcionario();
+    private DAO_vale DAOv = new DAO_vale();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
-    cla_color_palete clacolor= new cla_color_palete();
+    cla_color_palete clacolor = new cla_color_palete();
     private dao_usuario dao_usu = new dao_usuario();
     private entidad_usuario ENTusu = new entidad_usuario();
     private String creado_por = ENTusu.getGlobal_idusuario() + "-" + ENTusu.getGlobal_nombre();
+
     private void abrir_formulario() {
         this.setTitle("FUNCIONARIO");
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);
         reestableser();
         DAO.actualizar_tabla_funcionario(conn, tbltabla);
         color_formulario();
+        evefec.cargar_combobox_mes(cmbmes_vale);
     }
-    private void color_formulario(){
+
+    private void color_formulario() {
         panel_tabla.setBackground(clacolor.getColor_tabla());
         panel_insertar.setBackground(clacolor.getColor_insertar_primario());
     }
+
     private boolean validar_guardar() {
         if (evejtf.getBoo_JTextField_vacio(txtnombre, "DEBE CARGAR UN NOMBRE")) {
             return false;
@@ -64,7 +77,8 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         }
         return true;
     }
-    private void cargar_dato(){
+
+    private void cargar_dato() {
         entidad.setC3creado_por(creado_por);
         entidad.setC4nombre(txtnombre.getText());
         entidad.setC5cedula(txtcedula.getText());
@@ -73,6 +87,7 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         entidad.setC8cargo(txtcargo.getText());
         entidad.setC9salario(Double.parseDouble(txtsalario.getText()));
     }
+
     private void boton_guardar() {
         if (validar_guardar()) {
             cargar_dato();
@@ -90,8 +105,8 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
     }
 
     private void seleccionar_tabla() {
-        int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_funcionario(conn,entidad, idproducto);
+        int idfuncionario = eveJtab.getInt_select_id(tbltabla);
+        DAO.cargar_funcionario(conn, entidad, idfuncionario);
         txtid.setText(String.valueOf(entidad.getC1idfuncionario()));
         txtnombre.setText(entidad.getC4nombre());
         txtcedula.setText(entidad.getC5cedula());
@@ -101,8 +116,25 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         txtsalario.setText(String.valueOf(entidad.getC9salario()));
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        cargar_funcionario_vale();
     }
-    private void reestableser(){
+
+    void cargar_funcionario_vale() {
+        if (tbltabla.getSelectedRow() >= 0) {
+            int idfuncionario = eveJtab.getInt_select_id(tbltabla);
+            String fecha = evefec.getmes_combobox(cmbmes_vale, " v.fecha_creado ");
+            DAO.actualizar_tabla_funcionario_vale(conn, tbltablavale, idfuncionario, fecha);
+            sumar_vale_funcionario(conn, idfuncionario, fecha);
+        }
+    }
+    void imprimir_funcionario_vale_por_fecha() {
+        if (tbltabla.getSelectedRow() >= 0) {
+            int idfuncionario = eveJtab.getInt_select_id(tbltabla);
+            String fecha = evefec.getmes_combobox(cmbmes_vale, " v.fecha_creado ");
+            DAOv.imprimir_rep_vale_por_fecha(conn, idfuncionario, fecha);
+        }
+    }
+    private void reestableser() {
         txtid.setText(null);
         txtnombre.setText(null);
         txtcedula.setText(null);
@@ -115,8 +147,46 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         btndeletar.setEnabled(false);
         txtnombre.grabFocus();
     }
-    private void boton_nuevo(){
+
+    private void boton_nuevo() {
         reestableser();
+    }
+
+    public void sumar_vale_funcionario(Connection conn, int fk_idfuncionario, String filtro) {
+        String titulo = "sumar_vale_funcionario";
+        String sql = "select coalesce(f.salario,0) as salario,coalesce(sum(v.monto_vale),0) as sum_vale,"
+                + "coalesce((f.salario-sum(v.monto_vale)),0)  as diferencia\n"
+                + "from vale v,funcionario f \n"
+                + "where v.fk_idfuncionario=f.idfuncionario \n"
+                + "and v.estado='EMITIDO'\n"
+                + "and v.fk_idfuncionario="+fk_idfuncionario+filtro
+                + " group by f.salario;";
+        try {
+            ResultSet rs = eveconn.getResulsetSQL(conn,sql, titulo);
+            if (rs.next()) {
+                int salario=(rs.getInt(1));
+                int sum_vale=(rs.getInt(2));
+                int diferencia=(rs.getInt(3));
+                jFsalario.setValue(salario);
+                jFsum_vale.setValue(sum_vale);
+                jFdiferencia.setValue(diferencia);
+                evemen.Imprimir_serial_sql(sql, titulo);
+            }else{
+                jFsalario.setValue(0);
+                jFsum_vale.setValue(0);
+                jFdiferencia.setValue(0);
+            }
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql, titulo);
+        }
+    }
+private void boton_imprimir() {
+        if (tbltablavale.getSelectedRow() >= 0) {
+            int idvale_select = eveJtab.getInt_select_id(tbltablavale);
+            DAOv.imprimir_rep_vale(conn, idvale_select);
+        } else {
+            JOptionPane.showMessageDialog(null, "SELECCIONAR UN VALE PARA IMPRIMIR", "ERROR", JOptionPane.ERROR_MESSAGE);
+        }
     }
     public FrmFuncionario() {
         initComponents();
@@ -155,6 +225,17 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         panel_tabla = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tbltabla = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tbltablavale = new javax.swing.JTable();
+        jLabel18 = new javax.swing.JLabel();
+        cmbmes_vale = new javax.swing.JComboBox<>();
+        btnimprimir_resumen = new javax.swing.JButton();
+        jFdiferencia = new javax.swing.JFormattedTextField();
+        jFsum_vale = new javax.swing.JFormattedTextField();
+        jFsalario = new javax.swing.JFormattedTextField();
+        btnimprimir_vale = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -350,7 +431,7 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(txtsalario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 115, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo)
                     .addComponent(btnguardar)
@@ -391,11 +472,122 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         panel_tablaLayout.setVerticalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 49, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 368, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 76, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("TABLA", panel_tabla);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("VALE"));
+
+        tbltablavale.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(tbltablavale);
+
+        jLabel18.setText("Fecha:");
+
+        cmbmes_vale.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cmbmes_valeItemStateChanged(evt);
+            }
+        });
+
+        btnimprimir_resumen.setText("IMPRIMIR RESUMEN");
+        btnimprimir_resumen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_resumenActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane2)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jLabel18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cmbmes_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnimprimir_resumen, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel18)
+                    .addComponent(cmbmes_vale, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnimprimir_resumen))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jFdiferencia.setBorder(javax.swing.BorderFactory.createTitledBorder("DIFERENCIA"));
+        jFdiferencia.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFdiferencia.setText("jFormattedTextField1");
+        jFdiferencia.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        jFsum_vale.setBorder(javax.swing.BorderFactory.createTitledBorder("SUMA VALE"));
+        jFsum_vale.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsum_vale.setText("jFormattedTextField1");
+        jFsum_vale.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        jFsalario.setBorder(javax.swing.BorderFactory.createTitledBorder("SALARIO"));
+        jFsalario.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jFsalario.setText("jFormattedTextField1");
+        jFsalario.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+
+        btnimprimir_vale.setText("IMPRIMIR NOTA");
+        btnimprimir_vale.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_valeActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(btnimprimir_vale, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jFsalario, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jFsum_vale, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jFdiferencia, javax.swing.GroupLayout.PREFERRED_SIZE, 159, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jFdiferencia)
+                        .addComponent(jFsum_vale)
+                        .addComponent(jFsalario))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnimprimir_vale)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("DATOS VALE", jPanel1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -463,24 +655,50 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsalarioKeyPressed
 
+    private void cmbmes_valeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbmes_valeItemStateChanged
+        // TODO add your handling code here:
+        cargar_funcionario_vale();
+    }//GEN-LAST:event_cmbmes_valeItemStateChanged
+
+    private void btnimprimir_valeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_valeActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir();
+    }//GEN-LAST:event_btnimprimir_valeActionPerformed
+
+    private void btnimprimir_resumenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_resumenActionPerformed
+        // TODO add your handling code here:
+        imprimir_funcionario_vale_por_fecha();
+    }//GEN-LAST:event_btnimprimir_resumenActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btndeletar;
     private javax.swing.JButton btneditar;
     private javax.swing.JButton btnguardar;
+    private javax.swing.JButton btnimprimir_resumen;
+    private javax.swing.JButton btnimprimir_vale;
     private javax.swing.JButton btnnuevo;
+    private javax.swing.JComboBox<String> cmbmes_vale;
+    private javax.swing.JFormattedTextField jFdiferencia;
+    private javax.swing.JFormattedTextField jFsalario;
+    private javax.swing.JFormattedTextField jFsum_vale;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JPanel panel_insertar;
     private javax.swing.JPanel panel_tabla;
     private javax.swing.JTable tbltabla;
+    private javax.swing.JTable tbltablavale;
     private javax.swing.JTextField txtcargo;
     private javax.swing.JTextField txtcedula;
     private javax.swing.JTextField txtdireccion;

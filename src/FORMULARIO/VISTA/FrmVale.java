@@ -70,7 +70,7 @@ public class FrmVale extends javax.swing.JInternalFrame {
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
         color_formulario();
-        evefec.cargar_combobox_directo(cmbfecha_vale);
+        evefec.cargar_combobox_intervalo_fecha(cmbfecha_vale);
     }
 
     private void color_formulario() {
@@ -186,7 +186,7 @@ private void boton_imprimir() {
         } else {
             estado = " and v.estado='"+estado_EMITIDO+"' ";
         }
-        String fecha = evefec.getFechaDirecto_combobox(cmbfecha_vale, " v.fecha_creado ");
+        String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_vale, " v.fecha_creado ");
         filtro = fecha + estado;
         DAOv.actualizar_tabla_vale(conn, tbltabla, filtro);
         double suma_vale = eveJtab.getDouble_sumar_tabla(tbltabla, 6);
