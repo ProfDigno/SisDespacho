@@ -6,6 +6,7 @@
 package Evento.JLabel;
 
 import Evento.Color.cla_color_palete;
+import java.awt.Color;
 import javax.swing.JLabel;
 
 /**
@@ -16,9 +17,18 @@ public class EvenJLabel {
     cla_color_palete clacolor= new cla_color_palete();
     public void evento_MouseMoved(JLabel lblnombre){
         lblnombre.setBackground(clacolor.getCol_btn_move_ok());
+        lblnombre.setForeground(clacolor.getCol_btn_move_ok());
+        lblnombre.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+    }
+    public void evento_MouseMoved_inicio(JLabel lblnombre){
+        lblnombre.setBackground(Color.BLUE);
+        lblnombre.setForeground(Color.BLUE);
         lblnombre.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
     }
     public void evento_MouseExited(JLabel lblnombre){
-        lblnombre.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+//        lblnombre.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        lblnombre.setBackground(Color.BLUE);
+        lblnombre.setForeground(Color.BLUE);
+        lblnombre.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
     }
 }

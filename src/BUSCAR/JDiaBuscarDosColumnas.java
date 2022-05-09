@@ -64,7 +64,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                     + "tr.nombre as rubro,te.saldo_credito \n"
                     + "from tercero te,tercero_rubro tr \n"
                     + "where te.fk_idtercero_rubro=tr.idtercero_rubro \n"
-                    + "and importador=true\n"
+                    + "and te.importador=true\n"
                     + "and te.nombre ilike '%" + buscar + "%'\n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 18, 1, 1};
@@ -73,7 +73,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         if (vbus.getTipo_tabla() == 4) {
             sql = "select idtercero  as idt,nombre,ruc  \n"
                     + "from tercero  \n"
-                    + "where importador=true \n"
+                    + "where exportador=true \n"
                     + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 20};
@@ -131,7 +131,27 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
             int Ancho1[] = {10, 70, 20};
             Ancho = Ancho1;
         }
-        if (vbus.getTipo_tabla() == 3) {
+        if (vbus.getTipo_tabla() == 12) {
+            sql = "select te.idtercero as idte,te.nombre, te.ruc,\n"
+                    + "tr.nombre as rubro,te.saldo_credito \n"
+                    + "from tercero te,tercero_rubro tr \n"
+                    + "where te.fk_idtercero_rubro=tr.idtercero_rubro \n"
+                    + "and te.exportador=true\n"
+                    + "and te.nombre ilike '%" + buscar + "%'\n"
+                    + "order by 2 desc;";
+            int Ancho1[] = {10, 70, 18, 1, 1};
+            Ancho = Ancho1;
+        }
+        if (vbus.getTipo_tabla() == 13) {
+            sql = "select idtercero  as idt,nombre,ruc  \n"
+                    + "from tercero  \n"
+                    + "where importador=true \n"
+                    + "and nombre  ilike'%" + buscar + "%' \n"
+                    + "order by 2 desc;";
+            int Ancho1[] = {10, 70, 20};
+            Ancho = Ancho1;
+        }
+        if (vbus.getTipo_tabla() == 3 || vbus.getTipo_tabla() == 12) {
             eveconn.Select_cargar_jtable(conn, sql, tblbuscar);
             eveJtab.setAnchoColumnaJtable(tblbuscar, Ancho);
             eveJtab.ocultar_columna(tblbuscar,3);
@@ -206,6 +226,24 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                 FrmLiquidacion_final.txtruc_despachante.setText(ruc);
                 FrmLiquidacion_final.setFk_idtercero_despachante(id);
             }
+             if (vbus.getTipo_tabla() == 12) {
+                String ruc = eveJtab.getString_select(tblbuscar, 2);
+                String rubro = eveJtab.getString_select(tblbuscar, 3);
+                String saldo = eveJtab.getString_select(tblbuscar, 4);
+                FrmLiquidacion_final.txtbuscar_importador.setText(nombre);
+                FrmLiquidacion_final.txtruc_importador.setText(ruc);
+                FrmLiquidacion_final.txtimportador_rubro.setText(rubro);
+                FrmLiquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
+//                FrmLiquidacion_final.setFk_idtercero_importador(id);
+                FrmLiquidacion_final.setFk_idtercero_exportador(id);
+            }
+            if (vbus.getTipo_tabla() == 13) {
+                String ruc = eveJtab.getString_select(tblbuscar, 2);
+                FrmLiquidacion_final.txtbuscar_exportador.setText(nombre);
+                FrmLiquidacion_final.txtruc_exportador.setText(ruc);
+//                FrmLiquidacion_final.setFk_idtercero_exportador(id);
+                FrmLiquidacion_final.setFk_idtercero_importador(id);
+            }
         }
     }
 
@@ -242,6 +280,12 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         }
         if (vbus.getTipo_tabla() == 11) {
             FrmLiquidacion_final.txtlp_contenedor_nro.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 12) {
+            FrmLiquidacion_final.txtbuscar_exportador.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 13) {
+            FrmLiquidacion_final.txtbuscar_despachante.grabFocus();
         }
     }
 

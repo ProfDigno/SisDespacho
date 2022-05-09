@@ -29,7 +29,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     ConnPostgres conPs = new ConnPostgres();
     VariablesBD var = new VariablesBD();
     json_config config = new json_config();
-    json_sql_actualizar json_sql=new json_sql_actualizar();
+    json_sql_actualizar json_sql = new json_sql_actualizar();
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenFecha evefec = new EvenFecha();
     cla_color_palete clacolor = new cla_color_palete();
@@ -37,7 +37,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 //    dao_usuario dao_usu=new dao_usuario();
     cla_InvPro_compra_todos inv_com = new cla_InvPro_compra_todos();
     json_imprimir_pos jsprint = new json_imprimir_pos();
-    private String version_estatica="V:1.1";
+    private String version_estatica = "V:1.1";
 
     void abrir_formulario() {
         config.cargar_jsom_configuracion();
@@ -83,17 +83,21 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
          */
 //        ALTER TABLE liquidacion_final ADD COLUMN fecha_pagado TIMESTAMP  NULL DEFAULT 'now()' ;
 //ALTER TABLE liquidacion_final ADD COLUMN monto_pagado NUMERIC(20,0)  NULL DEFAULT 0;
-        String sql = "DO $$ \n"
-                + "    BEGIN\n"
-                + "        BEGIN\n "
-                + json_sql.getSql_ahora()+"\n"
-                + json_sql.getUlt_sql()+"\n"
-                + "        EXCEPTION\n"
-                + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
-                + "        END;\n"
-                + "    END;\n"
-                + "$$ ";
-        eveconn.SQL_execute_libre(conn, sql);
+        if (json_sql.getEjecutar_sql().equals("SI")) {
+            String sql = "DO $$ \n"
+                    + "    BEGIN\n"
+                    + "        BEGIN\n "
+                    + json_sql.getSql_ahora() + "\n"
+                    + json_sql.getUlt_sql() + "\n"
+                    + "        EXCEPTION\n"
+                    + "            WHEN duplicate_column THEN RAISE NOTICE 'duplicate_column.';\n"
+                    + "        END;\n"
+                    + "    END;\n"
+                    + "$$ ";
+            eveconn.SQL_execute_libre(conn, sql);
+        }else{
+            System.out.println("###--NO SE EJECUTA SQL DE INICIO--###");
+        }
     }
 
     public FrmMenuDespacho() {
@@ -213,7 +217,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         });
 
         btnliquidacion_proforma.setIcon(new javax.swing.ImageIcon(getClass().getResource("/iconos/MENU/proforma.png"))); // NOI18N
-        btnliquidacion_proforma.setText("PROFORMA");
+        btnliquidacion_proforma.setText("PRE-LIQUIDACION");
         btnliquidacion_proforma.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btnliquidacion_proforma.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         btnliquidacion_proforma.addActionListener(new java.awt.event.ActionListener() {
@@ -236,7 +240,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 .addComponent(btnvale, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnliquidacion_proforma)
-                .addGap(0, 401, Short.MAX_VALUE))
+                .addGap(0, 367, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -746,7 +750,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 
     private void btnvaleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnvaleActionPerformed
         // TODO add your handling code here:
-         evetbl.abrir_TablaJinternal(new FrmVale());
+        evetbl.abrir_TablaJinternal(new FrmVale());
     }//GEN-LAST:event_btnvaleActionPerformed
 
     private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed

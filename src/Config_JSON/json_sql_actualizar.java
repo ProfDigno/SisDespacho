@@ -22,6 +22,7 @@ public class json_sql_actualizar {
     EvenFecha evefec = new EvenFecha();
     private static String ult_sql;
     private static String sql_ahora;
+    private static String ejecutar_sql;
 
     public void cargar_jsom_sql_actualizar() {
         JSONParser parser = new JSONParser();
@@ -34,9 +35,11 @@ public class json_sql_actualizar {
             String ult_sql = " ";
             String sql_ahora = " ";
             if (ejecutar_sql.equals("SI")) {
-                ult_sql = (String) jsonObject.get("sql" + evefec.getString_formato_fecha_hora_backup());
+//                ult_sql = (String) jsonObject.get("sql" + evefec.getString_formato_fecha_hora_backup());
+//                ult_sql = ult_sql + "";
             }
             sql_ahora = (String) jsonObject.get("sql_ahora");
+            setEjecutar_sql(ejecutar_sql);
             setUlt_sql(ult_sql);
             setSql_ahora(sql_ahora);
             System.out.println("json json_sql_actualizar:" + jsonObject);
@@ -62,6 +65,14 @@ public class json_sql_actualizar {
 
     public static void setSql_ahora(String sql_ahora) {
         json_sql_actualizar.sql_ahora = sql_ahora;
+    }
+
+    public static String getEjecutar_sql() {
+        return ejecutar_sql;
+    }
+
+    public static void setEjecutar_sql(String ejecutar_sql) {
+        json_sql_actualizar.ejecutar_sql = ejecutar_sql;
     }
 
 }

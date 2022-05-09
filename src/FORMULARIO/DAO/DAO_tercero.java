@@ -23,10 +23,10 @@ public class DAO_tercero {
     private String mensaje_update = "TERCERO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO tercero(idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
             + "representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,"
-            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro,exportador) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE tercero SET fecha_creacion=?,creado_por=?,nombre=?,ruc=?,telefono=?,direccion=?,"
             + "representante_nombre=?,representante_cedula=?,importador=?,despachante=?,colaborador=?,proveedor=?,transportadora=?,"
-            + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=? WHERE idtercero=?;";
+            + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=?,exportador=? WHERE idtercero=?;";
     private String sql_select = "SELECT t.idtercero,t.nombre,t.ruc,t.telefono,t.direccion,tr.nombre as rubro,\n"
             + "TRIM(to_char(t.saldo_credito,'999G999G999')) as saldo \n"
             + "FROM tercero t, tercero_rubro tr \n"
@@ -34,7 +34,7 @@ public class DAO_tercero {
             + "order by 1 desc;";
     private String sql_cargar = "SELECT idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
             + "representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,"
-            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro FROM tercero WHERE idtercero=";
+            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro,exportador FROM tercero WHERE idtercero=";
     private String sql_update_saldo = "update tercero set saldo_credito=\n"
             + "(select sum(cc.monto_contado - cc.monto_credito) as saldo\n"
             + "from grupo_credito_tercero gcc,credito_tercero cc\n"
@@ -67,6 +67,7 @@ public class DAO_tercero {
             pst.setInt(16, ter.getC16fk_idtercero_ciudad());
             pst.setDouble(17, ter.getC17saldo_credito());
             pst.setInt(18, ter.getC18fk_idtercero_rubro());
+            pst.setBoolean(19, ter.getC19exportador());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + ter.toString(), titulo);
@@ -98,7 +99,8 @@ public class DAO_tercero {
             pst.setInt(15, ter.getC16fk_idtercero_ciudad());
             pst.setDouble(16, ter.getC17saldo_credito());
             pst.setInt(17, ter.getC18fk_idtercero_rubro());
-            pst.setInt(18, ter.getC1idtercero());
+            pst.setBoolean(18, ter.getC19exportador());
+            pst.setInt(19, ter.getC1idtercero());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + ter.toString(), titulo);
@@ -132,6 +134,7 @@ public class DAO_tercero {
                 ter.setC16fk_idtercero_ciudad(rs.getInt(16));
                 ter.setC17saldo_credito(rs.getDouble(17));
                 ter.setC18fk_idtercero_rubro(rs.getInt(18));
+                ter.setC19exportador(rs.getBoolean(19));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + ter.toString(), titulo);
             }
         } catch (Exception e) {

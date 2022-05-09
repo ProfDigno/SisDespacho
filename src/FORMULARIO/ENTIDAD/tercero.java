@@ -35,6 +35,7 @@ private int C15fk_idtercero_pais;
 private int C16fk_idtercero_ciudad;
 private double C17saldo_credito;
 private int C18fk_idtercero_rubro;
+private boolean C19exportador;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -166,6 +167,14 @@ private static String nom_idtabla;
 
     public static void setC1idtercero_global(int C1idtercero_global) {
         tercero.C1idtercero_global = C1idtercero_global;
+    }
+
+    public boolean getC19exportador() {
+        return C19exportador;
+    }
+
+    public void setC19exportador(boolean C19exportador) {
+        this.C19exportador = C19exportador;
     }
         
 	public String toString() {

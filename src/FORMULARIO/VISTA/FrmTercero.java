@@ -180,7 +180,11 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         if(evecomb.getBoo_JCombobox_seleccionar(jCrubros,"SELECCIONAR UN RUBRO")){
             return false;
         }
-        
+        if(!jCimportador.isSelected() && !jCexportador.isSelected() && !jCdespachante.isSelected() 
+                && !jCcolaborador.isSelected()&& !jCproveedor.isSelected()&& !jCtransportadora.isSelected()){
+            JOptionPane.showMessageDialog(null,"MARCAR AL MENOS UNA RELACION");
+             return false;
+        }
         return true;
     }
     private boolean validar_guardar_item_tipo_registro() {
@@ -235,7 +239,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         ENTter.setC16fk_idtercero_ciudad(fk_idtercero_ciudad);
         ENTter.setC17saldo_credito(saldo_credito);
         ENTter.setC18fk_idtercero_rubro(fk_idtercero_rubro);
-        
+        ENTter.setC19exportador(jCexportador.isSelected());
     }
     private String getestado_registro(){
         String estado="error";
@@ -328,6 +332,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCcolaborador.setSelected(ENTter.getC12colaborador());
         jCproveedor.setSelected(ENTter.getC13proveedor());
         jCtransportadora.setSelected(ENTter.getC14transportadora());
+        jCexportador.setSelected(ENTter.getC19exportador());
         fk_idtercero_pais=ENTter.getC15fk_idtercero_pais();
         fk_idtercero_ciudad=ENTter.getC16fk_idtercero_ciudad();
         fk_idtercero_rubro=ENTter.getC18fk_idtercero_rubro();
@@ -397,6 +402,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCcolaborador.setSelected(false);
         jCproveedor.setSelected(false);
         jCtransportadora.setSelected(false);
+         jCexportador.setSelected(false);
         jFsaldo_credito.setValue(0);
         fk_idtercero_pais=0;
         fk_idtercero_ciudad=0;
@@ -541,6 +547,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCtransportadora = new javax.swing.JCheckBox();
         lblID = new javax.swing.JLabel();
         txtid = new javax.swing.JTextField();
+        jCexportador = new javax.swing.JCheckBox();
         jLabel14 = new javax.swing.JLabel();
         jFsaldo_credito = new javax.swing.JFormattedTextField();
         panel_tabla = new javax.swing.JPanel();
@@ -850,7 +857,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jCrubros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblrubro))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 16, Short.MAX_VALUE))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("REPRESENTANTE"));
@@ -905,7 +912,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("RELACIONES"));
 
-        jCimportador.setText("IMPORTADOR O EXPORTADOR");
+        jCimportador.setText("IMPORTADOR");
 
         jCdespachante.setText("DESPACHANTE");
 
@@ -923,6 +930,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         txtid.setBackground(new java.awt.Color(204, 204, 204));
         txtid.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
 
+        jCexportador.setText("EXPORTADOR");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -930,6 +939,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCexportador)
                     .addComponent(jCimportador)
                     .addComponent(jCdespachante)
                     .addComponent(jCcolaborador)
@@ -947,6 +957,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addComponent(jCimportador)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jCexportador)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCdespachante)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCcolaborador)
@@ -954,7 +966,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addComponent(jCproveedor)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jCtransportadora)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblID)
                     .addComponent(txtid, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -992,7 +1004,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jFsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addContainerGap(108, Short.MAX_VALUE))
         );
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1009,7 +1021,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(jFsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 85, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo_tercero)
                     .addComponent(btnguardar_tercero)
@@ -2096,6 +2108,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JComboBox<String> jCciudad;
     private javax.swing.JCheckBox jCcolaborador;
     private javax.swing.JCheckBox jCdespachante;
+    private javax.swing.JCheckBox jCexportador;
     private javax.swing.JCheckBox jCimportador;
     private javax.swing.JComboBox<String> jCpais;
     private javax.swing.JCheckBox jCproveedor;
