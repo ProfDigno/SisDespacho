@@ -28,7 +28,10 @@ public class DAO_tercero {
             + "representante_nombre=?,representante_cedula=?,importador=?,despachante=?,colaborador=?,proveedor=?,transportadora=?,"
             + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=?,exportador=? WHERE idtercero=?;";
     private String sql_select = "SELECT t.idtercero,t.nombre,t.ruc,t.telefono,t.direccion,tr.nombre as rubro,\n"
-            + "TRIM(to_char(t.saldo_credito,'999G999G999')) as saldo \n"
+            + "TRIM(to_char(t.saldo_credito,'999G999G999')) as saldo, \n"
+            + "case when t.importador=true then 'SI' else 'NO' end as impor,\n"
+            + "case when t.exportador=true then 'SI' else 'NO' end as expor,\n"
+            + "case when t.despachante=true then 'SI' else 'NO' end as desp "
             + "FROM tercero t, tercero_rubro tr \n"
             + "where t.fk_idtercero_rubro=tr.idtercero_rubro \n"
             + "order by 1 desc;";
@@ -148,7 +151,7 @@ public class DAO_tercero {
     }
 
     public void ancho_tabla_tercero(JTable tbltabla) {
-        int Ancho[] = {5, 22, 12, 12, 23, 16, 10};
+        int Ancho[] = {5, 20, 12, 12, 20, 14, 10,5,5,5};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
@@ -241,7 +244,7 @@ public class DAO_tercero {
                 + "and re.idrecibo_pago_tercero=" + id;
         String titulonota = "RECIBO";
         String direccion = "src/REPORTE/RECIBO/repRecibo.jrxml";
-        String rutatemp="Recibo_"+evefec.getString_formato_fecha()+"_"+id;
+        String rutatemp = "Recibo_" + evefec.getString_formato_fecha() + "_" + id;
 //        rep.imprimirjasper(conn, sql, titulonota, direccion);
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }

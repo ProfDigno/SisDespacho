@@ -46,10 +46,10 @@ public class DAO_liquidacion_final {
             + "factura_numero,monto_letra,"
             + "fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,"
             + "fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,"
-            + "fk_idmoneda_cambio,fk_idregimen,fk_idincoterms,fecha_pagado,monto_pagado,otro_nombre,otro_monto "
+            + "fk_idmoneda_cambio,fk_idregimen,fk_idincoterms,fecha_pagado,monto_pagado,otro_nombre,otro_monto,fk_idtercero_despachante,fk_idrecibo_pago_tercero "
             + "FROM liquidacion_final WHERE idliquidacion_final=";
     private String sql_update_estado = "UPDATE liquidacion_final SET estado=? WHERE idliquidacion_final=?;";
-        private String sql_update = "UPDATE liquidacion_final SET fecha_creado=?,creado_por=?,fecha_despacho=?,despacho_numero=?,tipo_liquidacion=?,estado=?,observacion=?,"
+    private String sql_update = "UPDATE liquidacion_final SET fecha_creado=?,creado_por=?,fecha_despacho=?,despacho_numero=?,tipo_liquidacion=?,estado=?,observacion=?,"
             + "contenedor_nro=?,contenedor_tipo=?,via_transporte=?,transporte_condicion=?,"
             + "monto_imponible=?,monto_ajuste_incluir=?,monto_factura=?,monto_flete=?,"
             + "monto_seguro=?,monto_cif=?,monto_total_despacho=?,monto_adelanto=?,monto_pagar=?,"
@@ -58,6 +58,7 @@ public class DAO_liquidacion_final {
             + "fk_idtipo_comprobante=?,fk_idtercero_ciudad=?,fk_idaduana=?,fk_iddespacho_zona=?,"
             + "fk_idtransporte_empresa=?,fk_idtercero_importador=?,fk_idtercero_transportadora=?,"
             + "fk_idmoneda_cambio=?,fk_idregimen=?,fk_idincoterms=?,fecha_pagado=?,monto_pagado=?,otro_nombre=?,otro_monto=? WHERE idliquidacion_final=?;";
+
     public void insertar_liquidacion_final(Connection conn, liquidacion_final liqfin) {
         liqfin.setC1idliquidacion_final(eveconn.getInt_ultimoID_mas_uno(conn, liqfin.getTb_liquidacion_final(), liqfin.getId_idliquidacion_final()));
         String titulo = "insertar_liquidacion_final";
@@ -96,7 +97,7 @@ public class DAO_liquidacion_final {
             pst.setInt(30, liqfin.getC30fk_iddespacho_zona());
             pst.setInt(31, liqfin.getC31fk_idtransporte_empresa());
             pst.setInt(32, liqfin.getC32fk_idtercero_importador());
-            pst.setInt(33, liqfin.getC33fk_idtercero_transportadora());
+            pst.setInt(33, liqfin.getC33fk_idtercero_exportador());
             pst.setInt(34, liqfin.getC34fk_idmoneda_cambio());
             pst.setInt(35, liqfin.getC35fk_idregimen());
             pst.setInt(36, liqfin.getC36fk_idincoterms());
@@ -151,7 +152,7 @@ public class DAO_liquidacion_final {
             pst.setInt(29, liqfin.getC30fk_iddespacho_zona());
             pst.setInt(30, liqfin.getC31fk_idtransporte_empresa());
             pst.setInt(31, liqfin.getC32fk_idtercero_importador());
-            pst.setInt(32, liqfin.getC33fk_idtercero_transportadora());
+            pst.setInt(32, liqfin.getC33fk_idtercero_exportador());
             pst.setInt(33, liqfin.getC34fk_idmoneda_cambio());
             pst.setInt(34, liqfin.getC35fk_idregimen());
             pst.setInt(35, liqfin.getC36fk_idincoterms());
@@ -218,7 +219,7 @@ public class DAO_liquidacion_final {
                 liqfin.setC30fk_iddespacho_zona(rs.getInt(30));
                 liqfin.setC31fk_idtransporte_empresa(rs.getInt(31));
                 liqfin.setC32fk_idtercero_importador(rs.getInt(32));
-                liqfin.setC33fk_idtercero_transportadora(rs.getInt(33));
+                liqfin.setC33fk_idtercero_exportador(rs.getInt(33));
                 liqfin.setC34fk_idmoneda_cambio(rs.getInt(34));
                 liqfin.setC35fk_idregimen(rs.getInt(35));
                 liqfin.setC36fk_idincoterms(rs.getInt(36));
@@ -226,6 +227,8 @@ public class DAO_liquidacion_final {
                 liqfin.setC38monto_pagado(rs.getDouble(38));
                 liqfin.setC39otro_nombre(rs.getString(39));
                 liqfin.setC40otro_monto(rs.getDouble(40));
+                liqfin.setC41fk_idtercero_despachante(rs.getInt(41));
+                liqfin.setC42fk_idrecibo_pago_tercero(rs.getInt(42));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + liqfin.toString(), titulo);
             }
         } catch (Exception e) {
@@ -234,29 +237,47 @@ public class DAO_liquidacion_final {
     }
 
     public void actualizar_tabla_liquidacion_final(Connection conn, JTable tbltabla, String filtro) {
-        String sql_select = "select lf.idliquidacion_final as idlf,ti.idtercero as idi,ti.nombre as importado,\n"
+//        String sql_select = "select lf.idliquidacion_final as idlf,ti.idtercero as idi,ti.nombre as importado,\n"
+//                + "lf.fecha_despacho as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
+//                + "ad.nombre as aduana,re.sigla as regi,\n"
+//                + "case when lf.tipo_liquidacion='" + liquidacion_impor + "' then 'IMP'\n"
+//                + "     when lf.tipo_liquidacion='" + liquidacion_espor + "' then 'EXP'\n"
+//                + "     when lf.tipo_liquidacion='" + liquidacion_profor + "' then 'PRO'\n"
+//                + "     else 'error' end as tipo,\n"
+//                + "TRIM(to_char(lf.monto_imponible,'999G999G999G999')) as mon_imponible,\n"
+//                + "TRIM(to_char(lf.monto_pagar,'999G999G999G999')) as mon_pagar,\n"
+//                + "TRIM(to_char(lf.monto_pagado,'999G999G999G999')) as mon_pagado,\n"
+//                + "TRIM(to_char(((lf.monto_total_despacho/lf.monto_imponible)*100),'999G990D99')) as util, "
+//                + "lf.estado\n"
+//                + "from liquidacion_final lf,tercero ti,aduana ad,regimen re\n"
+//                + "where lf.fk_idtercero_importador=ti.idtercero\n"
+//                + "and lf.fk_idaduana=ad.idaduana \n"
+//                + "and lf.fk_idregimen=re.idregimen \n" + filtro
+//                + " order by 1 desc";
+        String sql_1 = "select lf.idliquidacion_final as idlf,ti.nombre as importado,tex.nombre as exportador,\n"
                 + "lf.fecha_despacho as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
                 + "ad.nombre as aduana,re.sigla as regi,\n"
-                + "case when lf.tipo_liquidacion='"+liquidacion_impor+"' then 'IMP'\n"
-                + "     when lf.tipo_liquidacion='"+liquidacion_espor+"' then 'EXP'\n"
-                + "     when lf.tipo_liquidacion='"+liquidacion_profor+"' then 'PRO'\n"
+                + "case when lf.tipo_liquidacion='" + liquidacion_impor + "' then 'IMP'\n"
+                + "     when lf.tipo_liquidacion='" + liquidacion_espor + "' then 'EXP'\n"
+                + "     when lf.tipo_liquidacion='" + liquidacion_profor + "' then 'PRO'\n"
                 + "     else 'error' end as tipo,\n"
                 + "TRIM(to_char(lf.monto_imponible,'999G999G999G999')) as mon_imponible,\n"
                 + "TRIM(to_char(lf.monto_pagar,'999G999G999G999')) as mon_pagar,\n"
                 + "TRIM(to_char(lf.monto_pagado,'999G999G999G999')) as mon_pagado,\n"
-                + "TRIM(to_char(((lf.monto_total_despacho/lf.monto_imponible)*100),'999G990D99')) as util, "
-                + "lf.estado\n"
-                + "from liquidacion_final lf,tercero ti,aduana ad,regimen re\n"
+                + "TRIM(to_char(((lf.monto_total_despacho/lf.monto_imponible)*100),'999G990D99')) as util, lf.estado,ti.idtercero as idi\n"
+                + "from liquidacion_final lf,tercero ti,tercero tex,aduana ad,regimen re\n"
                 + "where lf.fk_idtercero_importador=ti.idtercero\n"
+                + "and lf.fk_idtercero_transportadora=tex.idtercero \n"
                 + "and lf.fk_idaduana=ad.idaduana \n"
                 + "and lf.fk_idregimen=re.idregimen \n" + filtro
                 + " order by 1 desc";
-        eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        eveconn.Select_cargar_jtable(conn, sql_1, tbltabla);
+        evejt.ocultar_columna(tbltabla, 14);
         ancho_tabla_liquidacion_final(tbltabla);
     }
 
     public void ancho_tabla_liquidacion_final(JTable tbltabla) {
-        int Ancho[] = {2,2, 14, 8, 10, 10, 10, 5, 5, 8, 8, 8,3, 8};
+        int Ancho[] = {2, 14, 14, 6, 9, 9, 9, 4, 4, 8, 7, 7, 3, 6,1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 
@@ -292,11 +313,11 @@ public class DAO_liquidacion_final {
                 + " order by ilf.orden asc;";
         String titulonota = liquidacion_impor;
         String direccion = "src/REPORTE/LIQUIDACION/repLiquidacionFin_1.jrxml";
-        String rutatemp="Liquidacion_"+evefec.getString_formato_fecha()+"_"+id;
+        String rutatemp = "Liquidacion_" + evefec.getString_formato_fecha() + "_" + id;
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
 
-    public void imprimir_rep_cuenta_liquidacion(Connection conn, int idtercero,String filtrofecha) {
+    public void imprimir_rep_cuenta_liquidacion(Connection conn, int idtercero, String filtrofecha) {
         String sql = "select ter.idtercero as idter,ter.nombre as cliente,ter.direccion as direccion,\n"
                 + "ter.ruc as ruc,ter.telefono as telefono,tr.nombre as rubro,\n"
                 + "lf.idliquidacion_final as idlf,trim(to_char(lf.fecha_despacho,'dd-MM-yyyy')) as fec_despacho,\n"
@@ -307,25 +328,26 @@ public class DAO_liquidacion_final {
                 + "case when (lf.monto_pagado-lf.monto_pagar)=0 then lf.estado \n"
                 + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then 'CREDITO'\n"
                 + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then 'P.PARCIAL' else 'error' end as estado,\n"
-                + "case when lf.estado='"+estado_pagado+"' then to_char(lf.fecha_pagado,'dd-MM-yyyy') else 'FALTA-PAGAR' end as fec_pago  \n"
+                + "case when lf.estado='" + estado_pagado + "' then to_char(lf.fecha_pagado,'dd-MM-yyyy') else 'FALTA-PAGAR' end as fec_pago  \n"
                 + "from tercero ter,liquidacion_final lf,tercero_rubro tr  \n"
                 + "where lf.fk_idtercero_importador=ter.idtercero \n"
                 + "and ter.fk_idtercero_rubro=tr.idtercero_rubro \n"
-                + "and (lf.estado='"+estado_pagado+"' or lf.estado='"+estado_emitido+"') \n"
-                + "and ter.idtercero="+idtercero+filtrofecha
+                + "and (lf.estado='" + estado_pagado + "' or lf.estado='" + estado_emitido + "') \n"
+                + "and ter.idtercero=" + idtercero + filtrofecha
                 + " order by lf.idliquidacion_final desc;";
         String titulonota = "CUENTA LIQUIDACION";
         String direccion = "src/REPORTE/TERCERO/repTerceroLiquidacionPagado.jrxml";
-        String rutatemp="Cuenta_liquidacion_"+evefec.getString_formato_fecha()+"_"+idtercero;
+        String rutatemp = "Cuenta_liquidacion_" + evefec.getString_formato_fecha() + "_" + idtercero;
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
     }
-    public void imprimir_liquidacion_filtro(Connection conn,String filtro) {
+
+    public void imprimir_liquidacion_filtro(Connection conn, String filtro) {
         String sql_select = "select lf.idliquidacion_final as idlf,ti.idtercero as idi,ti.nombre as importado,\n"
                 + "to_char(lf.fecha_despacho,'yyyy-MM-dd') as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
                 + "ad.nombre as aduana,re.sigla as regi,\n"
-                + "case when lf.tipo_liquidacion='"+liquidacion_impor+"' then 'IMP'\n"
-                + "     when lf.tipo_liquidacion='"+liquidacion_espor+"' then 'EXP'\n"
-                + "     when lf.tipo_liquidacion='"+liquidacion_profor+"' then 'PRO'\n"
+                + "case when lf.tipo_liquidacion='" + liquidacion_impor + "' then 'IMP'\n"
+                + "     when lf.tipo_liquidacion='" + liquidacion_espor + "' then 'EXP'\n"
+                + "     when lf.tipo_liquidacion='" + liquidacion_profor + "' then 'PRO'\n"
                 + "     else 'error' end as tipo,\n"
                 + "lf.monto_imponible as mon_imponible,\n"
                 + "lf.monto_pagar as mon_pagar,\n"
@@ -339,7 +361,7 @@ public class DAO_liquidacion_final {
                 + " order by 1 desc";
         String titulonota = "FILTRO LIQUIDACION";
         String direccion = "src/REPORTE/LIQUIDACION/repLiquidacionPorFiltro.jrxml";
-        String rutatemp="Filtr_liquidacion_"+evefec.getString_formato_fecha();
+        String rutatemp = "Filtr_liquidacion_" + evefec.getString_formato_fecha();
         rep.imprimir_jasper_o_pdf(conn, sql_select, titulonota, direccion, rutatemp);
     }
 }

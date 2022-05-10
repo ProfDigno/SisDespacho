@@ -34,7 +34,7 @@ private int C29fk_idaduana;
 private int C30fk_iddespacho_zona;
 private int C31fk_idtransporte_empresa;
 private int C32fk_idtercero_importador;
-private int C33fk_idtercero_transportadora;
+private int C33fk_idtercero_exportador;
 private int C34fk_idmoneda_cambio;
 private int C35fk_idregimen;
 private int C36fk_idincoterms;
@@ -256,11 +256,11 @@ private static String nom_idtabla;
 	public void setC32fk_idtercero_importador(int C32fk_idtercero_importador){
 		this.C32fk_idtercero_importador = C32fk_idtercero_importador;
 	}
-	public int getC33fk_idtercero_transportadora(){
-		return C33fk_idtercero_transportadora;
+	public int getC33fk_idtercero_exportador(){
+		return C33fk_idtercero_exportador;
 	}
-	public void setC33fk_idtercero_transportadora(int C33fk_idtercero_transportadora){
-		this.C33fk_idtercero_transportadora = C33fk_idtercero_transportadora;
+	public void setC33fk_idtercero_exportador(int C33fk_idtercero_exportador){
+		this.C33fk_idtercero_exportador = C33fk_idtercero_exportador;
 	}
 	public int getC34fk_idmoneda_cambio(){
 		return C34fk_idmoneda_cambio;
@@ -330,6 +330,6 @@ private static String nom_idtabla;
     }
         
 	public String toString() {
-		return "liquidacion_final(" + ",idliquidacion_final=" + C1idliquidacion_final + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,fecha_despacho=" + C4fecha_despacho + " ,despacho_numero=" + C5despacho_numero + " ,tipo_liquidacion=" + C6tipo_liquidacion + " ,estado=" + C7estado + " ,observacion=" + C8observacion + " ,contenedor_nro=" + C9contenedor_nro + " ,contenedor_tipo=" + C10contenedor_tipo + " ,via_transporte=" + C11via_transporte + " ,transporte_condicion=" + C12transporte_condicion + " ,monto_imponible=" + C13monto_imponible + " ,monto_ajuste_incluir=" + C14monto_ajuste_incluir + " ,monto_factura=" + C15monto_factura + " ,monto_flete=" + C16monto_flete + " ,monto_seguro=" + C17monto_seguro + " ,monto_cif=" + C18monto_cif + " ,monto_total_despacho=" + C19monto_total_despacho + " ,monto_adelanto=" + C20monto_adelanto + " ,monto_pagar=" + C21monto_pagar + " ,tasa_cambio_aduana=" + C22tasa_cambio_aduana + " ,tasa_cambio_mercado=" + C23tasa_cambio_mercado + " ,tipo_tasa_cambio=" + C24tipo_tasa_cambio + " ,factura_numero=" + C25factura_numero + " ,monto_letra=" + C26monto_letra + " ,fk_idtipo_comprobante=" + C27fk_idtipo_comprobante + " ,fk_idtercero_ciudad=" + C28fk_idtercero_ciudad + " ,fk_idaduana=" + C29fk_idaduana + " ,fk_iddespacho_zona=" + C30fk_iddespacho_zona + " ,fk_idtransporte_empresa=" + C31fk_idtransporte_empresa + " ,fk_idtercero_importador=" + C32fk_idtercero_importador + " ,fk_idtercero_transportadora=" + C33fk_idtercero_transportadora + " ,fk_idmoneda_cambio=" + C34fk_idmoneda_cambio + " ,fk_idregimen=" + C35fk_idregimen + " ,fk_idincoterms=" + C36fk_idincoterms + " )";
+		return "liquidacion_final(" + ",idliquidacion_final=" + C1idliquidacion_final + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,fecha_despacho=" + C4fecha_despacho + " ,despacho_numero=" + C5despacho_numero + " ,tipo_liquidacion=" + C6tipo_liquidacion + " ,estado=" + C7estado + " ,observacion=" + C8observacion + " ,contenedor_nro=" + C9contenedor_nro + " ,contenedor_tipo=" + C10contenedor_tipo + " ,via_transporte=" + C11via_transporte + " ,transporte_condicion=" + C12transporte_condicion + " ,monto_imponible=" + C13monto_imponible + " ,monto_ajuste_incluir=" + C14monto_ajuste_incluir + " ,monto_factura=" + C15monto_factura + " ,monto_flete=" + C16monto_flete + " ,monto_seguro=" + C17monto_seguro + " ,monto_cif=" + C18monto_cif + " ,monto_total_despacho=" + C19monto_total_despacho + " ,monto_adelanto=" + C20monto_adelanto + " ,monto_pagar=" + C21monto_pagar + " ,tasa_cambio_aduana=" + C22tasa_cambio_aduana + " ,tasa_cambio_mercado=" + C23tasa_cambio_mercado + " ,tipo_tasa_cambio=" + C24tipo_tasa_cambio + " ,factura_numero=" + C25factura_numero + " ,monto_letra=" + C26monto_letra + " ,fk_idtipo_comprobante=" + C27fk_idtipo_comprobante + " ,fk_idtercero_ciudad=" + C28fk_idtercero_ciudad + " ,fk_idaduana=" + C29fk_idaduana + " ,fk_iddespacho_zona=" + C30fk_iddespacho_zona + " ,fk_idtransporte_empresa=" + C31fk_idtransporte_empresa + " ,fk_idtercero_importador=" + C32fk_idtercero_importador + " ,fk_idtercero_transportadora=" + C33fk_idtercero_exportador + " ,fk_idmoneda_cambio=" + C34fk_idmoneda_cambio + " ,fk_idregimen=" + C35fk_idregimen + " ,fk_idincoterms=" + C36fk_idincoterms + " )";
 	}
 }
