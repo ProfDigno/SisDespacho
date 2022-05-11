@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.tercero_rubro;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,6 +19,7 @@ public class DAO_tercero_rubro {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "TERCERO_RUBRO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "TERCERO_RUBRO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO tercero_rubro(idtercero_rubro,nombre,sigla,descripcion) VALUES (?,?,?,?);";
@@ -105,12 +107,12 @@ public class DAO_tercero_rubro {
                 + "when date_part('month',lf.fecha_despacho)=10 then date_part('year',lf.fecha_despacho)||'-OCTUBRE'\n"
                 + "when date_part('month',lf.fecha_despacho)=11 then date_part('year',lf.fecha_despacho)||'-NOVIEMBRE'\n"
                 + "when date_part('month',lf.fecha_despacho)=12 then date_part('year',lf.fecha_despacho)||'-DICIEMBRE'\n"
-                + "else 'ERROR' end as mes,\n"
-                + "count(*) as cant,trim(to_char(sum(lf.monto_pagar),'999G999G999G999')) as monto_pagar \n"
+                + "else '"+varglo.getEst_Error()+"' end as mes,\n"
+                + "count(*) as cant,trim(to_char(sum(lf.monto_pagar),'"+varglo.getFormato_numero_4c()+"')) as monto_pagar \n"
                 + "from tercero ter,tercero_rubro tr,liquidacion_final lf  \n"
                 + "where ter.fk_idtercero_rubro=tr.idtercero_rubro \n"
                 + "and ter.idtercero=lf.fk_idtercero_importador \n"
-                + "and lf.estado='PAGADO' \n"+filtro
+                + "and lf.estado='"+varglo.getEst_Pagado()+"' \n"+filtro
                 + " group by 1,2,3,4 order by 1 asc,2 asc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_tercero_rubro_liquidacion(tbltabla);

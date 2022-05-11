@@ -81,7 +81,7 @@ public class DAO_honorario_despacho {
     }
 
     public void ancho_tabla_honorario_despacho(JTable tbltabla) {
-        int Ancho[] = {33, 33, 33};
+        int Ancho[] = {10,40,50};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
     }
 }

@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.tercero;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -19,6 +20,7 @@ public class DAO_tercero {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "TERCERO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "TERCERO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO tercero(idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
@@ -28,7 +30,7 @@ public class DAO_tercero {
             + "representante_nombre=?,representante_cedula=?,importador=?,despachante=?,colaborador=?,proveedor=?,transportadora=?,"
             + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=?,exportador=? WHERE idtercero=?;";
     private String sql_select = "SELECT t.idtercero,t.nombre,t.ruc,t.telefono,t.direccion,tr.nombre as rubro,\n"
-            + "TRIM(to_char(t.saldo_credito,'999G999G999')) as saldo, \n"
+            + "TRIM(to_char(t.saldo_credito,'"+varglo.getFormato_numero_3c()+"')) as saldo, \n"
             + "case when t.importador=true then 'SI' else 'NO' end as impor,\n"
             + "case when t.exportador=true then 'SI' else 'NO' end as expor,\n"
             + "case when t.despachante=true then 'SI' else 'NO' end as desp "
@@ -42,8 +44,8 @@ public class DAO_tercero {
             + "(select sum(cc.monto_contado - cc.monto_credito) as saldo\n"
             + "from grupo_credito_tercero gcc,credito_tercero cc\n"
             + "where gcc.idgrupo_credito_tercero=cc.fk_idgrupo_credito_tercero\n"
-            + "and gcc.estado='ABIERTO'\n"
-            + "and (cc.estado='EMITIDO')\n"
+            + "and gcc.estado='"+varglo.getEst_Abierto()+"'\n"
+            + "and (cc.estado='"+varglo.getEst_Emitido()+"')\n"
             + "and gcc.fk_idtercero=tercero.idtercero) where tercero.idtercero=?;";
 
     public void insertar_tercero(Connection conn, tercero ter) {
@@ -187,20 +189,20 @@ public class DAO_tercero {
 
     public void actualizar_tabla_tercero_liquidacion(Connection conn, JTable tbltabla, int idtercero, String filtro) {
         String sql = "select lf.idliquidacion_final as idlf,\n"
-                + "to_char(lf.fecha_despacho,'dd-MM-yyyy') as fec_despacho,"
+                + "to_char(lf.fecha_despacho,'"+evefec.getFormato_fecha()+"') as fec_despacho,"
                 + "lf.despacho_numero ,"
                 + "lf.factura_numero as nro_factura,"
-                + "TRIM(to_char(lf.monto_pagar,'999G999G999')) as mon_pagar,"
-                + "TRIM(to_char(lf.monto_pagado,'999G999G999')) as mon_pagado,\n"
-                + "TRIM(to_char((lf.monto_pagado-lf.monto_pagar),'999G999G999')) as saldo,\n"
+                + "TRIM(to_char(lf.monto_pagar,'"+varglo.getFormato_numero_3c()+"')) as mon_pagar,"
+                + "TRIM(to_char(lf.monto_pagado,'"+varglo.getFormato_numero_3c()+"')) as mon_pagado,\n"
+                + "TRIM(to_char((lf.monto_pagado-lf.monto_pagar),'"+varglo.getFormato_numero_3c()+"')) as saldo,\n"
                 + "case when (lf.monto_pagado-lf.monto_pagar)=0 then lf.estado \n"
-                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then 'CREDITO'\n"
-                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then 'P.PARCIAL' else 'error' end as estado,\n"
-                + "case when lf.estado='PAGADO' then to_char(lf.fecha_pagado,'dd-MM-yyyy') else 'FALTA-PAGAR' end as fec_pago,"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then '"+varglo.getEst_Credito()+"'\n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then '"+varglo.getEst_PagoParcial()+"' else 'error' end as estado,\n"
+                + "case when lf.estado='"+varglo.getEst_Pagado()+"' then to_char(lf.fecha_pagado,'"+evefec.getFormato_fecha()+"') else '"+varglo.getEst_FaltaPagar()+"' end as fec_pago,"
                 + "(lf.monto_pagado-lf.monto_pagar) as isaldo,lf.monto_pagar,lf.monto_pagado  \n"
                 + "from tercero ter,liquidacion_final lf \n"
                 + "where lf.fk_idtercero_importador=ter.idtercero \n"
-                + "and (lf.estado='PAGADO' or lf.estado='EMITIDO') \n"
+                + "and (lf.estado='"+varglo.getEst_Pagado()+"' or lf.estado='"+varglo.getEst_Emitido()+"') \n"
                 + "and ter.idtercero=" + idtercero + filtro
                 + " order by lf.idliquidacion_final desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -216,11 +218,11 @@ public class DAO_tercero {
     }
 
     public void actualizar_tabla_tercero_recibo(Connection conn, JTable tbltabla, int idtercero, String filtro) {
-        String sql = "select re.idrecibo_pago_tercero as idre,to_char(re.fecha_emision,'dd-MM-yyyy HH24:MI') as fec_emision,\n"
-                + "re.descripcion, TRIM(to_char(re.monto_recibo_pago,'999G999G999')) as monto,re.estado,\n"
+        String sql = "select re.idrecibo_pago_tercero as idre,to_char(re.fecha_emision,'"+evefec.getFormato_fechaHora_psql()+"') as fec_emision,\n"
+                + "re.descripcion, TRIM(to_char(re.monto_recibo_pago,'"+varglo.getFormato_numero_3c()+"')) as monto,re.estado,\n"
                 + "re.monto_recibo_pago\n"
                 + "from recibo_pago_tercero re\n"
-                + "where re.estado!='ANULADO'\n"
+                + "where re.estado!='"+varglo.getEst_Anulado()+"'\n"
                 + "and re.fk_idtercero =" + idtercero + filtro
                 + " order by re.idrecibo_pago_tercero desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -236,7 +238,7 @@ public class DAO_tercero {
     public void imprimir_rep_recibo(Connection conn, int id) {
         String sql = "select re.idrecibo_pago_tercero as idre,\n"
                 + "ter.nombre as cliente,ter.ruc as ruc,\n"
-                + "to_char(re.fecha_emision,'dd-MM-yyyy') as fec_emision,\n"
+                + "to_char(re.fecha_emision,'"+evefec.getFormato_fecha()+"') as fec_emision,\n"
                 + "re.descripcion as concepto,\n"
                 + "re.monto_recibo_pago as monto,re.monto_letra as letra \n"
                 + "from recibo_pago_tercero re,tercero ter\n"

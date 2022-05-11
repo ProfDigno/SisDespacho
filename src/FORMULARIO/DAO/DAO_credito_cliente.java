@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.credito_cliente;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,6 +19,7 @@ public class DAO_credito_cliente {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "CREDITO_CLIENTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CREDITO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO credito_tercero(idcredito_tercero,fecha_emision,descripcion,estado,"
@@ -28,13 +30,13 @@ public class DAO_credito_cliente {
     private String sql_select = "SELECT idcredito_tercero,fecha_emision,descripcion,estado,monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_tercero,fk_idsaldo_credito_tercero,fk_idrecibo_pago_tercero,fk_idliquidacion_final FROM credito_tercero order by 1 desc;";
     private String sql_cargar = "SELECT idcredito_tercero,fecha_emision,descripcion,estado,monto_contado,monto_credito,tabla_origen,fk_idgrupo_credito_tercero,fk_idsaldo_credito_tercero,fk_idrecibo_pago_tercero,fk_idliquidacion_final FROM credito_tercero WHERE idcredito_tercero=";
     private String sql_select_gcc = "select cc.idcredito_tercero as idc,\n"
-            + "to_char(cc.fecha_emision,'yyyy-MM-dd HH24:MI') as fecha,\n"
-            + "case when vence=true then to_char(cc.fecha_vence,'yyyy-MM-dd') else 'NO VENCE' end as vence,"
+            + "to_char(cc.fecha_emision,'"+evefec.getFormato_fechaHora_psql()+"') as fecha,\n"
+            + "case when vence=true then to_char(cc.fecha_vence,'"+evefec.getFormato_fecha()+"') else 'NO VENCE' end as vence,"
             + "cc.descripcion,cc.estado,cc.tabla_origen,\n"
-            + "TRIM(to_char(cc.monto_credito,'999G999G999')) as credito,\n"
-            + "TRIM(to_char(cc.monto_contado,'999G999G999')) as contado\n"
+            + "TRIM(to_char(cc.monto_credito,'"+varglo.getFormato_numero_3c()+"')) as credito,\n"
+            + "TRIM(to_char(cc.monto_contado,'"+varglo.getFormato_numero_3c()+"')) as contado\n"
             + " from credito_tercero cc\n"
-            + " where  cc.estado!='ANULADO' and cc.fk_idgrupo_credito_tercero=";
+            + " where  cc.estado!='"+varglo.getEst_Anulado()+"' and cc.fk_idgrupo_credito_tercero=";
         private String sql_anular = "UPDATE credito_tercero SET estado=? WHERE fk_idliquidacion_final=?;";
  
     public void insertar_credito_cliente1(Connection conn, credito_cliente crcl) {

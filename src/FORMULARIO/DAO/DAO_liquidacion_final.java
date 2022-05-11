@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.liquidacion_final;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,12 +19,7 @@ public class DAO_liquidacion_final {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
-    private String liquidacion_impor = "IMPORTACIÓN";
-    private String liquidacion_espor = "EXPORTACIÓN";
-    private String liquidacion_profor = "PROFORMA";
-    private String estado_emitido = "EMITIDO";
-    private String estado_anulado = "ANULADO";
-    private String estado_pagado = "PAGADO";
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "LIQUIDACION_FINAL GUARDADO CORRECTAMENTE";
     private String mensaje_update = "LIQUIDACION_FINAL MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO liquidacion_final(idliquidacion_final,fecha_creado,creado_por,fecha_despacho,despacho_numero,tipo_liquidacion,estado,observacion,\n"
@@ -237,34 +233,18 @@ public class DAO_liquidacion_final {
     }
 
     public void actualizar_tabla_liquidacion_final(Connection conn, JTable tbltabla, String filtro) {
-//        String sql_select = "select lf.idliquidacion_final as idlf,ti.idtercero as idi,ti.nombre as importado,\n"
-//                + "lf.fecha_despacho as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
-//                + "ad.nombre as aduana,re.sigla as regi,\n"
-//                + "case when lf.tipo_liquidacion='" + liquidacion_impor + "' then 'IMP'\n"
-//                + "     when lf.tipo_liquidacion='" + liquidacion_espor + "' then 'EXP'\n"
-//                + "     when lf.tipo_liquidacion='" + liquidacion_profor + "' then 'PRO'\n"
-//                + "     else 'error' end as tipo,\n"
-//                + "TRIM(to_char(lf.monto_imponible,'999G999G999G999')) as mon_imponible,\n"
-//                + "TRIM(to_char(lf.monto_pagar,'999G999G999G999')) as mon_pagar,\n"
-//                + "TRIM(to_char(lf.monto_pagado,'999G999G999G999')) as mon_pagado,\n"
-//                + "TRIM(to_char(((lf.monto_total_despacho/lf.monto_imponible)*100),'999G990D99')) as util, "
-//                + "lf.estado\n"
-//                + "from liquidacion_final lf,tercero ti,aduana ad,regimen re\n"
-//                + "where lf.fk_idtercero_importador=ti.idtercero\n"
-//                + "and lf.fk_idaduana=ad.idaduana \n"
-//                + "and lf.fk_idregimen=re.idregimen \n" + filtro
-//                + " order by 1 desc";
+
         String sql_1 = "select lf.idliquidacion_final as idlf,ti.nombre as importado,tex.nombre as exportador,\n"
-                + "lf.fecha_despacho as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
+                + "to_char(lf.fecha_despacho,'"+evefec.getFormato_fecha()+"') as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
                 + "ad.nombre as aduana,re.sigla as regi,\n"
-                + "case when lf.tipo_liquidacion='" + liquidacion_impor + "' then 'IMP'\n"
-                + "     when lf.tipo_liquidacion='" + liquidacion_espor + "' then 'EXP'\n"
-                + "     when lf.tipo_liquidacion='" + liquidacion_profor + "' then 'PRO'\n"
-                + "     else 'error' end as tipo,\n"
-                + "TRIM(to_char(lf.monto_imponible,'999G999G999G999')) as mon_imponible,\n"
-                + "TRIM(to_char(lf.monto_pagar,'999G999G999G999')) as mon_pagar,\n"
-                + "TRIM(to_char(lf.monto_pagado,'999G999G999G999')) as mon_pagado,\n"
-                + "TRIM(to_char(((lf.monto_total_despacho/lf.monto_imponible)*100),'999G990D99')) as util, lf.estado,ti.idtercero as idi\n"
+                + "case when lf.tipo_liquidacion='" + varglo.getLiq_Importacion() + "' then 'IMP'\n"
+                + "     when lf.tipo_liquidacion='" + varglo.getLiq_Exportacion() + "' then 'EXP'\n"
+                + "     when lf.tipo_liquidacion='" + varglo.getLiq_proforma() + "' then 'PRO'\n"
+                + "     else '"+varglo.getEst_Error()+"' end as tipo,\n"
+                + "TRIM(to_char(lf.monto_imponible,'"+varglo.getFormato_numero_4c()+"')) as mon_imponible,\n"
+                + "TRIM(to_char(lf.monto_pagar,'"+varglo.getFormato_numero_4c()+"')) as mon_pagar,\n"
+                + "TRIM(to_char(lf.monto_pagado,'"+varglo.getFormato_numero_4c()+"')) as mon_pagado,\n"
+                + "TRIM(to_char(((lf.monto_total_despacho/lf.monto_imponible)*100),'"+varglo.getFormato_numero_2c()+"')) as util, lf.estado,ti.idtercero as idi\n"
                 + "from liquidacion_final lf,tercero ti,tercero tex,aduana ad,regimen re\n"
                 + "where lf.fk_idtercero_importador=ti.idtercero\n"
                 + "and lf.fk_idtercero_transportadora=tex.idtercero \n"
@@ -311,7 +291,7 @@ public class DAO_liquidacion_final {
                 + "and lf.idliquidacion_final=ilf.fk_idliquidacion_final \n"
                 + "and lf.idliquidacion_final=" + id
                 + " order by ilf.orden asc;";
-        String titulonota = liquidacion_impor;
+        String titulonota = varglo.getLiq_Importacion();
         String direccion = "src/REPORTE/LIQUIDACION/repLiquidacionFin_1.jrxml";
         String rutatemp = "Liquidacion_" + evefec.getString_formato_fecha() + "_" + id;
         rep.imprimir_jasper_o_pdf(conn, sql, titulonota, direccion, rutatemp);
@@ -320,19 +300,19 @@ public class DAO_liquidacion_final {
     public void imprimir_rep_cuenta_liquidacion(Connection conn, int idtercero, String filtrofecha) {
         String sql = "select ter.idtercero as idter,ter.nombre as cliente,ter.direccion as direccion,\n"
                 + "ter.ruc as ruc,ter.telefono as telefono,tr.nombre as rubro,\n"
-                + "lf.idliquidacion_final as idlf,trim(to_char(lf.fecha_despacho,'dd-MM-yyyy')) as fec_despacho,\n"
+                + "lf.idliquidacion_final as idlf,trim(to_char(lf.fecha_despacho,'"+evefec.getFormato_fecha()+"')) as fec_despacho,\n"
                 + "lf.despacho_numero as despacho_nro,lf.factura_numero  as factura_nro,\n"
                 + "substring(lf.tipo_liquidacion,1,3) as tipo, \n"
                 + "lf.monto_pagar as mon_pagar,lf.monto_pagado as mon_pagado,\n"
                 + "(lf.monto_pagado-lf.monto_pagar) as saldo,\n"
                 + "case when (lf.monto_pagado-lf.monto_pagar)=0 then lf.estado \n"
-                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then 'CREDITO'\n"
-                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then 'P.PARCIAL' else 'error' end as estado,\n"
-                + "case when lf.estado='" + estado_pagado + "' then to_char(lf.fecha_pagado,'dd-MM-yyyy') else 'FALTA-PAGAR' end as fec_pago  \n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado=0) then '"+varglo.getEst_Credito()+"'\n"
+                + "     when ((lf.monto_pagado-lf.monto_pagar)<0 and lf.monto_pagado>0) then '"+varglo.getEst_PagoParcial()+"' else '"+varglo.getEst_Error()+"' end as estado,\n"
+                + "case when lf.estado='" + varglo.getEst_Pagado() + "' then to_char(lf.fecha_pagado,'"+evefec.getFormato_fecha()+"') else '"+varglo.getEst_FaltaPagar()+"' end as fec_pago  \n"
                 + "from tercero ter,liquidacion_final lf,tercero_rubro tr  \n"
                 + "where lf.fk_idtercero_importador=ter.idtercero \n"
                 + "and ter.fk_idtercero_rubro=tr.idtercero_rubro \n"
-                + "and (lf.estado='" + estado_pagado + "' or lf.estado='" + estado_emitido + "') \n"
+                + "and (lf.estado='" + varglo.getEst_Pagado() + "' or lf.estado='" + varglo.getEst_Emitido() + "') \n"
                 + "and ter.idtercero=" + idtercero + filtrofecha
                 + " order by lf.idliquidacion_final desc;";
         String titulonota = "CUENTA LIQUIDACION";
@@ -343,11 +323,11 @@ public class DAO_liquidacion_final {
 
     public void imprimir_liquidacion_filtro(Connection conn, String filtro) {
         String sql_select = "select lf.idliquidacion_final as idlf,ti.idtercero as idi,ti.nombre as importado,\n"
-                + "to_char(lf.fecha_despacho,'yyyy-MM-dd') as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
+                + "to_char(lf.fecha_despacho,'"+evefec.getFormato_fecha()+"') as fec_despacho,lf.despacho_numero as despacho_nro,lf.factura_numero as factura_nro,\n"
                 + "ad.nombre as aduana,re.sigla as regi,\n"
-                + "case when lf.tipo_liquidacion='" + liquidacion_impor + "' then 'IMP'\n"
-                + "     when lf.tipo_liquidacion='" + liquidacion_espor + "' then 'EXP'\n"
-                + "     when lf.tipo_liquidacion='" + liquidacion_profor + "' then 'PRO'\n"
+                + "case when lf.tipo_liquidacion='" + varglo.getLiq_Importacion() + "' then 'IMP'\n"
+                + "     when lf.tipo_liquidacion='" + varglo.getLiq_Exportacion() + "' then 'EXP'\n"
+                + "     when lf.tipo_liquidacion='" + varglo.getLiq_proforma() + "' then 'PRO'\n"
                 + "     else 'error' end as tipo,\n"
                 + "lf.monto_imponible as mon_imponible,\n"
                 + "lf.monto_pagar as mon_pagar,\n"

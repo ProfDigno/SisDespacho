@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.gasto;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,6 +19,7 @@ public class DAO_gasto {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "GASTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GASTO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO gasto(idgasto,fecha_creado,creado_por,fecha,descripcion,monto_gasto,estado,fk_idgasto_tipo,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?);";
@@ -107,7 +109,8 @@ public class DAO_gasto {
     }
 
     public void actualizar_tabla_gasto(Connection conn, JTable tbltabla,String fecha) {
-        String sql_select = "SELECT g.idgasto,g.fecha,gt.nombre,trim(to_char(g.monto_gasto,'999G999G999')) as monto,g.estado,g.monto_gasto "
+        String sql_select = "SELECT g.idgasto,to_char(g.fecha,'"+evefec.getFormato_fecha()+"') as fecha,gt.nombre,"
+                + "trim(to_char(g.monto_gasto,'"+varglo.getFormato_numero_3c()+"')) as monto,g.estado,g.monto_gasto "
             + "FROM gasto g,gasto_tipo gt "
             + "where g.fk_idgasto_tipo=gt.idgasto_tipo "+fecha
             + " order by 1 desc;";

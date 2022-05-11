@@ -9,6 +9,7 @@ import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import BUSCAR.ClaVarBuscar;
 import BUSCAR.JDiaBuscarDosColumnas;
+import CONFIGURACION.EveVarGlobal;
 import Evento.Color.cla_color_palete;
 import Evento.Combobox.CargaDirectoCombobox;
 import Evento.Combobox.EvenCombobox;
@@ -92,6 +93,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     EvenJasperReport rep = new EvenJasperReport();
     EvenJLabel evelbl = new EvenJLabel();
     CargaDirectoCombobox carcbm = new CargaDirectoCombobox();
+    private EveVarGlobal varglo=new EveVarGlobal();
     private ClaAuxFiltroVenta auxfilto = new ClaAuxFiltroVenta();
     private ClaVarBuscar vbus = new ClaVarBuscar();
     private EvenJTextField evejtf = new EvenJTextField();
@@ -179,15 +181,16 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     private double monto_ajuste_incluir;
     private double monto_cif;
     private double monto_imponible;
-    private String liquidacion_impor = "IMPORTACIÓN";
-    private String liquidacion_espor = "EXPORTACIÓN";
-    private String liquidacion_profor = "PROFORMA";
-    private String estado_emitido = "EMITIDO";
-    private String estado_anulado = "ANULADO";
+    private String liquidacion_impor = varglo.getLiq_Importacion();
+    private String liquidacion_espor = varglo.getLiq_Exportacion();
+    private String liquidacion_profor = varglo.getLiq_proforma();
+    private String estado_emitido = varglo.getEst_Emitido();
+    private String estado_anulado = varglo.getEst_Anulado();
+    private String estado_pagado = varglo.getEst_Pagado();
     private String estado_proforma = "PROFORMA";
     private int idliquidacion_final_select;
     private String tabla_origen = "LIQUIDACIÓN";
-    private String estado_pagado = "PAGADO";
+    
     private String tipo_SIN_IVA = "SIN_IVA";
     private String tipo_SOLO_IVA = "SOLO_IVA";
     private String tipo_SIN_Y_SOLO_IVA = "SIN_Y_SOLO_IVA";
@@ -2847,7 +2850,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 318, Short.MAX_VALUE)
         );
 
         btnimprimir_liquidacion.setText("IMPRIMIR LIQUIDACION");
@@ -2883,7 +2886,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
+            .addComponent(jScrollPane4)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2910,19 +2913,15 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
             panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panel_filtro_liquidacionLayout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panel_filtro_liquidacionLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnanular, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnrecargar_liquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())
-                    .addGroup(panel_filtro_liquidacionLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCmostrarAnulado)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(btnimprimir_liquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnanular, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnrecargar_liquidacion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jCmostrarAnulado, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
         );
         panel_filtro_liquidacionLayout.setVerticalGroup(
             panel_filtro_liquidacionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

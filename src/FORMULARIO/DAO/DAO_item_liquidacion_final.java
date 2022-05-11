@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.item_liquidacion_final;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -19,6 +20,7 @@ public class DAO_item_liquidacion_final {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private entidad_usuario ENTusu = new entidad_usuario();
     private String creado_por = ENTusu.getGlobal_idusuario() + "-" + ENTusu.getGlobal_nombre();
     private String mensaje_insert = "ITEM_LIQUIDACION_FINAL GUARDADO CORRECTAMENTE";
@@ -148,9 +150,9 @@ public class DAO_item_liquidacion_final {
 
     public void actualizar_tabla_item_liquidacion_final_por_id(Connection conn, JTable tbltabla,int fk_idliquidacion_final) {
         String sql = "select ilf.orden, ilf.descripcion,ilf.comprobante_nro,"
-                + "to_char(ilf.total_guarani,'999G999G999') as total, \n"
-                + "to_char(ilf.sin_iva,'999G999G999') as sin_iva, \n"
-                + "to_char(ilf.solo_iva,'999G999G999') as solo_iva \n"
+                + "to_char(ilf.total_guarani,'"+varglo.getFormato_numero_3c()+"') as total, \n"
+                + "to_char(ilf.sin_iva,'"+varglo.getFormato_numero_3c()+"') as sin_iva, \n"
+                + "to_char(ilf.solo_iva,'"+varglo.getFormato_numero_3c()+"') as solo_iva \n"
                 + "from item_liquidacion_final ilf \n"
                 + "where ilf.fk_idliquidacion_final="+fk_idliquidacion_final
                 + " order by 1 asc;";

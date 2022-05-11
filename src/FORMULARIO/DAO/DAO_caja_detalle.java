@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.caja_detalle;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,8 +19,9 @@ public class DAO_caja_detalle {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
-        private String estado_emitido = "EMITIDO";
-    private String estado_anulado = "ANULADO";
+    EveVarGlobal varglo=new EveVarGlobal();
+//        private String estado_emitido = "EMITIDO";
+//    private String estado_anulado = "ANULADO";
     private String mensaje_insert = "CAJA_DETALLE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "CAJA_DETALLE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO caja_detalle(idcaja_detalle,fecha_creado,creado_por,descripcion,estado,monto_liquidacion_credito,monto_recibo_pago,monto_gasto,monto_vale,fk_idusuario,fk_idvale,fk_idgasto,fk_idliquidacion_final,fk_recibo_pago_tercero) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
@@ -121,14 +123,14 @@ public class DAO_caja_detalle {
     }
 
     public void actualizar_caja_detalle_todos(Connection conn, JTable tbltabla, String fecha) {
-        String sql = "select cd.idcaja_detalle as idcd,to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+        String sql = "select cd.idcaja_detalle as idcd,to_char(cd.fecha_creado,'"+evefec.getFormato_fechaHora_psql()+"') as fecha,\n"
                 + "cd.descripcion,cd.estado,\n"
                 + "cd.monto_liquidacion_credito as liquidacion_credito,\n"
                 + "cd.monto_recibo_pago as recibo_pago,\n"
                 + "cd.monto_gasto as gasto,\n"
                 + "cd.monto_vale  as vale\n"
                 + "from caja_detalle cd\n"
-                + "where cd.estado='"+estado_emitido+"' \n" + fecha
+                + "where cd.estado='"+varglo.getEst_Emitido()+"' \n" + fecha
                 + "order by cd.idcaja_detalle desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_caja_detalle_todos(tbltabla);
@@ -146,12 +148,12 @@ public class DAO_caja_detalle {
                 + "     when cd.fk_idvale>0 then 'VALE'\n"
                 + "     when cd.fk_idgasto>0 then 'GASTO'\n"
                 + "     else 'error' end as tipo_caja,\n"
-                + "trim(to_char(sum(cd.monto_liquidacion_credito),'999G999G999G999')) as liquidacion_credito,\n"
-                + "trim(to_char(sum(cd.monto_recibo_pago),'999G999G999G999')) as recibo_pago,\n"
-                + "trim(to_char(sum(cd.monto_gasto),'999G999G999G999')) as gasto,\n"
-                + "trim(to_char(sum(cd.monto_vale),'999G999G999G999'))  as vale\n"
+                + "trim(to_char(sum(cd.monto_liquidacion_credito),'"+varglo.getFormato_numero_4c()+"')) as liquidacion_credito,\n"
+                + "trim(to_char(sum(cd.monto_recibo_pago),'"+varglo.getFormato_numero_4c()+"')) as recibo_pago,\n"
+                + "trim(to_char(sum(cd.monto_gasto),'"+varglo.getFormato_numero_4c()+"')) as gasto,\n"
+                + "trim(to_char(sum(cd.monto_vale),'"+varglo.getFormato_numero_4c()+"'))  as vale\n"
                 + "from caja_detalle cd\n"
-                + "where cd.estado='"+estado_emitido+"' \n" + fecha
+                + "where cd.estado='"+varglo.getEst_Emitido()+"' \n" + fecha
                 + " group by 1,2\n"
                 + "order by 1 desc";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
@@ -197,7 +199,7 @@ public class DAO_caja_detalle {
 
     public void imprimir_caja_detalle_todos(Connection conn, String filtrofecha) {
         String sql = "select cd.idcaja_detalle as idcd,\n"
-                + "to_char(cd.fecha_creado,'yyyy-MM-dd HH24:MI') as fecha,\n"
+                + "to_char(cd.fecha_creado,'"+evefec.getFormato_fechaHora_psql()+"') as fecha,\n"
                 + "cd.descripcion,cd.estado,\n"
                 + "cd.monto_liquidacion_credito as liquidacion_credito,\n"
                 + "cd.monto_recibo_pago as recibo_pago,\n"
@@ -207,7 +209,7 @@ public class DAO_caja_detalle {
                 + "(cd.monto_gasto+cd.monto_vale) as egreso,\n" 
                 + "(cd.monto_recibo_pago-(cd.monto_gasto+cd.monto_vale)) as diferencia "
                 + "from caja_detalle cd\n"
-                + "where cd.estado='"+estado_emitido+"' \n" + filtrofecha
+                + "where cd.estado='"+varglo.getEst_Emitido()+"' \n" + filtrofecha
                 + "order by cd.idcaja_detalle desc;";
         String titulonota = "CAJA DETALLE";
         String direccion = "src/REPORTE/CAJA/repDetalleCajaTodos.jrxml";

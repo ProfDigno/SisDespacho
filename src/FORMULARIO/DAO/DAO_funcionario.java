@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.funcionario;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,11 +19,12 @@ public class DAO_funcionario {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "FUNCIONARIO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "FUNCIONARIO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO funcionario(idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario) VALUES (?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE funcionario SET fecha_creado=?,creado_por=?,nombre=?,cedula=?,telefono=?,direccion=?,cargo=?,salario=? WHERE idfuncionario=?;";
-    private String sql_select = "SELECT idfuncionario as idf,nombre,cedula,cargo,to_char(salario,'999G999G999') as salario FROM funcionario order by 1 desc;";
+    private String sql_select = "SELECT idfuncionario as idf,nombre,cedula,cargo,to_char(salario,'"+varglo.getFormato_numero_3c()+"') as salario FROM funcionario order by 1 desc;";
     private String sql_cargar = "SELECT idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario FROM funcionario WHERE idfuncionario=";
 
     public void insertar_funcionario(Connection conn, funcionario fun) {
@@ -104,11 +106,11 @@ public class DAO_funcionario {
     }
 
     public void actualizar_tabla_funcionario_vale(Connection conn, JTable tbltabla, int fk_idfuncionario,String filtro) {
-        String sql = "select v.idvale as idv,to_char(v.fecha_creado,'yyyy-MM-dd HH24:MI') fecha,\n"
-                + "f.nombre as funcio, v.descripcion,to_char(v.monto_vale,'999G999G999') as monto \n"
+        String sql = "select v.idvale as idv,to_char(v.fecha_creado,'"+evefec.getFormato_fechaHora_psql()+"') fecha,\n"
+                + "f.nombre as funcio, v.descripcion,to_char(v.monto_vale,'"+varglo.getFormato_numero_3c()+"') as monto \n"
                 + "from vale v,funcionario f \n"
                 + "where v.fk_idfuncionario=f.idfuncionario \n"
-                + "and v.estado='EMITIDO'\n"
+                + "and v.estado='"+varglo.getEst_Emitido()+"'\n"
                 + "and v.fk_idfuncionario="+fk_idfuncionario+filtro
                 + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);

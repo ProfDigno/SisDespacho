@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.grupo_credito_cliente;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -19,6 +20,7 @@ public class DAO_grupo_credito_cliente {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "GRUPO_CREDITO_CLIENTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GRUPO_CREDITO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO grupo_credito_tercero(idgrupo_credito_tercero,fecha_inicio,fecha_fin,estado,fk_idtercero) VALUES (?,?,?,?,?);";
@@ -26,20 +28,20 @@ public class DAO_grupo_credito_cliente {
     private String sql_select = "SELECT idgrupo_credito_tercero,fecha_inicio,fecha_fin,estado,fk_idtercero FROM grupo_credito_tercero order by 1 desc;";
     private String sql_cargar = "SELECT idgrupo_credito_tercero,fecha_inicio,fecha_fin,estado,fk_idtercero FROM grupo_credito_tercero WHERE idgrupo_credito_tercero=";
     private String sql_select_idc = "select gcc.idgrupo_credito_tercero as idgcc,\n"
-            + "to_char(gcc.fecha_inicio,'yyyy-MM-dd HH24:MI') as inicio,\n"
-            + "to_char(gcc.fecha_fin,'yyyy-MM-dd HH24:MI') as fin,\n"
+            + "to_char(gcc.fecha_inicio,'"+evefec.getFormato_fechaHora_psql()+"') as inicio,\n"
+            + "to_char(gcc.fecha_fin,'"+evefec.getFormato_fechaHora_psql()+"') as fin,\n"
             + "gcc.estado,cl.nombre,\n"
-            + "(select TRIM(to_char(coalesce(sum(cc.monto_contado),0),'999G999G999')) \n"
+            + "(select TRIM(to_char(coalesce(sum(cc.monto_contado),0),'"+varglo.getFormato_numero_3c()+"')) \n"
             + "from credito_tercero cc \n"
-            + "where (cc.estado='EMITIDO' or cc.estado='USO_RESERVA')\n"
+            + "where (cc.estado='"+varglo.getEst_Emitido()+"' or cc.estado='"+varglo.getEst_UsoReserva()+"')\n"
             + "and cc.fk_idgrupo_credito_tercero=gcc.idgrupo_credito_tercero) as contado,\n"
-            + "(select TRIM(to_char(coalesce(sum(cc.monto_credito),0),'999G999G999'))  \n"
+            + "(select TRIM(to_char(coalesce(sum(cc.monto_credito),0),'"+varglo.getFormato_numero_3c()+"'))  \n"
             + "from credito_tercero cc \n"
-            + "where (cc.estado='EMITIDO' or cc.estado='USO_RESERVA')\n"
+            + "where (cc.estado='"+varglo.getEst_Emitido()+"' or cc.estado='"+varglo.getEst_UsoReserva()+"')\n"
             + "and cc.fk_idgrupo_credito_tercero=gcc.idgrupo_credito_tercero) as credito,\n"
-            + "(select TRIM(to_char(coalesce(sum(cc.monto_contado - cc.monto_credito),0),'999G999G999'))  \n"
+            + "(select TRIM(to_char(coalesce(sum(cc.monto_contado - cc.monto_credito),0),'"+varglo.getFormato_numero_3c()+"'))  \n"
             + "from credito_tercero cc \n"
-            + "where (cc.estado='EMITIDO' or cc.estado='USO_RESERVA')\n"
+            + "where (cc.estado='"+varglo.getEst_Emitido()+"' or cc.estado='"+varglo.getEst_UsoReserva()+"')\n"
             + "and cc.fk_idgrupo_credito_tercero=gcc.idgrupo_credito_tercero) as saldo\n"
             + "from grupo_credito_tercero gcc,tercero cl\n"
             + "where gcc.fk_idtercero=cl.idtercero\n"
@@ -156,9 +158,9 @@ public class DAO_grupo_credito_cliente {
     }
     private void update_liquidacion_final_monto_pagado(Connection conn, double monto_pagado, int idliquidacion_final,int idrecibo_pago_tercero) {
         String titulo = "update_liquidacion_final_monto_pagado";
-         String sql_update_monto_pagado = "update liquidacion_final set estado='PAGADO',fecha_pagado='now()',"
+         String sql_update_monto_pagado = "update liquidacion_final set estado='"+varglo.getEst_Pagado()+"',fecha_pagado='now()',"
                  + "monto_pagado=(monto_pagado + ?),fk_idrecibo_pago_tercero=? "
-                 + "where estado='EMITIDO' and idliquidacion_final=?;";
+                 + "where estado='"+varglo.getEst_Emitido()+"' and idliquidacion_final=?;";
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_update_monto_pagado);
@@ -177,7 +179,7 @@ public class DAO_grupo_credito_cliente {
         String sql = "select lf.fecha_creado,(lf.monto_pagar-lf.monto_pagado) as saldo,lf.idliquidacion_final \n"
                 + "from credito_tercero ct,liquidacion_final lf \n"
                 + "where ct.fk_idliquidacion_final=lf.idliquidacion_final \n"
-                + "and ct.estado!='ANULADO' and ct.fk_idliquidacion_final >0 \n"
+                + "and ct.estado!='"+varglo.getEst_Anulado()+"' and ct.fk_idliquidacion_final >0 \n"
                 + "and lf.fk_idtercero_importador=" + fk_idcliente + " \n"
                 + " order by 1 asc;";
         try {

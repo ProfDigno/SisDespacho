@@ -7,6 +7,7 @@ package FORMULARIO.VISTA;
 
 import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
+import CONFIGURACION.EveVarGlobal;
 import Evento.Color.cla_color_palete;
 import Evento.Combobox.EvenCombobox;
 import Evento.Fecha.EvenFecha;
@@ -68,6 +69,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    EveVarGlobal varglo=new EveVarGlobal();
     private boolean hab_combo_pais=false;
     private int fk_idtercero_pais;
     private boolean hab_combo_ciudad=false;
@@ -78,13 +80,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private int fk_idtipo_registro;
     private int fk_idtipo_dependencia;
     private int fk_idtipo_institucion;
-    private String creado_por="Digno";
+    private String creado_por=usu.getGlobal_nombre();
     private int fk_idtercero;
     private int iditem_tipo_registro;
     private String estado_activo="ACTIVO";
     private String estado_desabilitado="DESABILITADO";
-    private String estado_EMITIDO = "EMITIDO";
-    private String estado_ABIERTO = "ABIERTO";
+    private String estado_EMITIDO =varglo.getEst_Emitido();
+    private String estado_ABIERTO = varglo.getEst_Abierto();
     private boolean hab_combo_rubro;
     private int fk_idtercero_rubro;
     private double saldo_credito;
@@ -113,7 +115,9 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         lblformatfech_1.setText(evefec.getFormato_fecha());
         lblformatfech_2.setText(evefec.getFormato_fecha());
         lblformatfech_3.setText(evefec.getFormato_fecha());
-        
+        evelbl.evento_MouseExited(lblpais);
+        evelbl.evento_MouseExited(lblrubro);
+        evelbl.evento_MouseExited(lblciudad);
         jCtipo_dependencia.setSelectedIndex(0);
         jCtipo_institucion.setSelectedIndex(0);
         jCtipo_registro.setSelectedIndex(0);

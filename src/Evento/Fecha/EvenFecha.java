@@ -35,11 +35,16 @@ public class EvenFecha {
         return formato_fecha;
     }
 
-    private String formato_fecha = "yyyy-MM-dd";
+    public String getFormato_fechaHora_psql() {
+        return formato_fechaHora_psql;
+    }
+
+    private String formato_fecha = "dd-MM-yyyy";
     String fecha_dia1 = "yyyy-MM-01";
     String formato_fechaHora = "yyyy-MM-dd HH:mm";
     private String formato_hora = "HH:mm:ss";
     String formato_fechaHoraZona = "yyyy-MM-dd HH:mm:ss.00";
+    String formato_fechaHora_psql = "dd-MM-yyyy HH24:MI";
     EvenConexion eveconn = new EvenConexion();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
 

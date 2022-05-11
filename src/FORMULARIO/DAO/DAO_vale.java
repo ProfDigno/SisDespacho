@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.vale;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,6 +19,7 @@ public class DAO_vale {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "VALE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "VALE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO vale(idvale,fecha_creado,creado_por,descripcion,monto_vale,monto_letra,estado,fk_idfuncionario,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?);";
@@ -111,8 +113,8 @@ public class DAO_vale {
     }
 
     public void actualizar_tabla_vale(Connection conn, JTable tbltabla, String filtro) {
-        String sql_select = "SELECT v.idvale,date(v.fecha_creado) as fecha,f.nombre as funcionario,v.descripcion,\n"
-                + "to_char(v.monto_vale,'999G999G999') as monto,v.estado,v.monto_vale \n"
+        String sql_select = "SELECT v.idvale,to_char(v.fecha_creado,'"+evefec.getFormato_fecha()+"') as fecha,f.nombre as funcionario,v.descripcion,\n"
+                + "to_char(v.monto_vale,'"+varglo.getFormato_numero_3c()+"') as monto,v.estado,v.monto_vale \n"
                 + "FROM vale v,funcionario f \n"
                 + "where v.fk_idfuncionario=f.idfuncionario \n" + filtro
                 + "order by 1 desc;";
@@ -129,7 +131,7 @@ public class DAO_vale {
     public void imprimir_rep_vale(Connection conn, int id) {
         String sql = "select v.idvale as idv,\n"
                 + "f.nombre as funcionario,f.cedula as cedula,\n"
-                + "to_char(v.fecha_creado,'dd-MM-yyyy HH24:MI') as fecha_creado,\n"
+                + "to_char(v.fecha_creado,'"+evefec.getFormato_fechaHora_psql()+"') as fecha_creado,\n"
                 + "v.descripcion as concepto,\n"
                 + "v.monto_vale as monto,v.monto_letra as letra \n"
                 + "from vale v,funcionario f\n"
@@ -142,11 +144,11 @@ public class DAO_vale {
     }
 
     public void imprimir_rep_vale_por_fecha(Connection conn,int fk_idfuncionario,String filtro) {
-        String sql = "select v.idvale as idv,to_char(v.fecha_creado,'yyyy-MM-dd HH24:MI') fecha,\n"
+        String sql = "select v.idvale as idv,to_char(v.fecha_creado,'"+evefec.getFormato_fechaHora_psql()+"') fecha,\n"
                 + "f.nombre as funcionario,f.cedula as cedula,  v.descripcion as descrip_vale,v.monto_vale as monto \n"
                 + "from vale v,funcionario f \n"
                 + "where v.fk_idfuncionario=f.idfuncionario \n"
-                + "and v.estado='EMITIDO'\n"
+                + "and v.estado='"+varglo.getEst_Emitido()+"'\n"
                 + "and v.fk_idfuncionario="+fk_idfuncionario+filtro
                 + " \n order by 1 desc;";
         String titulonota = "VALE POR FECHA";

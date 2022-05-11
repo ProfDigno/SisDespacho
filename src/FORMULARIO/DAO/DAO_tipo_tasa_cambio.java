@@ -22,7 +22,7 @@ public class DAO_tipo_tasa_cambio {
     private String mensaje_update = "TIPO_TASA_CAMBIO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO tipo_tasa_cambio(idtipo_tasa_cambio,fecha_creacion,creado_por,dolar_gua_aduana,dolar_gua_mercado,real_gua_aduana,real_gua_mercado) VALUES (?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE tipo_tasa_cambio SET fecha_creacion=?,creado_por=?,dolar_gua_aduana=?,dolar_gua_mercado=?,real_gua_aduana=?,real_gua_mercado=? WHERE idtipo_tasa_cambio=?;";
-    private String sql_select = "SELECT idtipo_tasa_cambio as idttc,to_char(fecha_creacion,'dd-MM-yyyy') as crecion,"
+    private String sql_select = "SELECT idtipo_tasa_cambio as idttc,to_char(fecha_creacion,'"+evefec.getFormato_fecha()+"') as crecion,"
             + "creado_por,dolar_gua_aduana as dolar_aduana,dolar_gua_mercado as dolar_mercado,real_gua_aduana as real_aduana,real_gua_mercado as real_mercado "
             + "FROM tipo_tasa_cambio order by 1 desc;";
     private String sql_cargar = "SELECT idtipo_tasa_cambio,fecha_creacion,creado_por,dolar_gua_aduana,dolar_gua_mercado,real_gua_aduana,real_gua_mercado FROM tipo_tasa_cambio WHERE idtipo_tasa_cambio=";

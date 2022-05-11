@@ -1,6 +1,7 @@
 package FORMULARIO.DAO;
 
 import BASEDATO.EvenConexion;
+import CONFIGURACION.EveVarGlobal;
 import FORMULARIO.ENTIDAD.recibo_pago_cliente;
 import Evento.JasperReport.EvenJasperReport;
 import Evento.Jtable.EvenJtable;
@@ -18,13 +19,15 @@ public class DAO_recibo_pago_cliente {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
+    EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "RECIBO_PAGO_CLIENTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "RECIBO_PAGO_CLIENTE MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO recibo_pago_tercero(idrecibo_pago_tercero,fecha_emision,descripcion,monto_recibo_pago,monto_letra,estado,fk_idtercero,fk_idusuario) VALUES (?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE recibo_pago_tercero SET fecha_emision=?,descripcion=?,monto_recibo_pago=?,monto_letra=?,estado=?,fk_idtercero=?,fk_idusuario=? WHERE idrecibo_pago_tercero=?;";
     private String sql_cargar = "SELECT idrecibo_pago_tercero,fecha_emision,descripcion,monto_recibo_pago,monto_letra,estado,fk_idtercero,fk_idusuario FROM recibo_pago_tercero WHERE idrecibo_pago_tercero=";
-    private String sql_select = "SELECT re.idrecibo_pago_tercero as idrecibo,to_char(re.fecha_emision,'yyyy-MM-dd HH24:MI') as fec_emision,\n"
-            + "re.descripcion,TRIM(to_char(re.monto_recibo_pago,'999G999G999')) as monto,re.estado,fi.nombre\n"
+    private String sql_select = "SELECT re.idrecibo_pago_tercero as idrecibo,"
+            + "to_char(re.fecha_emision,'"+evefec.getFormato_fechaHora_psql()+"') as fec_emision,\n"
+            + "re.descripcion,TRIM(to_char(re.monto_recibo_pago,'"+varglo.getFormato_numero_3c()+"')) as monto,re.estado,fi.nombre\n"
             + "FROM recibo_pago_tercero re,tercero fi \n"
             + "where re.fk_idtercero=fi.idtercero\n"
             + "order by 1 desc;";

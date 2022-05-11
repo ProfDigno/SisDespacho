@@ -1,7 +1,7 @@
 {
 "localhost":"localhost",
 "port":"5437",
-"basedato":"bdroyal_2",
+"basedato":"bdroyal_4",
 "usuario":"postgres",
 "password":"4650586",
 "direc_dump":"C:\\Program Files\\PostgreSQL\\13\\bin\\pg_dump.exe",
