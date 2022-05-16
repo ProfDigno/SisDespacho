@@ -23,17 +23,18 @@ public class FrmGasto_tipo extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private gasto_tipo entidad = new gasto_tipo();
-    private BO_gasto_tipo BO = new BO_gasto_tipo();
-    private DAO_gasto_tipo DAO = new DAO_gasto_tipo();
+    private gasto_tipo ENTgt = new gasto_tipo();
+    private BO_gasto_tipo BOgt = new BO_gasto_tipo();
+    private DAO_gasto_tipo DAOgt = new DAO_gasto_tipo();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("GASTO TIPO");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_gasto_tipo(conn, tbltabla);
+        DAOgt.actualizar_tabla_gasto_tipo(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -49,30 +50,31 @@ public class FrmGasto_tipo extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3activar(jCactivar.isSelected());
-            BO.insertar_gasto_tipo(entidad, tbltabla);
+            ENTgt.setC2nombre(txtnombre.getText());
+            ENTgt.setC3activar(jCactivar.isSelected());
+            BOgt.insertar_gasto_tipo(ENTgt, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idgasto_tipo(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3activar(jCactivar.isSelected());
-            BO.update_gasto_tipo(entidad, tbltabla);
+            ENTgt.setC1idgasto_tipo(Integer.parseInt(txtid.getText()));
+            ENTgt.setC2nombre(txtnombre.getText());
+            ENTgt.setC3activar(jCactivar.isSelected());
+            BOgt.update_gasto_tipo(ENTgt, tbltabla);
         }
     }
 
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_gasto_tipo(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idgasto_tipo()));
-        jCactivar.setSelected(entidad.getC3activar());
-        txtnombre.setText(entidad.getC2nombre());
+        DAOgt.cargar_gasto_tipo(conn,ENTgt, idproducto);
+        txtid.setText(String.valueOf(ENTgt.getC1idgasto_tipo()));
+        jCactivar.setSelected(ENTgt.getC3activar());
+        txtnombre.setText(ENTgt.getC2nombre());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -303,7 +305,7 @@ public class FrmGasto_tipo extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_gasto_tipo(tbltabla);
+        DAOgt.ancho_tabla_gasto_tipo(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased

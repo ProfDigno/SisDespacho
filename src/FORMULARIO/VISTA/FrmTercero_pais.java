@@ -5,8 +5,10 @@
  */
 package FORMULARIO.VISTA;
 
+import BASEDATO.EvenConexion;
 import BASEDATO.LOCAL.ConnPostgres;
 import Evento.Color.cla_color_palete;
+import Evento.Combobox.EvenCombobox;
 import Evento.JTextField.EvenJTextField;
 import Evento.Jframe.EvenJFRAME;
 import Evento.Jtable.EvenJtable;
@@ -23,17 +25,20 @@ public class FrmTercero_pais extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private tercero_pais entidad = new tercero_pais();
-    private BO_tercero_pais BO = new BO_tercero_pais();
-    private DAO_tercero_pais DAO = new DAO_tercero_pais();
+    private tercero_pais ENTtp = new tercero_pais();
+    private BO_tercero_pais BOtp = new BO_tercero_pais();
+    private DAO_tercero_pais DAOtp = new DAO_tercero_pais();
     private EvenJTextField evejtf = new EvenJTextField();
+    private  EvenConexion eveconn = new EvenConexion();
+    private  EvenCombobox evecomb = new EvenCombobox();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("TERCERO PAIS");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_tercero_pais(conn, tbltabla);
+        DAOtp.actualizar_tabla_tercero_pais(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -52,30 +57,32 @@ public class FrmTercero_pais extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            BO.insertar_tercero_pais(entidad, tbltabla);
+            ENTtp.setC2nombre(txtnombre.getText());
+            ENTtp.setC3sigla(txtsigla.getText());
+            BOtp.insertar_tercero_pais(ENTtp, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idtercero_pais(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            BO.update_tercero_pais(entidad, tbltabla);
+            ENTtp.setC1idtercero_pais(Integer.parseInt(txtid.getText()));
+            ENTtp.setC2nombre(txtnombre.getText());
+            ENTtp.setC3sigla(txtsigla.getText());
+            BOtp.update_tercero_pais(ENTtp, tbltabla);
+            
         }
     }
 
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_tercero_pais(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idtercero_pais()));
-        txtnombre.setText(entidad.getC2nombre());
-        txtsigla.setText(entidad.getC3sigla());
+        DAOtp.cargar_tercero_pais(conn,ENTtp, idproducto);
+        txtid.setText(String.valueOf(ENTtp.getC1idtercero_pais()));
+        txtnombre.setText(ENTtp.getC2nombre());
+        txtsigla.setText(ENTtp.getC3sigla());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -88,6 +95,13 @@ public class FrmTercero_pais extends javax.swing.JInternalFrame {
     }
     private void boton_nuevo(){
         reestableser();
+    }
+    private void boton_eliminar_tercero_pais() {
+        if (tbltabla.getSelectedRow()>=0) {
+            ENTtp.setC1idtercero_pais(Integer.parseInt(txtid.getText()));
+            BOtp.update_tercero_pais_eliminar(ENTtp, tbltabla);
+            reestableser();
+        }
     }
     public FrmTercero_pais() {
         initComponents();
@@ -192,6 +206,11 @@ public class FrmTercero_pais extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("SIGLA:");
@@ -319,7 +338,7 @@ public class FrmTercero_pais extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_tercero_pais(tbltabla);
+        DAOtp.ancho_tabla_tercero_pais(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -345,6 +364,13 @@ public class FrmTercero_pais extends javax.swing.JInternalFrame {
     private void txtsiglaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsiglaKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsiglaKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar_tercero_pais();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

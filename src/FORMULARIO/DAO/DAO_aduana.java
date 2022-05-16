@@ -20,13 +20,14 @@ public class DAO_aduana {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "ADUANA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "ADUANA MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO aduana(idaduana,nombre,telefono,direccion,sigla) VALUES (?,?,?,?,?);";
-    private String sql_update = "UPDATE aduana SET nombre=?,telefono=?,direccion=?,sigla=? WHERE idaduana=?;";
-    private String sql_select = "SELECT idaduana as id,nombre,direccion,sigla FROM aduana order by 1 desc;";
+    private String sql_insert = "INSERT INTO aduana(idaduana,nombre,telefono,direccion,sigla,eliminado) VALUES (?,?,?,?,?,?);";
+    private String sql_update = "UPDATE aduana SET nombre=?,telefono=?,direccion=?,sigla=?,eliminado=? WHERE idaduana=?;";
+    private String sql_select = "SELECT idaduana as id,nombre,direccion,sigla FROM aduana where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idaduana,nombre,telefono,direccion,sigla FROM aduana WHERE idaduana=";
 
     public void insertar_aduana(Connection conn, aduana adu) {
         adu.setC1idaduana(eveconn.getInt_ultimoID_mas_uno(conn, adu.getTb_aduana(), adu.getId_idaduana()));
+        adu.setC6eliminado(false);
         String titulo = "insertar_aduana";
         PreparedStatement pst = null;
         try {
@@ -36,6 +37,7 @@ public class DAO_aduana {
             pst.setString(3, adu.getC3telefono());
             pst.setString(4, adu.getC4direccion());
             pst.setString(5, adu.getC5sigla());
+            pst.setBoolean(6, adu.getC6eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + adu.toString(), titulo);
@@ -54,7 +56,8 @@ public class DAO_aduana {
             pst.setString(2, adu.getC3telefono());
             pst.setString(3, adu.getC4direccion());
             pst.setString(4, adu.getC5sigla());
-            pst.setInt(5, adu.getC1idaduana());
+            pst.setBoolean(5, adu.getC6eliminado());
+            pst.setInt(6, adu.getC1idaduana());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + adu.toString(), titulo);

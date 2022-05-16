@@ -23,17 +23,18 @@ public class FrmTransporte_empresa extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private transporte_empresa entidad = new transporte_empresa();
-    private BO_transporte_empresa BO = new BO_transporte_empresa();
-    private DAO_transporte_empresa DAO = new DAO_transporte_empresa();
+    private transporte_empresa ENTte = new transporte_empresa();
+    private BO_transporte_empresa BOte = new BO_transporte_empresa();
+    private DAO_transporte_empresa DAOte = new DAO_transporte_empresa();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("TRANSPORTE EMPRESA");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_transporte_empresa(conn, tbltabla);
+        DAOte.actualizar_tabla_transporte_empresa(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -58,36 +59,45 @@ public class FrmTransporte_empresa extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4direccion(txtdireccion.getText());
-            entidad.setC5telefono(txttelefono.getText());
-            BO.insertar_transporte_empresa(entidad, tbltabla);
+            ENTte.setC2nombre(txtnombre.getText());
+            ENTte.setC3sigla(txtsigla.getText());
+            ENTte.setC4direccion(txtdireccion.getText());
+            ENTte.setC5telefono(txttelefono.getText());
+            BOte.insertar_transporte_empresa(ENTte, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idtransporte_empresa(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4direccion(txtdireccion.getText());
-            entidad.setC5telefono(txttelefono.getText());
-            BO.update_transporte_empresa(entidad, tbltabla);
+            ENTte.setC1idtransporte_empresa(Integer.parseInt(txtid.getText()));
+            ENTte.setC2nombre(txtnombre.getText());
+            ENTte.setC3sigla(txtsigla.getText());
+            ENTte.setC4direccion(txtdireccion.getText());
+            ENTte.setC5telefono(txttelefono.getText());
+            ENTte.setC6eliminado(false);
+            BOte.update_transporte_empresa(ENTte, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTte.setC1idtransporte_empresa(Integer.parseInt(txtid.getText()));
+            ENTte.setC6eliminado(true);
+            BOte.update_transporte_empresa(ENTte, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_transporte_empresa(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idtransporte_empresa()));
-        txtnombre.setText(entidad.getC2nombre());
-        txtsigla.setText(entidad.getC3sigla());
-        txtdireccion.setText(entidad.getC4direccion());
-        txttelefono.setText(entidad.getC5telefono());
+        DAOte.cargar_transporte_empresa(conn,ENTte, idproducto);
+        txtid.setText(String.valueOf(ENTte.getC1idtransporte_empresa()));
+        txtnombre.setText(ENTte.getC2nombre());
+        txtsigla.setText(ENTte.getC3sigla());
+        txtdireccion.setText(ENTte.getC4direccion());
+        txttelefono.setText(ENTte.getC5telefono());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -210,6 +220,11 @@ public class FrmTransporte_empresa extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("SIGLA:");
@@ -369,7 +384,7 @@ public class FrmTransporte_empresa extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_transporte_empresa(tbltabla);
+        DAOte.ancho_tabla_transporte_empresa(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -403,6 +418,13 @@ public class FrmTransporte_empresa extends javax.swing.JInternalFrame {
     private void txttelefonoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txttelefonoKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txttelefonoKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

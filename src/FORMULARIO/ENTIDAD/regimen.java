@@ -6,6 +6,7 @@ private int C1idregimen;
 private String C2nombre;
 private String C3sigla;
 private String C4descripcion;
+private boolean C5eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -50,6 +51,15 @@ private static String nom_idtabla;
 	public void setC4descripcion(String C4descripcion){
 		this.C4descripcion = C4descripcion;
 	}
+
+    public boolean getC5eliminado() {
+        return C5eliminado;
+    }
+
+    public void setC5eliminado(boolean C5eliminado) {
+        this.C5eliminado = C5eliminado;
+    }
+        
 	public String toString() {
 		return "regimen(" + ",idregimen=" + C1idregimen + " ,nombre=" + C2nombre + " ,sigla=" + C3sigla + " ,descripcion=" + C4descripcion + " )";
 	}

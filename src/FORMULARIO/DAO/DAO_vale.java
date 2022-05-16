@@ -120,6 +120,7 @@ public class DAO_vale {
                 + "order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         evejt.ocultar_columna(tbltabla, 6);
+        evejt.alinear_derecha_columna(tbltabla, 4);
         ancho_tabla_vale(tbltabla);
     }
 

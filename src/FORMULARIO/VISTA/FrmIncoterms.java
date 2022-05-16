@@ -23,17 +23,18 @@ public class FrmIncoterms extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private incoterms entidad = new incoterms();
-    private BO_incoterms BO = new BO_incoterms();
-    private DAO_incoterms DAO = new DAO_incoterms();
+    private incoterms ENTinc = new incoterms();
+    private BO_incoterms BOinc = new BO_incoterms();
+    private DAO_incoterms DAOinc = new DAO_incoterms();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("INCOTERMS");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_incoterms(conn, tbltabla);
+        DAOinc.actualizar_tabla_incoterms(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -55,33 +56,42 @@ public class FrmIncoterms extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtanombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4descripcion(txtadescripcion.getText());
-            BO.insertar_incoterms(entidad, tbltabla);
+            ENTinc.setC2nombre(txtanombre.getText());
+            ENTinc.setC3sigla(txtsigla.getText());
+            ENTinc.setC4descripcion(txtadescripcion.getText());
+            BOinc.insertar_incoterms(ENTinc, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idincoterms(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtanombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4descripcion(txtadescripcion.getText());
-            BO.update_incoterms(entidad, tbltabla);
+            ENTinc.setC1idincoterms(Integer.parseInt(txtid.getText()));
+            ENTinc.setC2nombre(txtanombre.getText());
+            ENTinc.setC3sigla(txtsigla.getText());
+            ENTinc.setC4descripcion(txtadescripcion.getText());
+            ENTinc.setC5eliminado(false);
+            BOinc.update_incoterms(ENTinc, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTinc.setC1idincoterms(Integer.parseInt(txtid.getText()));
+            ENTinc.setC5eliminado(true);
+            BOinc.update_incoterms(ENTinc, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_incoterms(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idincoterms()));
-        txtanombre.setText(entidad.getC2nombre());
-        txtsigla.setText(entidad.getC3sigla());
-        txtadescripcion.setText(entidad.getC4descripcion());
+        DAOinc.cargar_incoterms(conn,ENTinc, idproducto);
+        txtid.setText(String.valueOf(ENTinc.getC1idincoterms()));
+        txtanombre.setText(ENTinc.getC2nombre());
+        txtsigla.setText(ENTinc.getC3sigla());
+        txtadescripcion.setText(ENTinc.getC4descripcion());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -193,6 +203,11 @@ public class FrmIncoterms extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("SIGLA:");
@@ -346,7 +361,7 @@ public class FrmIncoterms extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_incoterms(tbltabla);
+        DAOinc.ancho_tabla_incoterms(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -367,6 +382,13 @@ public class FrmIncoterms extends javax.swing.JInternalFrame {
     private void txtsiglaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsiglaKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsiglaKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

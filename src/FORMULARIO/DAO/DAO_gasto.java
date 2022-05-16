@@ -116,6 +116,7 @@ public class DAO_gasto {
             + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         evejt.ocultar_columna(tbltabla, 5);
+        evejt.alinear_derecha_columna(tbltabla, 3);
         ancho_tabla_gasto(tbltabla);
     }
 

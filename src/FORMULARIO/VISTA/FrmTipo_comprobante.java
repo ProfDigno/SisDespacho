@@ -24,10 +24,11 @@ public class FrmTipo_comprobante extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private tipo_comprobante entidad = new tipo_comprobante();
-    private BO_tipo_comprobante BO = new BO_tipo_comprobante();
-    private DAO_tipo_comprobante DAO = new DAO_tipo_comprobante();
+    private tipo_comprobante ENTtc = new tipo_comprobante();
+    private BO_tipo_comprobante BOtc = new BO_tipo_comprobante();
+    private DAO_tipo_comprobante DAOtc = new DAO_tipo_comprobante();
     private EvenJTextField evejtf = new EvenJTextField();
+    private dao_usuario DAOusu=new dao_usuario();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
     ClaAuxFiltroVenta clafil=new ClaAuxFiltroVenta();
@@ -37,19 +38,19 @@ public class FrmTipo_comprobante extends javax.swing.JInternalFrame {
         reestableser();
         
         color_formulario();
-        if(entidad.isConfig_inicio()){
-            jCcon_comprobante.setSelected(entidad.isIni_con_comprobante());
-            jCsin_comprobante.setSelected(entidad.isIni_sin_comprobante());
-            jCboleta_despachante.setSelected(entidad.isIni_boleta_despachante());
-            jCmercaderia.setSelected(entidad.isIni_mercaderia());
-            jCtipo_factura.setSelected(entidad.isIni_tipo_factura());
-            entidad.setConfig_inicio(false);
+        if(ENTtc.isConfig_inicio()){
+            jCcon_comprobante.setSelected(ENTtc.isIni_con_comprobante());
+            jCsin_comprobante.setSelected(ENTtc.isIni_sin_comprobante());
+            jCboleta_despachante.setSelected(ENTtc.isIni_boleta_despachante());
+            jCmercaderia.setSelected(ENTtc.isIni_mercaderia());
+            jCtipo_factura.setSelected(ENTtc.isIni_tipo_factura());
+            ENTtc.setConfig_inicio(false);
         }
         actualizar_tabla();
     }
     void actualizar_tabla(){
         String filtro=clafil.filtro_tipo_comprobante(jCcon_comprobante, jCsin_comprobante, jCboleta_despachante, jCmercaderia, jCtipo_factura);
-        DAO.actualizar_tabla_tipo_comprobante(conn, tbltabla,filtro);
+        DAOtc.actualizar_tabla_tipo_comprobante(conn, tbltabla,filtro);
     }
     private void color_formulario(){
         panel_tabla.setBackground(clacolor.getColor_tabla());
@@ -64,42 +65,53 @@ public class FrmTipo_comprobante extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2descripcion(txtnombre.getText());
-            entidad.setC3con_comprobante(jCcon_comprobante.isSelected());
-            entidad.setC4sin_comprobante(jCsin_comprobante.isSelected());
-            entidad.setC5boleta_despachante(jCboleta_despachante.isSelected());
-            entidad.setC6mercaderia(jCmercaderia.isSelected());
-            entidad.setC7tipo_factura(jCtipo_factura.isSelected());
-            BO.insertar_tipo_comprobante(entidad, tbltabla);
+            ENTtc.setC2descripcion(txtnombre.getText());
+            ENTtc.setC3con_comprobante(jCcon_comprobante.isSelected());
+            ENTtc.setC4sin_comprobante(jCsin_comprobante.isSelected());
+            ENTtc.setC5boleta_despachante(jCboleta_despachante.isSelected());
+            ENTtc.setC6mercaderia(jCmercaderia.isSelected());
+            ENTtc.setC7tipo_factura(jCtipo_factura.isSelected());
+            BOtc.insertar_tipo_comprobante(ENTtc, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idtipo_comprobante(Integer.parseInt(txtid.getText()));
-            entidad.setC2descripcion(txtnombre.getText());
-            entidad.setC3con_comprobante(jCcon_comprobante.isSelected());
-            entidad.setC4sin_comprobante(jCsin_comprobante.isSelected());
-            entidad.setC5boleta_despachante(jCboleta_despachante.isSelected());
-            entidad.setC6mercaderia(jCmercaderia.isSelected());
-            entidad.setC7tipo_factura(jCtipo_factura.isSelected());
-            BO.update_tipo_comprobante(entidad, tbltabla);
+            ENTtc.setC1idtipo_comprobante(Integer.parseInt(txtid.getText()));
+            ENTtc.setC2descripcion(txtnombre.getText());
+            ENTtc.setC3con_comprobante(jCcon_comprobante.isSelected());
+            ENTtc.setC4sin_comprobante(jCsin_comprobante.isSelected());
+            ENTtc.setC5boleta_despachante(jCboleta_despachante.isSelected());
+            ENTtc.setC6mercaderia(jCmercaderia.isSelected());
+            ENTtc.setC7tipo_factura(jCtipo_factura.isSelected());
+            ENTtc.setC8eliminado(false);
+            BOtc.update_tipo_comprobante(ENTtc, tbltabla,true);
+            actualizar_tabla();
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTtc.setC1idtipo_comprobante(Integer.parseInt(txtid.getText()));
+            ENTtc.setC8eliminado(true);
+            BOtc.update_tipo_comprobante(ENTtc, tbltabla,false);
+            actualizar_tabla();
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_tipo_comprobante(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idtipo_comprobante()));
-        txtnombre.setText(entidad.getC2descripcion());
-        jCcon_comprobante.setSelected(entidad.getC3con_comprobante());
-        jCsin_comprobante.setSelected(entidad.getC4sin_comprobante());
-        jCboleta_despachante.setSelected(entidad.getC5boleta_despachante());
-        jCmercaderia.setSelected(entidad.getC6mercaderia());
-        jCtipo_factura.setSelected(entidad.getC7tipo_factura());
+        DAOtc.cargar_tipo_comprobante(conn,ENTtc, idproducto);
+        txtid.setText(String.valueOf(ENTtc.getC1idtipo_comprobante()));
+        txtnombre.setText(ENTtc.getC2descripcion());
+        jCcon_comprobante.setSelected(ENTtc.getC3con_comprobante());
+        jCsin_comprobante.setSelected(ENTtc.getC4sin_comprobante());
+        jCboleta_despachante.setSelected(ENTtc.getC5boleta_despachante());
+        jCmercaderia.setSelected(ENTtc.getC6mercaderia());
+        jCtipo_factura.setSelected(ENTtc.getC7tipo_factura());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -224,6 +236,11 @@ public class FrmTipo_comprobante extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("TIPOS"));
 
@@ -407,7 +424,7 @@ public class FrmTipo_comprobante extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_tipo_comprobante(tbltabla);
+        DAOtc.ancho_tabla_tipo_comprobante(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -454,6 +471,13 @@ public class FrmTipo_comprobante extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         actualizar_tabla();
     }//GEN-LAST:event_jCtipo_facturaActionPerformed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

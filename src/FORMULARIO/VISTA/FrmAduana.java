@@ -23,17 +23,18 @@ public class FrmAduana extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private aduana entidad = new aduana();
-    private BO_aduana BO = new BO_aduana();
-    private DAO_aduana DAO = new DAO_aduana();
+    private aduana ENTad = new aduana();
+    private BO_aduana BOad = new BO_aduana();
+    private DAO_aduana DAOad = new DAO_aduana();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("ADUANAS");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_aduana(conn, tbltabla);
+        DAOad.actualizar_tabla_aduana(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -58,36 +59,45 @@ public class FrmAduana extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3telefono(txttelefono.getText());
-            entidad.setC4direccion(txtdireccion.getText());
-            entidad.setC5sigla(txtsigla.getText());
-            BO.insertar_aduana(entidad, tbltabla);
+            ENTad.setC2nombre(txtnombre.getText());
+            ENTad.setC3telefono(txttelefono.getText());
+            ENTad.setC4direccion(txtdireccion.getText());
+            ENTad.setC5sigla(txtsigla.getText());
+            BOad.insertar_aduana(ENTad, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idaduana(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3telefono(txttelefono.getText());
-            entidad.setC4direccion(txtdireccion.getText());
-            entidad.setC5sigla(txtsigla.getText());
-            BO.update_aduana(entidad, tbltabla);
+            ENTad.setC1idaduana(Integer.parseInt(txtid.getText()));
+            ENTad.setC2nombre(txtnombre.getText());
+            ENTad.setC3telefono(txttelefono.getText());
+            ENTad.setC4direccion(txtdireccion.getText());
+            ENTad.setC5sigla(txtsigla.getText());
+            ENTad.setC6eliminado(false);
+            BOad.update_aduana(ENTad, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTad.setC1idaduana(Integer.parseInt(txtid.getText()));
+            ENTad.setC6eliminado(true);
+            BOad.update_aduana(ENTad, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_aduana(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idaduana()));
-        txtnombre.setText(entidad.getC2nombre());
-        txttelefono.setText(entidad.getC3telefono());
-        txtdireccion.setText(entidad.getC4direccion());
-        txtsigla.setText(entidad.getC5sigla());
+        DAOad.cargar_aduana(conn,ENTad, idproducto);
+        txtid.setText(String.valueOf(ENTad.getC1idaduana()));
+        txtnombre.setText(ENTad.getC2nombre());
+        txttelefono.setText(ENTad.getC3telefono());
+        txtdireccion.setText(ENTad.getC4direccion());
+        txtsigla.setText(ENTad.getC5sigla());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -210,6 +220,11 @@ public class FrmAduana extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("TELEFONO:");
@@ -367,7 +382,7 @@ public class FrmAduana extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_aduana(tbltabla);
+        DAOad.ancho_tabla_aduana(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -401,6 +416,13 @@ public class FrmAduana extends javax.swing.JInternalFrame {
     private void txtsiglaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsiglaKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsiglaKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

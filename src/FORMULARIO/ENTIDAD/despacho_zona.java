@@ -4,6 +4,7 @@ public class despacho_zona {
 //---------------DECLARAR VARIABLES---------------
 private int C1iddespacho_zona;
 private String C2nombre;
+private boolean C3eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -36,6 +37,15 @@ private static String nom_idtabla;
 	public void setC2nombre(String C2nombre){
 		this.C2nombre = C2nombre;
 	}
+
+    public boolean getC3eliminado() {
+        return C3eliminado;
+    }
+
+    public void setC3eliminado(boolean C3eliminado) {
+        this.C3eliminado = C3eliminado;
+    }
+        
 	public String toString() {
 		return "despacho_zona(" + ",iddespacho_zona=" + C1iddespacho_zona + " ,nombre=" + C2nombre + " )";
 	}

@@ -20,13 +20,14 @@ public class DAO_transporte_empresa {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "TRANSPORTE_EMPRESA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "TRANSPORTE_EMPRESA MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO transporte_empresa(idtransporte_empresa,nombre,sigla,direccion,telefono) VALUES (?,?,?,?,?);";
-    private String sql_update = "UPDATE transporte_empresa SET nombre=?,sigla=?,direccion=?,telefono=? WHERE idtransporte_empresa=?;";
-    private String sql_select = "SELECT idtransporte_empresa,nombre,sigla,direccion,telefono FROM transporte_empresa order by 1 desc;";
+    private String sql_insert = "INSERT INTO transporte_empresa(idtransporte_empresa,nombre,sigla,direccion,telefono,eliminado) VALUES (?,?,?,?,?,?);";
+    private String sql_update = "UPDATE transporte_empresa SET nombre=?,sigla=?,direccion=?,telefono=?,eliminado=? WHERE idtransporte_empresa=?;";
+    private String sql_select = "SELECT idtransporte_empresa as idte,nombre,sigla,direccion,telefono FROM transporte_empresa where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idtransporte_empresa,nombre,sigla,direccion,telefono FROM transporte_empresa WHERE idtransporte_empresa=";
 
     public void insertar_transporte_empresa(Connection conn, transporte_empresa trem) {
         trem.setC1idtransporte_empresa(eveconn.getInt_ultimoID_mas_uno(conn, trem.getTb_transporte_empresa(), trem.getId_idtransporte_empresa()));
+        trem.setC6eliminado(false);
         String titulo = "insertar_transporte_empresa";
         PreparedStatement pst = null;
         try {
@@ -36,6 +37,7 @@ public class DAO_transporte_empresa {
             pst.setString(3, trem.getC3sigla());
             pst.setString(4, trem.getC4direccion());
             pst.setString(5, trem.getC5telefono());
+            pst.setBoolean(6, trem.getC6eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + trem.toString(), titulo);
@@ -54,7 +56,8 @@ public class DAO_transporte_empresa {
             pst.setString(2, trem.getC3sigla());
             pst.setString(3, trem.getC4direccion());
             pst.setString(4, trem.getC5telefono());
-            pst.setInt(5, trem.getC1idtransporte_empresa());
+            pst.setBoolean(5, trem.getC6eliminado());
+            pst.setInt(6, trem.getC1idtransporte_empresa());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + trem.toString(), titulo);

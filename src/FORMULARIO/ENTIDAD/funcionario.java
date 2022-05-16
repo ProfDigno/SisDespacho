@@ -11,6 +11,7 @@ private String C6telefono;
 private String C7direccion;
 private String C8cargo;
 private double C9salario;
+private boolean C10eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -85,6 +86,15 @@ private static String nom_idtabla;
 	public void setC9salario(double C9salario){
 		this.C9salario = C9salario;
 	}
+
+    public boolean getC10eliminado() {
+        return C10eliminado;
+    }
+
+    public void setC10eliminado(boolean C10eliminado) {
+        this.C10eliminado = C10eliminado;
+    }
+        
 	public String toString() {
 		return "funcionario(" + ",idfuncionario=" + C1idfuncionario + " ,fecha_creado=" + C2fecha_creado + " ,creado_por=" + C3creado_por + " ,nombre=" + C4nombre + " ,cedula=" + C5cedula + " ,telefono=" + C6telefono + " ,direccion=" + C7direccion + " ,cargo=" + C8cargo + " ,salario=" + C9salario + " )";
 	}

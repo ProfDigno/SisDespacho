@@ -23,17 +23,18 @@ public class FrmTercero_ciudad extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private tercero_ciudad entidad = new tercero_ciudad();
-    private BO_tercero_ciudad BO = new BO_tercero_ciudad();
-    private DAO_tercero_ciudad DAO = new DAO_tercero_ciudad();
+    private tercero_ciudad ENTtc = new tercero_ciudad();
+    private BO_tercero_ciudad BOtc = new BO_tercero_ciudad();
+    private DAO_tercero_ciudad DAOtc = new DAO_tercero_ciudad();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("TERCERO CIUDAD");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_tercero_ciudad(conn, tbltabla);
+        DAOtc.actualizar_tabla_tercero_ciudad(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -52,30 +53,31 @@ public class FrmTercero_ciudad extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            BO.insertar_tercero_ciudad(entidad, tbltabla);
+            ENTtc.setC2nombre(txtnombre.getText());
+            ENTtc.setC3sigla(txtsigla.getText());
+            BOtc.insertar_tercero_ciudad(ENTtc, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idtercero_ciudad(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            BO.update_tercero_ciudad(entidad, tbltabla);
+            ENTtc.setC1idtercero_ciudad(Integer.parseInt(txtid.getText()));
+            ENTtc.setC2nombre(txtnombre.getText());
+            ENTtc.setC3sigla(txtsigla.getText());
+            BOtc.update_tercero_ciudad(ENTtc, tbltabla);
         }
     }
 
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_tercero_ciudad(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idtercero_ciudad()));
-        txtnombre.setText(entidad.getC2nombre());
-        txtsigla.setText(entidad.getC3sigla());
+        DAOtc.cargar_tercero_ciudad(conn,ENTtc, idproducto);
+        txtid.setText(String.valueOf(ENTtc.getC1idtercero_ciudad()));
+        txtnombre.setText(ENTtc.getC2nombre());
+        txtsigla.setText(ENTtc.getC3sigla());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -85,6 +87,13 @@ public class FrmTercero_ciudad extends javax.swing.JInternalFrame {
         btneditar.setEnabled(false);
         btndeletar.setEnabled(false);
         txtnombre.grabFocus();
+    }
+    private void boton_eliminar_tercero_ciudad() {
+        if (tbltabla.getSelectedRow()>=0) {
+            ENTtc.setC1idtercero_ciudad(Integer.parseInt(txtid.getText()));
+            BOtc.update_tercero_ciudad_eliminar(ENTtc, tbltabla);
+            reestableser();
+        }
     }
     private void boton_nuevo(){
         reestableser();
@@ -192,6 +201,11 @@ public class FrmTercero_ciudad extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("SIGLA:");
@@ -317,7 +331,7 @@ public class FrmTercero_ciudad extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_tercero_ciudad(tbltabla);
+        DAOtc.ancho_tabla_tercero_ciudad(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -343,6 +357,13 @@ public class FrmTercero_ciudad extends javax.swing.JInternalFrame {
     private void txtsiglaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsiglaKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsiglaKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar_tercero_ciudad();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

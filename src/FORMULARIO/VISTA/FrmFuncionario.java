@@ -31,14 +31,14 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
     EvenJtable eveJtab = new EvenJtable();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     private EvenFecha evefec = new EvenFecha();
-    private funcionario entidad = new funcionario();
-    private BO_funcionario BO = new BO_funcionario();
-    private DAO_funcionario DAO = new DAO_funcionario();
+    private funcionario ENTfun = new funcionario();
+    private BO_funcionario BOfun = new BO_funcionario();
+    private DAO_funcionario DAOfun = new DAO_funcionario();
     private DAO_vale DAOv = new DAO_vale();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor = new cla_color_palete();
-    private dao_usuario dao_usu = new dao_usuario();
+    private dao_usuario DAOusu = new dao_usuario();
     private entidad_usuario ENTusu = new entidad_usuario();
     private String creado_por = ENTusu.getGlobal_idusuario() + "-" + ENTusu.getGlobal_nombre();
 
@@ -46,7 +46,7 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         this.setTitle("FUNCIONARIO");
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
-        DAO.actualizar_tabla_funcionario(conn, tbltabla);
+        DAOfun.actualizar_tabla_funcionario(conn, tbltabla);
         color_formulario();
         evefec.cargar_combobox_mes(cmbmes_vale);
     }
@@ -79,43 +79,54 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
     }
 
     private void cargar_dato() {
-        entidad.setC3creado_por(creado_por);
-        entidad.setC4nombre(txtnombre.getText());
-        entidad.setC5cedula(txtcedula.getText());
-        entidad.setC6telefono(txttelefono.getText());
-        entidad.setC7direccion(txtdireccion.getText());
-        entidad.setC8cargo(txtcargo.getText());
-        entidad.setC9salario(Double.parseDouble(txtsalario.getText()));
+        ENTfun.setC3creado_por(creado_por);
+        ENTfun.setC4nombre(txtnombre.getText());
+        ENTfun.setC5cedula(txtcedula.getText());
+        ENTfun.setC6telefono(txttelefono.getText());
+        ENTfun.setC7direccion(txtdireccion.getText());
+        ENTfun.setC8cargo(txtcargo.getText());
+        ENTfun.setC9salario(Double.parseDouble(txtsalario.getText()));
     }
 
     private void boton_guardar() {
         if (validar_guardar()) {
             cargar_dato();
-            BO.insertar_funcionario(entidad, tbltabla);
+            BOfun.insertar_funcionario(ENTfun, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idfuncionario(Integer.parseInt(txtid.getText()));
+            ENTfun.setC1idfuncionario(Integer.parseInt(txtid.getText()));
             cargar_dato();
-            BO.update_funcionario(entidad, tbltabla);
+            ENTfun.setC10eliminado(false);
+            BOfun.update_funcionario(ENTfun, tbltabla, true);
+        }
+    }
+
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTfun.setC1idfuncionario(Integer.parseInt(txtid.getText()));
+            ENTfun.setC10eliminado(true);
+            BOfun.update_funcionario(ENTfun, tbltabla, false);
+            reestableser();
         }
     }
 
     private void seleccionar_tabla() {
         int idfuncionario = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_funcionario(conn, entidad, idfuncionario);
-        txtid.setText(String.valueOf(entidad.getC1idfuncionario()));
-        txtnombre.setText(entidad.getC4nombre());
-        txtcedula.setText(entidad.getC5cedula());
-        txttelefono.setText(entidad.getC6telefono());
-        txtdireccion.setText(entidad.getC7direccion());
-        txtcargo.setText(entidad.getC8cargo());
-        txtsalario.setText(String.valueOf(entidad.getC9salario()));
+        DAOfun.cargar_funcionario(conn, ENTfun, idfuncionario);
+        txtid.setText(String.valueOf(ENTfun.getC1idfuncionario()));
+        txtnombre.setText(ENTfun.getC4nombre());
+        txtcedula.setText(ENTfun.getC5cedula());
+        txttelefono.setText(ENTfun.getC6telefono());
+        txtdireccion.setText(ENTfun.getC7direccion());
+        txtcargo.setText(ENTfun.getC8cargo());
+        txtsalario.setText(String.valueOf(ENTfun.getC9salario()));
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
         cargar_funcionario_vale();
     }
 
@@ -123,10 +134,11 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
         if (tbltabla.getSelectedRow() >= 0) {
             int idfuncionario = eveJtab.getInt_select_id(tbltabla);
             String fecha = evefec.getmes_combobox(cmbmes_vale, " v.fecha_creado ");
-            DAO.actualizar_tabla_funcionario_vale(conn, tbltablavale, idfuncionario, fecha);
+            DAOfun.actualizar_tabla_funcionario_vale(conn, tbltablavale, idfuncionario, fecha);
             sumar_vale_funcionario(conn, idfuncionario, fecha);
         }
     }
+
     void imprimir_funcionario_vale_por_fecha() {
         if (tbltabla.getSelectedRow() >= 0) {
             int idfuncionario = eveJtab.getInt_select_id(tbltabla);
@@ -134,6 +146,7 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
             DAOv.imprimir_rep_vale_por_fecha(conn, idfuncionario, fecha);
         }
     }
+
     private void reestableser() {
         txtid.setText(null);
         txtnombre.setText(null);
@@ -159,19 +172,19 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
                 + "from vale v,funcionario f \n"
                 + "where v.fk_idfuncionario=f.idfuncionario \n"
                 + "and v.estado='EMITIDO'\n"
-                + "and v.fk_idfuncionario="+fk_idfuncionario+filtro
+                + "and v.fk_idfuncionario=" + fk_idfuncionario + filtro
                 + " group by f.salario;";
         try {
-            ResultSet rs = eveconn.getResulsetSQL(conn,sql, titulo);
+            ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
-                int salario=(rs.getInt(1));
-                int sum_vale=(rs.getInt(2));
-                int diferencia=(rs.getInt(3));
+                int salario = (rs.getInt(1));
+                int sum_vale = (rs.getInt(2));
+                int diferencia = (rs.getInt(3));
                 jFsalario.setValue(salario);
                 jFsum_vale.setValue(sum_vale);
                 jFdiferencia.setValue(diferencia);
                 evemen.Imprimir_serial_sql(sql, titulo);
-            }else{
+            } else {
                 jFsalario.setValue(0);
                 jFsum_vale.setValue(0);
                 jFdiferencia.setValue(0);
@@ -180,7 +193,8 @@ public class FrmFuncionario extends javax.swing.JInternalFrame {
             evemen.mensaje_error(e, sql, titulo);
         }
     }
-private void boton_imprimir() {
+
+    private void boton_imprimir() {
         if (tbltablavale.getSelectedRow() >= 0) {
             int idvale_select = eveJtab.getInt_select_id(tbltablavale);
             DAOv.imprimir_rep_vale(conn, idvale_select);
@@ -188,6 +202,7 @@ private void boton_imprimir() {
             JOptionPane.showMessageDialog(null, "SELECCIONAR UN VALE PARA IMPRIMIR", "ERROR", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     public FrmFuncionario() {
         initComponents();
         abrir_formulario();
@@ -311,6 +326,11 @@ private void boton_imprimir() {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         txtcedula.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         txtcedula.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -612,7 +632,7 @@ private void boton_imprimir() {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_funcionario(tbltabla);
+        DAOfun.ancho_tabla_funcionario(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -669,6 +689,13 @@ private void boton_imprimir() {
         // TODO add your handling code here:
         imprimir_funcionario_vale_por_fecha();
     }//GEN-LAST:event_btnimprimir_resumenActionPerformed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

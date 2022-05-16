@@ -22,13 +22,15 @@ public class DAO_funcionario {
     EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "FUNCIONARIO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "FUNCIONARIO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO funcionario(idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario) VALUES (?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE funcionario SET fecha_creado=?,creado_por=?,nombre=?,cedula=?,telefono=?,direccion=?,cargo=?,salario=? WHERE idfuncionario=?;";
-    private String sql_select = "SELECT idfuncionario as idf,nombre,cedula,cargo,to_char(salario,'"+varglo.getFormato_numero_3c()+"') as salario FROM funcionario order by 1 desc;";
+    private String sql_insert = "INSERT INTO funcionario(idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario,eliminado) VALUES (?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE funcionario SET fecha_creado=?,creado_por=?,nombre=?,cedula=?,telefono=?,direccion=?,cargo=?,salario=?,eliminado=? WHERE idfuncionario=?;";
+    private String sql_select = "SELECT idfuncionario as idf,nombre,cedula,cargo,to_char(salario,'"+varglo.getFormato_numero_3c()+"') as salario "
+            + "FROM funcionario where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario FROM funcionario WHERE idfuncionario=";
 
     public void insertar_funcionario(Connection conn, funcionario fun) {
         fun.setC1idfuncionario(eveconn.getInt_ultimoID_mas_uno(conn, fun.getTb_funcionario(), fun.getId_idfuncionario()));
+        fun.setC10eliminado(false);
         String titulo = "insertar_funcionario";
         PreparedStatement pst = null;
         try {
@@ -42,6 +44,7 @@ public class DAO_funcionario {
             pst.setString(7, fun.getC7direccion());
             pst.setString(8, fun.getC8cargo());
             pst.setDouble(9, fun.getC9salario());
+            pst.setBoolean(10, fun.getC10eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + fun.toString(), titulo);
@@ -64,7 +67,8 @@ public class DAO_funcionario {
             pst.setString(6, fun.getC7direccion());
             pst.setString(7, fun.getC8cargo());
             pst.setDouble(8, fun.getC9salario());
-            pst.setInt(9, fun.getC1idfuncionario());
+            pst.setBoolean(9, fun.getC10eliminado());
+            pst.setInt(10, fun.getC1idfuncionario());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + fun.toString(), titulo);
@@ -97,6 +101,7 @@ public class DAO_funcionario {
 
     public void actualizar_tabla_funcionario(Connection conn, JTable tbltabla) {
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        evejt.alinear_derecha_columna(tbltabla, 4);
         ancho_tabla_funcionario(tbltabla);
     }
 
@@ -110,10 +115,12 @@ public class DAO_funcionario {
                 + "f.nombre as funcio, v.descripcion,to_char(v.monto_vale,'"+varglo.getFormato_numero_3c()+"') as monto \n"
                 + "from vale v,funcionario f \n"
                 + "where v.fk_idfuncionario=f.idfuncionario \n"
+                + "and f.eliminado=false "
                 + "and v.estado='"+varglo.getEst_Emitido()+"'\n"
                 + "and v.fk_idfuncionario="+fk_idfuncionario+filtro
                 + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        evejt.alinear_derecha_columna(tbltabla,4);
         ancho_tabla_funcionario_vale(tbltabla);
     }
 

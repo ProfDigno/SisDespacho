@@ -5,6 +5,7 @@ public class pre_item_liquidacion_final {
 private int C1idpre_item_liquidacion_final;
 private int C2orden;
 private int C3fk_idcomprobante_liquidacion;
+private boolean C4eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -43,6 +44,15 @@ private static String nom_idtabla;
 	public void setC3fk_idcomprobante_liquidacion(int C3fk_idcomprobante_liquidacion){
 		this.C3fk_idcomprobante_liquidacion = C3fk_idcomprobante_liquidacion;
 	}
+
+    public boolean getC4eliminado() {
+        return C4eliminado;
+    }
+
+    public void setC4eliminado(boolean C4eliminado) {
+        this.C4eliminado = C4eliminado;
+    }
+        
 	public String toString() {
 		return "pre_item_liquidacion_final(" + ",idpre_item_liquidacion_final=" + C1idpre_item_liquidacion_final + " ,orden=" + C2orden + " ,fk_idcomprobante_liquidacion=" + C3fk_idcomprobante_liquidacion + " )";
 	}

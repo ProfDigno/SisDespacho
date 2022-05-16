@@ -5,6 +5,7 @@ public class tercero_pais {
 private int C1idtercero_pais;
 private String C2nombre;
 private String C3sigla;
+private boolean C4eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -43,6 +44,15 @@ private static String nom_idtabla;
 	public void setC3sigla(String C3sigla){
 		this.C3sigla = C3sigla;
 	}
+
+    public boolean isC4eliminado() {
+        return C4eliminado;
+    }
+
+    public void setC4eliminado(boolean C4eliminado) {
+        this.C4eliminado = C4eliminado;
+    }
+        
 	public String toString() {
 		return "tercero_pais(" + ",idtercero_pais=" + C1idtercero_pais + " ,nombre=" + C2nombre + " ,sigla=" + C3sigla + " )";
 	}

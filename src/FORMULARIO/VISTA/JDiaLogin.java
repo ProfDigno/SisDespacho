@@ -110,7 +110,7 @@ public class JDiaLogin extends javax.swing.JDialog {
         FrmMenuDespacho.btnliquidacion.setEnabled(false);
         FrmMenuDespacho.btngasto.setEnabled(false);
         FrmMenuDespacho.btnvale.setEnabled(false);
-        FrmMenuDespacho.jMenu_proforma.setEnabled(false);
+//        FrmMenuDespacho.jMenu_proforma.setEnabled(false);
         FrmMenuDespacho.jMenu_tercero.setEnabled(false);
         FrmMenuDespacho.jMenu_configuracion.setEnabled(false);
         FrmMenuDespacho.jMenu_liquidacion.setEnabled(false);
@@ -121,16 +121,16 @@ public class JDiaLogin extends javax.swing.JDialog {
     void habilitar_evento_menu() {
         FrmMenuDespacho.btnliquidacion_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn, "1"));
         FrmMenuDespacho.btntercero.setEnabled(dao_usu.getBoolean_hab_evento(conn,"2"));
-        FrmMenuDespacho.jMenu_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn,"3"));
+//        FrmMenuDespacho.jMenu_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn,"3"));
         FrmMenuDespacho.jMenu_tercero.setEnabled(dao_usu.getBoolean_hab_evento(conn,"4"));
         FrmMenuDespacho.jMenu_configuracion.setEnabled(dao_usu.getBoolean_hab_evento(conn,"5"));
         FrmMenuDespacho.jMenu_liquidacion.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
         FrmMenuDespacho.jMenu_gasto.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
         FrmMenuDespacho.jMenu_informe.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
         FrmMenuDespacho.jMenu_vale.setEnabled(dao_usu.getBoolean_hab_evento(conn,"1"));
-        FrmMenuDespacho.jMenuItem_nueva_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn,"6"));
+//        FrmMenuDespacho.jMenuItem_nueva_proforma.setEnabled(dao_usu.getBoolean_hab_evento(conn,"6"));
         FrmMenuDespacho.jMenuItem_tipo_comprobante.setEnabled(dao_usu.getBoolean_hab_evento(conn,"7"));
-        FrmMenuDespacho.jMenuItem_tipo_mercaderia.setEnabled(dao_usu.getBoolean_hab_evento(conn,"8"));
+//        FrmMenuDespacho.jMenuItem_tipo_mercaderia.setEnabled(dao_usu.getBoolean_hab_evento(conn,"8"));
         FrmMenuDespacho.jMenuItem_local_aduana.setEnabled(dao_usu.getBoolean_hab_evento(conn,"9"));
         FrmMenuDespacho.jMenuItem_nuevo_tercero.setEnabled(dao_usu.getBoolean_hab_evento(conn,"10"));
         FrmMenuDespacho.jMenuItem_tipo_registro.setEnabled(dao_usu.getBoolean_hab_evento(conn,"11"));

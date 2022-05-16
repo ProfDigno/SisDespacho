@@ -23,17 +23,18 @@ public class FrmRegimen extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private regimen entidad = new regimen();
-    private BO_regimen BO = new BO_regimen();
-    private DAO_regimen DAO = new DAO_regimen();
+    private regimen ENTreg = new regimen();
+    private BO_regimen BOreg = new BO_regimen();
+    private DAO_regimen DAOreg = new DAO_regimen();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("REGIMEN");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_regimen(conn, tbltabla);
+        DAOreg.actualizar_tabla_regimen(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -55,33 +56,42 @@ public class FrmRegimen extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtanombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4descripcion(txtadescripcion.getText());
-            BO.insertar_regimen(entidad, tbltabla);
+            ENTreg.setC2nombre(txtanombre.getText());
+            ENTreg.setC3sigla(txtsigla.getText());
+            ENTreg.setC4descripcion(txtadescripcion.getText());
+            BOreg.insertar_regimen(ENTreg, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idregimen(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtanombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4descripcion(txtadescripcion.getText());
-            BO.update_regimen(entidad, tbltabla);
+            ENTreg.setC1idregimen(Integer.parseInt(txtid.getText()));
+            ENTreg.setC2nombre(txtanombre.getText());
+            ENTreg.setC3sigla(txtsigla.getText());
+            ENTreg.setC4descripcion(txtadescripcion.getText());
+            ENTreg.setC5eliminado(false);
+            BOreg.update_regimen(ENTreg, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTreg.setC1idregimen(Integer.parseInt(txtid.getText()));
+            ENTreg.setC5eliminado(true);
+            BOreg.update_regimen(ENTreg, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_regimen(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idregimen()));
-        txtanombre.setText(entidad.getC2nombre());
-        txtsigla.setText(entidad.getC3sigla());
-        txtadescripcion.setText(entidad.getC4descripcion());
+        DAOreg.cargar_regimen(conn,ENTreg, idproducto);
+        txtid.setText(String.valueOf(ENTreg.getC1idregimen()));
+        txtanombre.setText(ENTreg.getC2nombre());
+        txtsigla.setText(ENTreg.getC3sigla());
+        txtadescripcion.setText(ENTreg.getC4descripcion());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -193,6 +203,11 @@ public class FrmRegimen extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("SIGLA:");
@@ -351,7 +366,7 @@ public class FrmRegimen extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_regimen(tbltabla);
+        DAOreg.ancho_tabla_regimen(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -372,6 +387,13 @@ public class FrmRegimen extends javax.swing.JInternalFrame {
     private void txtsiglaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtsiglaKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtsiglaKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

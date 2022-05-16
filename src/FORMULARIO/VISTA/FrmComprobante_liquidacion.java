@@ -23,12 +23,13 @@ public class FrmComprobante_liquidacion extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private comprobante_liquidacion entidad = new comprobante_liquidacion();
-    private BO_comprobante_liquidacion BO = new BO_comprobante_liquidacion();
-    private DAO_comprobante_liquidacion DAO = new DAO_comprobante_liquidacion();
+    private comprobante_liquidacion ENTcl = new comprobante_liquidacion();
+    private BO_comprobante_liquidacion BOcl = new BO_comprobante_liquidacion();
+    private DAO_comprobante_liquidacion DAOcl = new DAO_comprobante_liquidacion();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor = new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private String tipo_SIN_IVA="SIN_IVA";
     private String tipo_SOLO_IVA="SOLO_IVA";
     private String tipo_SIN_Y_SOLO_IVA="SIN_Y_SOLO_IVA";
@@ -37,7 +38,7 @@ public class FrmComprobante_liquidacion extends javax.swing.JInternalFrame {
         this.setTitle("COMPROBANTE LIQUIDACION");
         evetbl.centrar_formulario_internalframa(this);
         reestableser();
-        DAO.actualizar_tabla_comprobante_liquidacion(conn, tbltabla);
+        DAOcl.actualizar_tabla_comprobante_liquidacion(conn, tbltabla);
         color_formulario();
     }
 
@@ -80,54 +81,64 @@ public class FrmComprobante_liquidacion extends javax.swing.JInternalFrame {
         return tipo;
     }
     void cargar_dato() {
-        entidad.setC2descripcion(txtdescripcion.getText());
-        entidad.setC3por_iva(getDoubleIva());
-        entidad.setC4tipo_iva(getStringTipoIva());
-        entidad.setC5nro_despacho(jCnro_despacho.isSelected());
+        ENTcl.setC2descripcion(txtdescripcion.getText());
+        ENTcl.setC3por_iva(getDoubleIva());
+        ENTcl.setC4tipo_iva(getStringTipoIva());
+        ENTcl.setC5nro_despacho(jCnro_despacho.isSelected());
+        ENTcl.setC6eliminado(false);
     }
 
     private void boton_guardar() {
         if (validar_guardar()) {
             cargar_dato();
-            BO.insertar_comprobante_liquidacion(entidad, tbltabla);
+            BOcl.insertar_comprobante_liquidacion(ENTcl, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idcomprobante_liquidacion(Integer.parseInt(txtid.getText()));
+            ENTcl.setC1idcomprobante_liquidacion(Integer.parseInt(txtid.getText()));
             cargar_dato();
-            BO.update_comprobante_liquidacion(entidad, tbltabla);
+            ENTcl.setC6eliminado(false);
+            BOcl.update_comprobante_liquidacion(ENTcl, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTcl.setC1idcomprobante_liquidacion(Integer.parseInt(txtid.getText()));
+            ENTcl.setC6eliminado(true);
+            BOcl.update_comprobante_liquidacion(ENTcl, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_comprobante_liquidacion(conn, entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idcomprobante_liquidacion()));
-        txtdescripcion.setText(entidad.getC2descripcion());
-        if(entidad.getC3por_iva()==5){
+        DAOcl.cargar_comprobante_liquidacion(conn, ENTcl, idproducto);
+        txtid.setText(String.valueOf(ENTcl.getC1idcomprobante_liquidacion()));
+        txtdescripcion.setText(ENTcl.getC2descripcion());
+        if(ENTcl.getC3por_iva()==5){
             jRiva_5.setSelected(true);
         }
-        if(entidad.getC3por_iva()==10){
+        if(ENTcl.getC3por_iva()==10){
             jRiva_10.setSelected(true);
         }
-        if(entidad.getC3por_iva()==0){
+        if(ENTcl.getC3por_iva()==0){
             jRiva_exenta.setSelected(true);
         }
-        if(entidad.getC4tipo_iva().equals(tipo_SIN_IVA)){
+        if(ENTcl.getC4tipo_iva().equals(tipo_SIN_IVA)){
             jRtipo_monto_sin_iva.setSelected(true);
         }
-        if(entidad.getC4tipo_iva().equals(tipo_SOLO_IVA)){
+        if(ENTcl.getC4tipo_iva().equals(tipo_SOLO_IVA)){
             jRtipo_monto_solo_iva.setSelected(true);
         }
-        if(entidad.getC4tipo_iva().equals(tipo_SIN_Y_SOLO_IVA)){
+        if(ENTcl.getC4tipo_iva().equals(tipo_SIN_Y_SOLO_IVA)){
             jRtipo_siniva_soloiva.setSelected(true);
         }
-        jCnro_despacho.setSelected(entidad.getC5nro_despacho());
+        jCnro_despacho.setSelected(ENTcl.getC5nro_despacho());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
 
     private void reestableser() {
@@ -258,6 +269,11 @@ public class FrmComprobante_liquidacion extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("IVA"));
 
@@ -447,7 +463,7 @@ public class FrmComprobante_liquidacion extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_comprobante_liquidacion(tbltabla);
+        DAOcl.ancho_tabla_comprobante_liquidacion(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -469,6 +485,13 @@ public class FrmComprobante_liquidacion extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 //        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_venta);
     }//GEN-LAST:event_txtdescripcionKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -21,7 +21,6 @@ public class BO_tipo_comprobante {
                 conn.setAutoCommit(false);
             }
             tgali_dao.insertar_tipo_comprobante(conn, tgali);
-//            tgali_dao.actualizar_tabla_tipo_comprobante(conn, tbltabla);
             conn.commit();
         } catch (SQLException e) {
             evmen.mensaje_error(e, tgali.toString(), titulo);
@@ -33,8 +32,20 @@ public class BO_tipo_comprobante {
         }
     }
 
-    public void update_tipo_comprobante(tipo_comprobante tgali, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR TIPO_GASTO_LIQUIDACION", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+    public void update_tipo_comprobante(tipo_comprobante tgali, JTable tbltabla, boolean es_editar) {
+        String mensaje = "";
+        String titulo1 = "";
+        String btnok = "";
+        if (es_editar) {
+            mensaje = "ESTAS SEGURO DE MODIFICAR TIPO_GASTO_LIQUIDACION";
+            titulo1 = "MODIFICAR";
+            btnok = "ACEPTAR";
+        } else {
+            mensaje = "ESTAS SEGURO DE ELIMINAR TIPO_GASTO_LIQUIDACION";
+            titulo1 = "ELIMINAR";
+            btnok = "ELIMINAR";
+        }
+        if (evmen.MensajeGeneral_warning(mensaje, titulo1,btnok, "CANCELAR")) {
             String titulo = "update_tipo_comprobante";
             Connection conn = ConnPostgres.getConnPosgres();
             try {
@@ -42,7 +53,6 @@ public class BO_tipo_comprobante {
                     conn.setAutoCommit(false);
                 }
                 tgali_dao.update_tipo_comprobante(conn, tgali);
-//                tgali_dao.actualizar_tabla_tipo_comprobante(conn, tbltabla);
                 conn.commit();
             } catch (SQLException e) {
                 evmen.mensaje_error(e, tgali.toString(), titulo);

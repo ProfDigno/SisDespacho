@@ -5,6 +5,7 @@ public class honorario_despacho {
 private int C1idhonorario_despacho;
 private String C2fecha_creado;
 private double C3monto;
+private boolean C4eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -43,6 +44,15 @@ private static String nom_idtabla;
 	public void setC3monto(double C3monto){
 		this.C3monto = C3monto;
 	}
+
+    public boolean getC4eliminado() {
+        return C4eliminado;
+    }
+
+    public void setC4eliminado(boolean C4eliminado) {
+        this.C4eliminado = C4eliminado;
+    }
+        
 	public String toString() {
 		return "honorario_despacho(" + ",idhonorario_despacho=" + C1idhonorario_despacho + " ,fecha_creado=" + C2fecha_creado + " ,monto=" + C3monto + " )";
 	}

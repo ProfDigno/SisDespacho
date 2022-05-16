@@ -21,6 +21,7 @@ private String C2moneda;
 private double C3guarani_unidad_aduana;
 private double C4guarani_unidad_mercado;
 private String C5sigla;
+private boolean C6eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -59,6 +60,15 @@ private static String nom_idtabla;
 	public void setC3guarani_unidad_aduana(double C3guarani_unidad){
 		this.C3guarani_unidad_aduana = C3guarani_unidad;
 	}
+
+    public boolean getC6eliminado() {
+        return C6eliminado;
+    }
+
+    public void setC6eliminado(boolean C6eliminado) {
+        this.C6eliminado = C6eliminado;
+    }
+        
 //	public String toString() {
 //		return "moneda_cambio(" + ",idmoneda_cambio=" + C1idmoneda_cambio + " ,moneda=" + C2moneda + " ,guarani_unidad=" + C3guarani_unidad_aduana + " )";
 //	}

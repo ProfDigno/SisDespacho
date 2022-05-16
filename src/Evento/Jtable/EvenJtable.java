@@ -8,6 +8,7 @@ package Evento.Jtable;
 import Evento.Mensaje.EvenMensajeJoptionpane;
 import java.awt.Color;
 import java.util.ArrayList;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
@@ -15,6 +16,7 @@ import javax.swing.JTextField;
 import javax.swing.JViewport;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
@@ -356,5 +358,14 @@ public class EvenJtable {
             evmen.mensaje_error(e, tutulo);
         }
     }
-    
+    public void alinear_derecha_columna(JTable tabla, int columna){
+        String titulo="alinear_derecha_columna";
+        try {
+            DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+            cellRenderer.setHorizontalAlignment(JLabel.RIGHT);
+            tabla.getColumnModel().getColumn(columna).setCellRenderer(cellRenderer);
+        } catch (Exception e) {
+            evmen.mensaje_error(e, titulo);
+        }
+    }
 }

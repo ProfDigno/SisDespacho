@@ -20,13 +20,14 @@ public class DAO_incoterms {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "INCOTERMS GUARDADO CORRECTAMENTE";
     private String mensaje_update = "INCOTERMS MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO incoterms(idincoterms,nombre,sigla,descripcion) VALUES (?,?,?,?);";
-    private String sql_update = "UPDATE incoterms SET nombre=?,sigla=?,descripcion=? WHERE idincoterms=?;";
-    private String sql_select = "SELECT idincoterms,nombre,sigla,descripcion FROM incoterms order by 1 desc;";
+    private String sql_insert = "INSERT INTO incoterms(idincoterms,nombre,sigla,descripcion,eliminado) VALUES (?,?,?,?,?);";
+    private String sql_update = "UPDATE incoterms SET nombre=?,sigla=?,descripcion=?,eliminado=? WHERE idincoterms=?;";
+    private String sql_select = "SELECT idincoterms,nombre,sigla,descripcion FROM incoterms where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idincoterms,nombre,sigla,descripcion FROM incoterms WHERE idincoterms=";
 
     public void insertar_incoterms(Connection conn, incoterms inc) {
         inc.setC1idincoterms(eveconn.getInt_ultimoID_mas_uno(conn, inc.getTb_incoterms(), inc.getId_idincoterms()));
+        inc.setC5eliminado(false);
         String titulo = "insertar_incoterms";
         PreparedStatement pst = null;
         try {
@@ -35,6 +36,7 @@ public class DAO_incoterms {
             pst.setString(2, inc.getC2nombre());
             pst.setString(3, inc.getC3sigla());
             pst.setString(4, inc.getC4descripcion());
+            pst.setBoolean(5,inc.getC5eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + inc.toString(), titulo);
@@ -52,7 +54,8 @@ public class DAO_incoterms {
             pst.setString(1, inc.getC2nombre());
             pst.setString(2, inc.getC3sigla());
             pst.setString(3, inc.getC4descripcion());
-            pst.setInt(4, inc.getC1idincoterms());
+            pst.setBoolean(4, inc.getC5eliminado());
+            pst.setInt(5, inc.getC1idincoterms());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + inc.toString(), titulo);

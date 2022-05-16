@@ -7,6 +7,7 @@ private String C2descripcion;
 private double C3por_iva;
 private String C4tipo_iva;
 private boolean C5nro_despacho;
+private boolean C6eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -59,6 +60,14 @@ private static String nom_idtabla;
 
     public void setC4tipo_iva(String C4tipo_iva) {
         this.C4tipo_iva = C4tipo_iva;
+    }
+
+    public boolean getC6eliminado() {
+        return C6eliminado;
+    }
+
+    public void setC6eliminado(boolean C6eliminado) {
+        this.C6eliminado = C6eliminado;
     }
 
     @Override

@@ -45,18 +45,20 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
     private void actualizar_buscar() {
         String sql = "";
         String buscar = txtbuscar_nombre.getText();
-        int Ancho[] = {20, 80};
+        int Ancho[] = {5, 95};
         if (vbus.getTipo_tabla() == 1) {
             sql = "select idtipo_comprobante as idtc,descripcion  \n"
                     + "from tipo_comprobante "
                     + "where mercaderia=true\n"
+                    + "and eliminado=false "
                     + "and descripcion ilike'%" + buscar + "%' "
                     + "order by 2 desc;";
         }
         if (vbus.getTipo_tabla() == 2) {
             sql = "select idtercero_ciudad  as idtc,nombre  \n"
                     + "from tercero_ciudad  \n"
-                    + "where nombre  ilike'%" + buscar + "%' \n"
+                    + "where eliminado=false "
+                    + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
         }
         if (vbus.getTipo_tabla() == 3) {
@@ -64,7 +66,8 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                     + "tr.nombre as rubro,te.saldo_credito \n"
                     + "from tercero te,tercero_rubro tr \n"
                     + "where te.fk_idtercero_rubro=tr.idtercero_rubro \n"
-                    + "and te.importador=true\n"
+                    + "and te.importador=true\n "
+                    + "and te.eliminado=false\n "
                     + "and te.nombre ilike '%" + buscar + "%'\n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 18, 1, 1};
@@ -74,6 +77,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
             sql = "select idtercero  as idt,nombre,ruc  \n"
                     + "from tercero  \n"
                     + "where exportador=true \n"
+                    + "and eliminado=false\n "
                     + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 20};
@@ -82,7 +86,8 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         if (vbus.getTipo_tabla() == 5) {
             sql = "select idaduana  as ida,nombre,sigla  \n"
                     + "from aduana   \n"
-                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "where eliminado=false "
+                    + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 20};
             Ancho = Ancho1;
@@ -90,23 +95,26 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         if (vbus.getTipo_tabla() == 6) {
             sql = "select idtransporte_empresa  as idt,nombre  \n"
                     + "from transporte_empresa   \n"
-                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "where eliminado=false "
+                    + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
         }
         if (vbus.getTipo_tabla() == 7) {
             sql = "select idregimen  as idr,sigla,nombre  \n"
                     + "from regimen   \n"
-                    + "where  sigla  ilike'%" + buscar + "%' \n"
+                    + "where eliminado=false "
+                    + "and sigla  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
-            int Ancho1[] = {10, 20, 70};
+            int Ancho1[] = {5, 10, 85};
             Ancho = Ancho1;
         }
         if (vbus.getTipo_tabla() == 8) {
             sql = "select idincoterms  as idi,sigla,nombre  \n"
                     + "from incoterms   \n"
-                    + "where  sigla  ilike'%" + buscar + "%' \n"
+                    + "where eliminado=false "
+                    + "and sigla  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
-            int Ancho1[] = {10, 20, 70};
+            int Ancho1[] = {5, 10, 85};
             Ancho = Ancho1;
         }
         if (vbus.getTipo_tabla() == 9) {
@@ -119,13 +127,15 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         if (vbus.getTipo_tabla() == 10) {
             sql = "select idfuncionario  as idfu,nombre  \n"
                     + "from funcionario   \n"
-                    + "where  nombre  ilike'%" + buscar + "%' \n"
+                    + "where eliminado=false "
+                    + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
         }
         if (vbus.getTipo_tabla() == 11) {
             sql = "select idtercero  as idt,nombre,ruc  \n"
                     + "from tercero  \n"
                     + "where despachante=true \n"
+                    + "and eliminado=false\n "
                     + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 20};
@@ -137,6 +147,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                     + "from tercero te,tercero_rubro tr \n"
                     + "where te.fk_idtercero_rubro=tr.idtercero_rubro \n"
                     + "and te.exportador=true\n"
+                    + "and te.eliminado=false\n "
                     + "and te.nombre ilike '%" + buscar + "%'\n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 18, 1, 1};
@@ -146,6 +157,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
             sql = "select idtercero  as idt,nombre,ruc  \n"
                     + "from tercero  \n"
                     + "where importador=true \n"
+                    + "and eliminado=false\n "
                     + "and nombre  ilike'%" + buscar + "%' \n"
                     + "order by 2 desc;";
             int Ancho1[] = {10, 70, 20};
@@ -324,6 +336,7 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         jLabel1.setText("BUSCAR:");
 
         txtbuscar_nombre.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        txtbuscar_nombre.setText("dfgdfgdg");
         txtbuscar_nombre.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtbuscar_nombreKeyPressed(evt);

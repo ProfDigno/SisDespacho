@@ -20,19 +20,21 @@ public class DAO_despacho_zona {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "DESPACHO_ZONA GUARDADO CORRECTAMENTE";
     private String mensaje_update = "DESPACHO_ZONA MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO despacho_zona(iddespacho_zona,nombre) VALUES (?,?);";
-    private String sql_update = "UPDATE despacho_zona SET nombre=? WHERE iddespacho_zona=?;";
-    private String sql_select = "SELECT iddespacho_zona,nombre FROM despacho_zona order by 1 desc;";
+    private String sql_insert = "INSERT INTO despacho_zona(iddespacho_zona,nombre,eliminado) VALUES (?,?,?);";
+    private String sql_update = "UPDATE despacho_zona SET nombre=?,eliminado=? WHERE iddespacho_zona=?;";
+    private String sql_select = "SELECT iddespacho_zona,nombre FROM despacho_zona where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT iddespacho_zona,nombre FROM despacho_zona WHERE iddespacho_zona=";
 
     public void insertar_despacho_zona(Connection conn, despacho_zona dzon) {
         dzon.setC1iddespacho_zona(eveconn.getInt_ultimoID_mas_uno(conn, dzon.getTb_despacho_zona(), dzon.getId_iddespacho_zona()));
+        dzon.setC3eliminado(false);
         String titulo = "insertar_despacho_zona";
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_insert);
             pst.setInt(1, dzon.getC1iddespacho_zona());
             pst.setString(2, dzon.getC2nombre());
+            pst.setBoolean(3, dzon.getC3eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + dzon.toString(), titulo);
@@ -48,7 +50,8 @@ public class DAO_despacho_zona {
         try {
             pst = conn.prepareStatement(sql_update);
             pst.setString(1, dzon.getC2nombre());
-            pst.setInt(2, dzon.getC1iddespacho_zona());
+            pst.setBoolean(2, dzon.getC3eliminado());
+            pst.setInt(3, dzon.getC1iddespacho_zona());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + dzon.toString(), titulo);

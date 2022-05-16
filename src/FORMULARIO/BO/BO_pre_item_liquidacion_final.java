@@ -33,8 +33,20 @@ public class BO_pre_item_liquidacion_final {
         }
     }
 
-    public void update_pre_item_liquidacion_final(pre_item_liquidacion_final pilf, JTable tbltabla) {
-        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE MODIFICAR PRE_ITEM_LIQUIDACION_FINAL", "MODIFICAR", "ACEPTAR", "CANCELAR")) {
+    public void update_pre_item_liquidacion_final(pre_item_liquidacion_final pilf, JTable tbltabla,boolean es_editar) {
+        String mensaje = "";
+        String titulo1 = "";
+        String btnok = "";
+        if (es_editar) {
+            mensaje = "ESTAS SEGURO DE MODIFICAR PRE_ITEM_LIQUIDACION_FINAL";
+            titulo1 = "MODIFICAR";
+            btnok = "ACEPTAR";
+        }else{
+            mensaje = "ESTAS SEGURO DE ELIMINAR PRE_ITEM_LIQUIDACION_FINAL";
+            titulo1 = "ELIMINAR";
+            btnok = "ELIMINAR";
+        }
+        if (evmen.MensajeGeneral_warning(mensaje, titulo1,btnok, "CANCELAR")) {
             String titulo = "update_pre_item_liquidacion_final";
             Connection conn = ConnPostgres.getConnPosgres();
             try {

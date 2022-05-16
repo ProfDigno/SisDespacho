@@ -21,17 +21,22 @@ public class DAO_moneda_cambio {
     private String mensaje_insert = "MONEDA_CAMBIO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "MONEDA_CAMBIO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO moneda_cambio(idmoneda_cambio,moneda,"
-            + "guarani_unidad_aduana,guarani_unidad_mercado,sigla) VALUES (?,?,?,?,?);";
+            + "guarani_unidad_aduana,guarani_unidad_mercado,sigla,eliminado) VALUES (?,?,?,?,?,?);";
     private String sql_update = "UPDATE moneda_cambio SET moneda=?,guarani_unidad_aduana=?,"
-            + "guarani_unidad_mercado=?,sigla=? WHERE idmoneda_cambio=?;";
-    private String sql_select = "SELECT idmoneda_cambio,moneda,guarani_unidad_aduana,"
-            + "guarani_unidad_mercado,sigla FROM moneda_cambio order by 1 desc;";
+            + "guarani_unidad_mercado=?,sigla=?,eliminado=? WHERE idmoneda_cambio=?;";
+    private String sql_select = "SELECT idmoneda_cambio as idmc,moneda,"
+            + "to_char(guarani_unidad_aduana,'999G999D99') as aduana,"
+            + "to_char(guarani_unidad_mercado,'999G999D99') as mercado,"
+            + "sigla "
+            + "FROM moneda_cambio "
+            + "where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idmoneda_cambio,moneda,guarani_unidad_aduana,"
             + "guarani_unidad_mercado,sigla FROM moneda_cambio WHERE idmoneda_cambio=";
-
+    
     public void insertar_moneda_cambio(Connection conn, moneda_cambio mcam) {
         mcam.setC1idmoneda_cambio(eveconn.getInt_ultimoID_mas_uno(conn, mcam.getTb_moneda_cambio(), mcam.getId_idmoneda_cambio()));
         String titulo = "insertar_moneda_cambio";
+        mcam.setC6eliminado(false);
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_insert);
@@ -40,6 +45,7 @@ public class DAO_moneda_cambio {
             pst.setDouble(3, mcam.getC3guarani_unidad_aduana());
             pst.setDouble(4, mcam.getC4guarani_unidad_mercado());
             pst.setString(5, mcam.getC5sigla());
+            pst.setBoolean(6, mcam.getC6eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + mcam.toString(), titulo);
@@ -58,7 +64,8 @@ public class DAO_moneda_cambio {
             pst.setDouble(2, mcam.getC3guarani_unidad_aduana());
             pst.setDouble(3, mcam.getC4guarani_unidad_mercado());
             pst.setString(4, mcam.getC5sigla());
-            pst.setInt(5, mcam.getC1idmoneda_cambio());
+            pst.setBoolean(5,mcam.getC6eliminado());
+            pst.setInt(6, mcam.getC1idmoneda_cambio());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + mcam.toString(), titulo);
@@ -87,6 +94,8 @@ public class DAO_moneda_cambio {
 
     public void actualizar_tabla_moneda_cambio(Connection conn, JTable tbltabla) {
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        evejt.alinear_derecha_columna(tbltabla, 2);
+        evejt.alinear_derecha_columna(tbltabla, 3);
         ancho_tabla_moneda_cambio(tbltabla);
     }
 

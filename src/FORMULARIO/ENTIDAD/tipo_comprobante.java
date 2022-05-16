@@ -37,6 +37,7 @@ private boolean C4sin_comprobante;
 private boolean C5boleta_despachante;
 private boolean C6mercaderia;
 private boolean C7tipo_factura;
+private boolean C8eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 private static boolean config_inicio;
@@ -149,6 +150,14 @@ private static boolean ini_tipo_factura;
 
     public static void setIni_tipo_factura(boolean ini_tipo_factura) {
         tipo_comprobante.ini_tipo_factura = ini_tipo_factura;
+    }
+
+    public boolean getC8eliminado() {
+        return C8eliminado;
+    }
+
+    public void setC8eliminado(boolean C8eliminado) {
+        this.C8eliminado = C8eliminado;
     }
         
         

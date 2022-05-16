@@ -23,17 +23,18 @@ public class FrmMoneda_cambio extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private moneda_cambio entidad = new moneda_cambio();
-    private BO_moneda_cambio BO = new BO_moneda_cambio();
-    private DAO_moneda_cambio DAO = new DAO_moneda_cambio();
+    private moneda_cambio ENTmc = new moneda_cambio();
+    private BO_moneda_cambio BOmc = new BO_moneda_cambio();
+    private DAO_moneda_cambio DAOmc = new DAO_moneda_cambio();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("MONEDA CAMBIO");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_moneda_cambio(conn, tbltabla);
+        DAOmc.actualizar_tabla_moneda_cambio(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -58,36 +59,45 @@ public class FrmMoneda_cambio extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2moneda(txtmoneda.getText());
-            entidad.setC3guarani_unidad_aduana(Double.parseDouble(txtguarani_unidad_aduana.getText()));
-            entidad.setC4guarani_unidad_mercado(Double.parseDouble(txtguarani_unidad_mercado.getText()));
-            entidad.setC5sigla(txtsigla.getText());
-            BO.insertar_moneda_cambio(entidad, tbltabla);
+            ENTmc.setC2moneda(txtmoneda.getText());
+            ENTmc.setC3guarani_unidad_aduana(Double.parseDouble(txtguarani_unidad_aduana.getText()));
+            ENTmc.setC4guarani_unidad_mercado(Double.parseDouble(txtguarani_unidad_mercado.getText()));
+            ENTmc.setC5sigla(txtsigla.getText());
+            BOmc.insertar_moneda_cambio(ENTmc, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idmoneda_cambio(Integer.parseInt(txtid.getText()));
-            entidad.setC2moneda(txtmoneda.getText());
-            entidad.setC3guarani_unidad_aduana(Double.parseDouble(txtguarani_unidad_aduana.getText()));
-            entidad.setC4guarani_unidad_mercado(Double.parseDouble(txtguarani_unidad_mercado.getText()));
-            entidad.setC5sigla(txtsigla.getText());
-            BO.update_moneda_cambio(entidad, tbltabla);
+            ENTmc.setC1idmoneda_cambio(Integer.parseInt(txtid.getText()));
+            ENTmc.setC2moneda(txtmoneda.getText());
+            ENTmc.setC3guarani_unidad_aduana(Double.parseDouble(txtguarani_unidad_aduana.getText()));
+            ENTmc.setC4guarani_unidad_mercado(Double.parseDouble(txtguarani_unidad_mercado.getText()));
+            ENTmc.setC5sigla(txtsigla.getText());
+            ENTmc.setC6eliminado(false);
+            BOmc.update_moneda_cambio(ENTmc, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTmc.setC1idmoneda_cambio(Integer.parseInt(txtid.getText()));
+            ENTmc.setC6eliminado(true);
+            BOmc.update_moneda_cambio(ENTmc, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_moneda_cambio(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idmoneda_cambio()));
-        txtmoneda.setText(entidad.getC2moneda());
-        txtguarani_unidad_aduana.setText(String.valueOf(entidad.getC3guarani_unidad_aduana()));
-        txtguarani_unidad_mercado.setText(String.valueOf(entidad.getC4guarani_unidad_mercado()));
-        txtsigla.setText(entidad.getC5sigla());
+        DAOmc.cargar_moneda_cambio(conn,ENTmc, idproducto);
+        txtid.setText(String.valueOf(ENTmc.getC1idmoneda_cambio()));
+        txtmoneda.setText(ENTmc.getC2moneda());
+        txtguarani_unidad_aduana.setText(String.valueOf(ENTmc.getC3guarani_unidad_aduana()));
+        txtguarani_unidad_mercado.setText(String.valueOf(ENTmc.getC4guarani_unidad_mercado()));
+        txtsigla.setText(ENTmc.getC5sigla());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -210,6 +220,11 @@ public class FrmMoneda_cambio extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("Guarani Aduana:");
@@ -368,7 +383,7 @@ public class FrmMoneda_cambio extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_moneda_cambio(tbltabla);
+        DAOmc.ancho_tabla_moneda_cambio(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -402,6 +417,13 @@ public class FrmMoneda_cambio extends javax.swing.JInternalFrame {
     private void txtguarani_unidad_mercadoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtguarani_unidad_mercadoKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtguarani_unidad_mercadoKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+        boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

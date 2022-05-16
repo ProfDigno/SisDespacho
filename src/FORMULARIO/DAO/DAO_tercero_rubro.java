@@ -22,11 +22,11 @@ public class DAO_tercero_rubro {
     EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "TERCERO_RUBRO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "TERCERO_RUBRO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO tercero_rubro(idtercero_rubro,nombre,sigla,descripcion) VALUES (?,?,?,?);";
+    private String sql_insert = "INSERT INTO tercero_rubro(idtercero_rubro,nombre,sigla,descripcion,eliminado) VALUES (?,?,?,?,?);";
     private String sql_update = "UPDATE tercero_rubro SET nombre=?,sigla=?,descripcion=? WHERE idtercero_rubro=?;";
-    private String sql_select = "SELECT idtercero_rubro as idtr,nombre,sigla,descripcion FROM tercero_rubro order by 1 desc;";
+    private String sql_select = "SELECT idtercero_rubro as idtr,nombre,sigla,descripcion FROM tercero_rubro where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idtercero_rubro,nombre,sigla,descripcion FROM tercero_rubro WHERE idtercero_rubro=";
-
+    private String sql_update_eliminar = "UPDATE tercero_rubro SET eliminado=true WHERE idtercero_rubro=?;"; 
     public void insertar_tercero_rubro(Connection conn, tercero_rubro rub) {
         rub.setC1idtercero_rubro(eveconn.getInt_ultimoID_mas_uno(conn, rub.getTb_tercero_rubro(), rub.getId_idtercero_rubro()));
         String titulo = "insertar_tercero_rubro";
@@ -37,6 +37,7 @@ public class DAO_tercero_rubro {
             pst.setString(2, rub.getC2nombre());
             pst.setString(3, rub.getC3sigla());
             pst.setString(4, rub.getC4descripcion());
+            pst.setBoolean(5, false);//eliminado
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + rub.toString(), titulo);
@@ -63,7 +64,20 @@ public class DAO_tercero_rubro {
             evemen.mensaje_error(e, sql_update + "\n" + rub.toString(), titulo);
         }
     }
-
+    public void update_tercero_rubro_eliminar(Connection conn, tercero_rubro rub) {
+        String titulo = "update_tercero_rubro_eliminar";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_eliminar);
+            pst.setInt(1, rub.getC1idtercero_rubro());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_eliminar + "\n" + rub.toString(), titulo);
+//            evemen.modificado_correcto(mensaje_update, true);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_eliminar + "\n" + rub.toString(), titulo);
+        }
+    }
     public void cargar_tercero_rubro(Connection conn, tercero_rubro rub, int id) {
         String titulo = "Cargar_tercero_rubro";
         try {

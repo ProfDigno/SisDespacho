@@ -345,12 +345,12 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
     }
 
     private void cargar_moneda_cambio() {
-        evecomb.cargarCombobox(conn, cmbmoneda_cambio, "idmoneda_cambio", "moneda", "moneda_cambio", " order by idmoneda_cambio asc;");
+        evecomb.cargarCombobox(conn, cmbmoneda_cambio, "idmoneda_cambio", "moneda", "moneda_cambio", " where eliminado=false ");
         hab_cargar_moneda_cambio = true;
     }
 
     private void cargar_despacho_zona() {
-        evecomb.cargarCombobox(conn, cmbdespachozona, "iddespacho_zona", "nombre", "despacho_zona", "");
+        evecomb.cargarCombobox(conn, cmbdespachozona, "iddespacho_zona", "nombre", "despacho_zona", " where eliminado=false ");
         hab_cargar_despachozona = true;
     }
 
@@ -1034,6 +1034,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
                     + "pilf.orden,cl.descripcion,cl.por_iva,cl.tipo_iva,cl.nro_despacho \n"
                     + "from pre_item_liquidacion_final pilf,comprobante_liquidacion cl \n"
                     + "where pilf.fk_idcomprobante_liquidacion=cl.idcomprobante_liquidacion \n"
+                    + "and pilf.eliminado=false "
                     + "order by pilf.orden asc; ";
             eveJtab.limpiar_tabla_datos(model_item_liquidacion);
             try {
@@ -1198,7 +1199,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         String titulo = "buscar_por_despacho_aduana";
         String sql = "select idaduana,nombre,sigla  \n"
                 + "from aduana   \n"
-                + "where  sigla='" + sigla_aduana + "';";
+                + "where eliminado=false and sigla='" + sigla_aduana + "';";
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
@@ -1218,7 +1219,7 @@ public class FrmLiquidacion_final extends javax.swing.JInternalFrame {
         String titulo = "buscar_por_despacho_regimen";
         String sql = "select idregimen,nombre,sigla  \n"
                 + "from regimen   \n"
-                + "where  sigla='" + regimen + "';";
+                + "where eliminado=false and sigla='" + regimen + "';";
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {

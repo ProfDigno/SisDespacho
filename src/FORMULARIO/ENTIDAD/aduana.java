@@ -7,6 +7,7 @@ private String C2nombre;
 private String C3telefono;
 private String C4direccion;
 private String C5sigla;
+private boolean C6eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -57,6 +58,15 @@ private static String nom_idtabla;
 	public void setC5sigla(String C5sigla){
 		this.C5sigla = C5sigla;
 	}
+
+    public boolean getC6eliminado() {
+        return C6eliminado;
+    }
+
+    public void setC6eliminado(boolean C6eliminado) {
+        this.C6eliminado = C6eliminado;
+    }
+        
 	public String toString() {
 		return "aduana(" + ",idaduana=" + C1idaduana + " ,nombre=" + C2nombre + " ,telefono=" + C3telefono + " ,direccion=" + C4direccion + " ,sigla=" + C5sigla + " )";
 	}

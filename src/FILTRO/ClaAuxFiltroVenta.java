@@ -194,7 +194,7 @@ public class ClaAuxFiltroVenta {
         if (jCcon_comprobante.isSelected()) {
             contestado++;
             if (contestado == 1) {
-                condi = " where(";
+                condi = " and(";
                 fin = ") ";
             } else {
                 condi = " or";
@@ -205,7 +205,7 @@ public class ClaAuxFiltroVenta {
         if (jCsin_comprobante.isSelected()) {
             contestado++;
             if (contestado == 1) {
-                condi = " where(";
+                condi = " and(";
                 fin = ") ";
             } else {
                 condi = " or";
@@ -216,7 +216,7 @@ public class ClaAuxFiltroVenta {
         if (jCboleta_despachante.isSelected()) {
             contestado++;
             if (contestado == 1) {
-                condi = " where(";
+                condi = " and(";
                 fin = ") ";
             } else {
                 condi = " or";
@@ -227,7 +227,7 @@ public class ClaAuxFiltroVenta {
         if (jCmercaderia.isSelected()) {
             contestado++;
             if (contestado == 1) {
-                condi = " where(";
+                condi = " and(";
                 fin = ") ";
             } else {
                 condi = " or";
@@ -238,7 +238,7 @@ public class ClaAuxFiltroVenta {
         if (jCtipo_factura.isSelected()) {
             contestado++;
             if (contestado == 1) {
-                condi = " where(";
+                condi = " and(";
                 fin = ") ";
             } else {
                 condi = " or";

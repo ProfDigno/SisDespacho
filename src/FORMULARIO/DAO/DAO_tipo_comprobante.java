@@ -20,13 +20,15 @@ public class DAO_tipo_comprobante {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "TIPO_COMPROBANTE GUARDADO CORRECTAMENTE";
     private String mensaje_update = "TIPO_COMPROBANTE MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO tipo_comprobante(idtipo_comprobante,descripcion,con_comprobante,sin_comprobante,boleta_despachante,mercaderia,tipo_factura) VALUES (?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE tipo_comprobante SET descripcion=?,con_comprobante=?,sin_comprobante=?,boleta_despachante=?,mercaderia=?,tipo_factura=? WHERE idtipo_comprobante=?;";
-
-    private String sql_cargar = "SELECT idtipo_comprobante,descripcion,con_comprobante,sin_comprobante,boleta_despachante,mercaderia,tipo_factura FROM tipo_comprobante WHERE idtipo_comprobante=";
-
+    private String sql_insert = "INSERT INTO tipo_comprobante(idtipo_comprobante,descripcion,"
+            + "con_comprobante,sin_comprobante,boleta_despachante,mercaderia,tipo_factura,eliminado) VALUES (?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE tipo_comprobante SET descripcion=?,"
+            + "con_comprobante=?,sin_comprobante=?,boleta_despachante=?,mercaderia=?,tipo_factura=?,eliminado=? WHERE idtipo_comprobante=?;";
+    private String sql_cargar = "SELECT idtipo_comprobante,descripcion,"
+            + "con_comprobante,sin_comprobante,boleta_despachante,mercaderia,tipo_factura FROM tipo_comprobante WHERE idtipo_comprobante=";
     public void insertar_tipo_comprobante(Connection conn, tipo_comprobante tgali) {
         tgali.setC1idtipo_comprobante(eveconn.getInt_ultimoID_mas_uno(conn, tgali.getTb_tipo_comprobante(), tgali.getId_idtipo_comprobante()));
+        tgali.setC8eliminado(false);
         String titulo = "insertar_tipo_comprobante";
         PreparedStatement pst = null;
         try {
@@ -38,6 +40,7 @@ public class DAO_tipo_comprobante {
             pst.setBoolean(5, tgali.getC5boleta_despachante());
             pst.setBoolean(6, tgali.getC6mercaderia());
             pst.setBoolean(7, tgali.getC7tipo_factura());
+            pst.setBoolean(8, tgali.getC8eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + tgali.toString(), titulo);
@@ -58,7 +61,8 @@ public class DAO_tipo_comprobante {
             pst.setBoolean(4, tgali.getC5boleta_despachante());
             pst.setBoolean(5, tgali.getC6mercaderia());
             pst.setBoolean(6, tgali.getC7tipo_factura());
-            pst.setInt(7, tgali.getC1idtipo_comprobante());
+            pst.setBoolean(7, tgali.getC8eliminado());
+            pst.setInt(8, tgali.getC1idtipo_comprobante());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + tgali.toString(), titulo);
@@ -96,8 +100,8 @@ public class DAO_tipo_comprobante {
                 + "when mercaderia=true then 'MERCADERIA' \n"
                 + "when tipo_factura=true then 'TIPO-FACTURA' \n"
                 + "else 'SIN-TIPO' end as tipo  "
-                + "FROM tipo_comprobante "
-                + " " + filtro
+                + "FROM tipo_comprobante  where eliminado=false "
+                + " " + filtro+"  "
                 + " order by 3 desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         ancho_tabla_tipo_comprobante(tbltabla);

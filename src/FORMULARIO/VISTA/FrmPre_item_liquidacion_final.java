@@ -26,10 +26,10 @@ import javax.swing.table.DefaultTableModel;
  */
 public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
 
-    EvenJFRAME evetbl = new EvenJFRAME();
-    EvenJtable eveJtab = new EvenJtable();
-    EvenJLabel evelbl = new EvenJLabel();
-    EvenConexion eveconn = new EvenConexion();
+    private EvenJFRAME evetbl = new EvenJFRAME();
+    private EvenJtable eveJtab = new EvenJtable();
+    private EvenJLabel evelbl = new EvenJLabel();
+    private EvenConexion eveconn = new EvenConexion();
     private pre_item_liquidacion_final ENTpilf = new pre_item_liquidacion_final();
     private BO_pre_item_liquidacion_final BOpilf = new BO_pre_item_liquidacion_final();
     private DAO_pre_item_liquidacion_final DAOpilf = new DAO_pre_item_liquidacion_final();
@@ -38,27 +38,31 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
     private DAO_comprobante_liquidacion DAOcl = new DAO_comprobante_liquidacion();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
-    cla_color_palete clacolor= new cla_color_palete();
+    cla_color_palete clacolor = new cla_color_palete();
+    private dao_usuario DAOusu = new dao_usuario();
     private DefaultTableModel model_item_liquidacion = new DefaultTableModel();
     private int orden_item;
     private int fk_idcomprobante_liquidacion;
+
     private void abrir_formulario() {
         this.setTitle("MENU PRE ITEM LIQUIDACION");
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);
         reestableser();
         DAOpilf.actualizar_tabla_pre_item_liquidacion_final(conn, tblitem_liquidacion_final);
         color_formulario();
     }
-    private void color_formulario(){
+
+    private void color_formulario() {
         panel_tabla.setBackground(clacolor.getColor_tabla());
         panel_insertar.setBackground(clacolor.getColor_insertar_primario());
     }
+
     private boolean validar_guardar() {
         if (evejtf.getBoo_JTextField_vacio(txtorden, "DEBE CARGAR UN ORDEN")) {
             return false;
         }
-        if(fk_idcomprobante_liquidacion==0){
-            JOptionPane.showMessageDialog(null,"NO SE ENCONTRO NINGUN COMPROBANTE CARGADO","ERROR",JOptionPane.ERROR_MESSAGE);
+        if (fk_idcomprobante_liquidacion == 0) {
+            JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN COMPROBANTE CARGADO", "ERROR", JOptionPane.ERROR_MESSAGE);
             return false;
         }
         return true;
@@ -78,22 +82,34 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
             ENTpilf.setC1idpre_item_liquidacion_final(Integer.parseInt(txtid.getText()));
             ENTpilf.setC3fk_idcomprobante_liquidacion(fk_idcomprobante_liquidacion);
             ENTpilf.setC2orden(Integer.parseInt(txtorden.getText()));
-            BOpilf.update_pre_item_liquidacion_final(ENTpilf, tblitem_liquidacion_final);
+            ENTpilf.setC4eliminado(false);
+            BOpilf.update_pre_item_liquidacion_final(ENTpilf, tblitem_liquidacion_final, true);
+        }
+    }
+
+    private void boton_eliminado() {
+        if (validar_guardar()) {
+            ENTpilf.setC1idpre_item_liquidacion_final(Integer.parseInt(txtid.getText()));
+            ENTpilf.setC4eliminado(true);
+            BOpilf.update_pre_item_liquidacion_final(ENTpilf, tblitem_liquidacion_final, false);
+            reestableser();
         }
     }
 
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tblitem_liquidacion_final);
-        DAOpilf.cargar_pre_item_liquidacion_final(conn,ENTpilf, idproducto);
+        DAOpilf.cargar_pre_item_liquidacion_final(conn, ENTpilf, idproducto);
         txtid.setText(String.valueOf(ENTpilf.getC1idpre_item_liquidacion_final()));
         txtorden.setText(String.valueOf(ENTpilf.getC2orden()));
-        fk_idcomprobante_liquidacion=ENTpilf.getC3fk_idcomprobante_liquidacion();
+        fk_idcomprobante_liquidacion = ENTpilf.getC3fk_idcomprobante_liquidacion();
         DAOcl.cargar_comprobante_liquidacion(conn, ENTcl, fk_idcomprobante_liquidacion);
         txtbucar_comprobante.setText(ENTcl.getC2descripcion());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
-    private void reestableser(){
+
+    private void reestableser() {
         txtid.setText(null);
         txtorden.setText(null);
         txtbucar_comprobante.setText(null);
@@ -102,42 +118,18 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
         btndeletar.setEnabled(false);
         txtorden.grabFocus();
     }
-    private void boton_nuevo(){
+
+    private void boton_nuevo() {
         reestableser();
     }
+
     void seleccionar_cargar_comprobante() {
         fk_idcomprobante_liquidacion = eveconn.getInt_Solo_seleccionar_JLista(conn, jList_comprobante, "comprobante_liquidacion", "descripcion", "idcomprobante_liquidacion", true);
         DAOcl.cargar_comprobante_liquidacion(conn, ENTcl, fk_idcomprobante_liquidacion);
         txtbucar_comprobante.setText(ENTcl.getC2descripcion());
         txtorden.grabFocus();
     }
-//    private void crear_item_liquidacion_final() {
-//        String dato[] = {"idi", "idc", "orden", "descripcion", "iva","dir_iva","nro_des"};
-//        eveJtab.crear_tabla_datos(tblitem_liquidacion_final, model_item_liquidacion, dato);
-//    }
-//    void boton_cargar_item_liquidacion_final() {
-//        if (true) {
-//            cargar_item_liquidacion_final();
-////            reestableser_item_liquidacion();
-//        }
-//    }
-//    private void cargar_item_liquidacion_final() {
-//        orden_item++;
-//        String ord = String.valueOf(orden_item);
-//        String descripcion = txtbucar_comprobante.getText();
-//        String comprobante = txtdespacho_numero_item.getText();
-//        String total = txtmonto_guarani_item.getText();
-//        String idliqui = String.valueOf(idliquidacion_final);
-//        String idcompro = String.valueOf(fk_idtipo_comprobante);
-//        String dato[] = {ord, descripcion, comprobante, total, idliqui, idcompro};
-//        eveJtab.cargar_tabla_datos(tblitem_liquidacion_final, model_item_liquidacion, dato);
-//        ancho_item_liquidacion_final();
-////        sumar_item_liquidacion_final();
-//    }
-//    void ancho_item_liquidacion_final() {
-//        int Ancho[] = {10, 40, 30, 20, 1, 1};
-//        eveJtab.setAnchoColumnaJtable(tblitem_liquidacion_final, Ancho);
-//    }
+
     public FrmPre_item_liquidacion_final() {
         initComponents();
         abrir_formulario();
@@ -244,6 +236,11 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jList_comprobante.setBackground(new java.awt.Color(204, 204, 255));
         jList_comprobante.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -482,6 +479,13 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
             eveconn.buscar_cargar_condicion_Jlista(conn, txtbucar_comprobante, jList_comprobante, "comprobante_liquidacion", "descripcion", "descripcion", "");
         }
     }//GEN-LAST:event_txtbucar_comprobanteKeyReleased
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminado();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

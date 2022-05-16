@@ -127,6 +127,8 @@ public class DAO_credito_cliente {
 
     public void actualizar_tabla_credito_cliente_por_grupo(Connection conn, JTable tbltabla, int idgrupo_credito_tercero) {
         eveconn.Select_cargar_jtable(conn, sql_select_gcc + idgrupo_credito_tercero + " order by 1 desc;", tbltabla);
+        evejt.alinear_derecha_columna(tbltabla, 6);
+        evejt.alinear_derecha_columna(tbltabla, 7);
         ancho_tabla_credito_cliente_por_grupo(tbltabla);
     }
 

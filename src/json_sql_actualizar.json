@@ -1,6 +1,23 @@
 {
 "ejecutar_sql":"SI",
-"sql_ahora":"ALTER TABLE tercero ADD COLUMN exportador BOOLEAN NOT NULL DEFAULT false;",
+"sql_ahora":"
+ALTER TABLE tercero ADD COLUMN exportador BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero_pais ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero_ciudad ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero_rubro ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE moneda_cambio ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE honorario_despacho ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tipo_comprobante ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE aduana ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE regimen ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE incoterms ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE transporte_empresa ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE despacho_zona ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE comprobante_liquidacion ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE pre_item_liquidacion_final ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+",
 "sql_2022_02_17":"CREATE TABLE gasto (
 	idgasto INTEGER NOT NULL ,
 	fecha_creado TIMESTAMP NOT NULL ,
@@ -64,5 +81,20 @@ ALTER TABLE liquidacion_final ADD COLUMN fk_idtercero_despachante INTEGER NOT NU
 ALTER TABLE liquidacion_final ADD COLUMN fk_idrecibo_pago_tercero INTEGER NOT NULL DEFAULT 0;"
 "sql_2022_05_10":"
 ALTER TABLE tercero ADD COLUMN exportador BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero_pais ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero_ciudad ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tercero_rubro ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE moneda_cambio ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE honorario_despacho ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE tipo_comprobante ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE aduana ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE regimen ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE incoterms ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE transporte_empresa ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE despacho_zona ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE comprobante_liquidacion ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE pre_item_liquidacion_final ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE funcionario ADD COLUMN eliminado BOOLEAN NOT NULL DEFAULT false;
 "
 }

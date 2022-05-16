@@ -23,17 +23,18 @@ public class FrmHonorario_despacho extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private honorario_despacho entidad = new honorario_despacho();
-    private BO_honorario_despacho BO = new BO_honorario_despacho();
-    private DAO_honorario_despacho DAO = new DAO_honorario_despacho();
+    private honorario_despacho ENThd = new honorario_despacho();
+    private BO_honorario_despacho BOhd = new BO_honorario_despacho();
+    private DAO_honorario_despacho DAOhd = new DAO_honorario_despacho();
     private EvenJTextField evejtf = new EvenJTextField();
+    private dao_usuario DAOusu=new dao_usuario();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
     private void abrir_formulario() {
-        this.setTitle("MONEDA CAMBIO");
+        this.setTitle("HONORARIO DESPACHO");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_honorario_despacho(conn, tbltabla);
+        DAOhd.actualizar_tabla_honorario_despacho(conn, tbltabla);
         color_formulario();
     }
     private void color_formulario(){
@@ -49,27 +50,36 @@ public class FrmHonorario_despacho extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC3monto(evejtf.getDouble_format_nro_entero(txtmonto.getText()));
-            BO.insertar_honorario_despacho(entidad, tbltabla);
+            ENThd.setC3monto(evejtf.getDouble_format_nro_entero(txtmonto.getText()));
+            BOhd.insertar_honorario_despacho(ENThd, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idhonorario_despacho(Integer.parseInt(txtid.getText()));
-            entidad.setC3monto(evejtf.getDouble_format_nro_entero(txtmonto.getText()));
-            BO.update_honorario_despacho(entidad, tbltabla);
+            ENThd.setC1idhonorario_despacho(Integer.parseInt(txtid.getText()));
+            ENThd.setC3monto(evejtf.getDouble_format_nro_entero(txtmonto.getText()));
+            ENThd.setC4eliminado(false);
+            BOhd.update_honorario_despacho(ENThd, tbltabla,true);
         }
     }
-
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENThd.setC1idhonorario_despacho(Integer.parseInt(txtid.getText()));
+            ENThd.setC4eliminado(true);
+            BOhd.update_honorario_despacho(ENThd, tbltabla,false);
+            reestableser();
+        }
+    }
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_honorario_despacho(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idhonorario_despacho()));
-        txtmonto.setText(evejtf.getString_format_nro_decimal(entidad.getC3monto()));
+        DAOhd.cargar_honorario_despacho(conn,ENThd, idproducto);
+        txtid.setText(String.valueOf(ENThd.getC1idhonorario_despacho()));
+        txtmonto.setText(evejtf.getString_format_nro_decimal(ENThd.getC3monto()));
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -173,6 +183,11 @@ public class FrmHonorario_despacho extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("HONORARIO:");
@@ -300,7 +315,7 @@ public class FrmHonorario_despacho extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_honorario_despacho(tbltabla);
+        DAOhd.ancho_tabla_honorario_despacho(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -331,6 +346,13 @@ public class FrmHonorario_despacho extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         evejtf.soloNumero(evt);
     }//GEN-LAST:event_txtmontoKeyTyped
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+        boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

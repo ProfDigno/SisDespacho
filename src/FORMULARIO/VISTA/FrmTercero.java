@@ -33,12 +33,12 @@ import javax.swing.JOptionPane;
  */
 public class FrmTercero extends javax.swing.JInternalFrame {
 
-    EvenJFRAME evetbl = new EvenJFRAME();
-    EvenJtable eveJtab = new EvenJtable();
-     EvenCombobox evecomb = new EvenCombobox();
-     EvenJLabel evelbl=new EvenJLabel();
-     EvenFecha evefec=new EvenFecha();
-     EvenConexion eveconn = new EvenConexion();
+    private  EvenJFRAME evetbl = new EvenJFRAME();
+    private EvenJtable eveJtab = new EvenJtable();
+    private  EvenCombobox evecomb = new EvenCombobox();
+    private  EvenJLabel evelbl=new EvenJLabel();
+    private  EvenFecha evefec=new EvenFecha();
+    private  EvenConexion eveconn = new EvenConexion();
     private tercero ENTter = new tercero();
     private BO_tercero BOter = new BO_tercero();
     private DAO_tercero DAOter = new DAO_tercero();
@@ -66,6 +66,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private DAO_liquidacion_final DAOliqfin = new DAO_liquidacion_final();
     private EvenNumero_a_Letra nroletra = new EvenNumero_a_Letra();
     private entidad_usuario usu = new entidad_usuario();
+    private dao_usuario DAOusu=new dao_usuario();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
@@ -126,12 +127,16 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         txtfecha_estado.grabFocus();
     }
     private void cargar_pais() {
-        evecomb.cargarCombobox(conn, jCpais, "idtercero_pais", "nombre", "tercero_pais", "");
+        evecomb.cargarCombobox(conn, jCpais, "idtercero_pais", "nombre", "tercero_pais", " where eliminado=false ");
         hab_combo_pais = true;
     }
     private void cargar_ciudad() {
-        evecomb.cargarCombobox(conn, jCciudad, "idtercero_ciudad", "nombre", "tercero_ciudad", "");
+        evecomb.cargarCombobox(conn, jCciudad, "idtercero_ciudad", "nombre", "tercero_ciudad", " where eliminado=false ");
         hab_combo_ciudad = true;
+    }
+    private void cargar_rubro() {
+        evecomb.cargarCombobox(conn, jCrubros, "idtercero_rubro", "nombre", "tercero_rubro", " where eliminado=false ");
+        hab_combo_rubro = true;
     }
     private void cargar_tipo_registro() {
         evecomb.cargarCombobox(conn, jCtipo_registro, "idtipo_registro", "nombre", "tipo_registro", "");
@@ -145,10 +150,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         evecomb.cargarCombobox(conn, jCtipo_institucion, "idtipo_institucion", "nombre", "tipo_institucion", "");
         hab_combo_tipo_institucion = true;
     }
-    private void cargar_rubro() {
-        evecomb.cargarCombobox(conn, jCrubros, "idtercero_rubro", "nombre", "tercero_rubro", "");
-        hab_combo_rubro = true;
-    }
+    
     private void color_formulario(){
         panel_tabla.setBackground(clacolor.getColor_tabla());
         panel_insertar.setBackground(clacolor.getColor_insertar_primario());
@@ -309,6 +311,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             BOter.update_tercero(ENTter, tbltercero);
         }
     }
+    private void boton_eliminar_tercero() {
+        if (tbltercero.getSelectedRow()>=0) {
+            ENTter.setC1idtercero(Integer.parseInt(txtid.getText()));
+            BOter.update_tercero_eliminar(ENTter, tbltercero);
+            reestableser_tercero();
+        }
+    }
     private void boton_editar_item_tipo_registro() {
         if (validar_guardar_item_tipo_registro()) {
             ENTitr.setC1iditem_tipo_registro(Integer.parseInt(txtiditem_tipo_registro.getText()));
@@ -355,6 +364,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         cfina_dao.actualizar_tabla_credito_cliente_por_grupo(conn, tblcredito_cliente, gcfina.getC1idgrupo_credito_cliente());
         btnguardar_tercero.setEnabled(false);
         btneditar_tercero.setEnabled(true);
+        btndeletar_tercero.setEnabled(true);
     }
     void suma_liquidacion(String fecha){
         DAOter.actualizar_tabla_tercero_liquidacion(conn, tblliquidacion_final, fk_idtercero,fecha);
@@ -538,6 +548,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         jCciudad = new javax.swing.JComboBox<>();
         lblrubro = new javax.swing.JLabel();
         jCrubros = new javax.swing.JComboBox<>();
+        btnrecargar_combo = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
@@ -687,6 +698,11 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         btndeletar_tercero.setText("DELETAR");
         btndeletar_tercero.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar_tercero.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar_tercero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletar_terceroActionPerformed(evt);
+            }
+        });
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("DATOS EMPRESA "));
 
@@ -738,16 +754,31 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
         });
         lblpais.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                lblpaisMouseClicked(evt);
-            }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 lblpaisMouseExited(evt);
+            }
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                lblpaisMouseClicked(evt);
             }
         });
 
         jCpais.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jCpais.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jCpais.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                jCpaisItemStateChanged(evt);
+            }
+        });
+        jCpais.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jCpaisMouseMoved(evt);
+            }
+        });
+        jCpais.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jCpaisMouseClicked(evt);
+            }
+        });
         jCpais.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCpaisActionPerformed(evt);
@@ -802,6 +833,13 @@ public class FrmTercero extends javax.swing.JInternalFrame {
             }
         });
 
+        btnrecargar_combo.setText("RECARGAR");
+        btnrecargar_combo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnrecargar_comboActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -815,21 +853,25 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                         .addComponent(jLabel3)
                         .addComponent(jLabel2)
                         .addComponent(lblpais, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(lblciudad)
                     .addComponent(lblrubro))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(txtdireccion, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                    .addComponent(txttelefono, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                    .addComponent(txtruc, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                    .addComponent(txtnombre, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jCpais, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblciudad)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCciudad, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jCrubros, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnrecargar_combo)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jCrubros, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtdireccion, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                            .addComponent(txttelefono, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                            .addComponent(txtruc, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                            .addComponent(txtnombre, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 397, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jCpais, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(230, 230, 230))
+                            .addComponent(jCciudad, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(64, 64, 64))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -850,18 +892,19 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                     .addComponent(jLabel5)
                     .addComponent(txtdireccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblciudad)
-                        .addComponent(jCciudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblpais)
-                        .addComponent(jCpais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblpais)
+                    .addComponent(jCpais, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblciudad)
+                    .addComponent(jCciudad, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jCrubros, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lblrubro))
-                .addGap(0, 16, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnrecargar_combo))
         );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("REPRESENTANTE"));
@@ -1013,10 +1056,10 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         panel_insertarLayout.setVerticalGroup(
             panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panel_insertarLayout.createSequentialGroup()
-                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(41, 41, 41))
+                        .addGap(80, 80, 80))
                     .addGroup(panel_insertarLayout.createSequentialGroup()
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1025,7 +1068,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel14)
                     .addComponent(jFsaldo_credito, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
+                .addGap(54, 54, 54)
                 .addGroup(panel_insertarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnnuevo_tercero)
                     .addComponent(btnguardar_tercero)
@@ -1515,7 +1558,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         );
         panel_tabla_cliente2Layout.setVerticalGroup(
             panel_tabla_cliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 328, Short.MAX_VALUE)
+            .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 339, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
@@ -1642,8 +1685,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                     .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel18)
                         .addComponent(cmbfecha_liquidacion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(btnimprimir_cuenta, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1752,8 +1795,8 @@ public class FrmTercero extends javax.swing.JInternalFrame {
                     .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel15)
                         .addComponent(cmbfecha_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 406, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 434, Short.MAX_VALUE)
                 .addGap(5, 5, 5)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                     .addComponent(btnimprimir_recibo, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2088,6 +2131,43 @@ public class FrmTercero extends javax.swing.JInternalFrame {
         }
     }//GEN-LAST:event_btngenerar_creditoActionPerformed
 
+    private void btndeletar_terceroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletar_terceroActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar_tercero();
+        }
+    }//GEN-LAST:event_btndeletar_terceroActionPerformed
+
+    private void btnrecargar_comboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnrecargar_comboActionPerformed
+        // TODO add your handling code here:
+//        jCpais.setSelectedIndex(0);
+//        jCciudad.setSelectedIndex(0);
+//        jCrubros.setSelectedIndex(0);
+        hab_combo_rubro=false;
+        hab_combo_pais=false;
+        hab_combo_ciudad=false;
+        cargar_rubro();
+        cargar_pais();
+        cargar_ciudad();
+        
+    }//GEN-LAST:event_btnrecargar_comboActionPerformed
+
+    private void jCpaisMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCpaisMouseMoved
+        // TODO add your handling code here:
+//         hab_combo_pais=false;
+//        cargar_pais();
+    }//GEN-LAST:event_jCpaisMouseMoved
+
+    private void jCpaisMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jCpaisMouseClicked
+        // TODO add your handling code here:
+         hab_combo_pais=false;
+        cargar_pais();
+    }//GEN-LAST:event_jCpaisMouseClicked
+
+    private void jCpaisItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_jCpaisItemStateChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCpaisItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnabrir_imagen;
@@ -2106,6 +2186,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnnuevo_item_tr;
     private javax.swing.JButton btnnuevo_tercero;
     private javax.swing.JButton btnpagar_credito;
+    private javax.swing.JButton btnrecargar_combo;
     private javax.swing.JComboBox<String> cmbfecha_liquidacion;
     private javax.swing.JComboBox<String> cmbfecha_recibo;
     private javax.swing.ButtonGroup est_reg;
@@ -2114,7 +2195,7 @@ public class FrmTercero extends javax.swing.JInternalFrame {
     private javax.swing.JCheckBox jCdespachante;
     private javax.swing.JCheckBox jCexportador;
     private javax.swing.JCheckBox jCimportador;
-    private javax.swing.JComboBox<String> jCpais;
+    public static javax.swing.JComboBox<String> jCpais;
     private javax.swing.JCheckBox jCproveedor;
     private javax.swing.JComboBox<String> jCrubros;
     private javax.swing.JComboBox<String> jCtipo_dependencia;

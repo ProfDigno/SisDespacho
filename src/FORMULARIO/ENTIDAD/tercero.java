@@ -36,6 +36,7 @@ private int C16fk_idtercero_ciudad;
 private double C17saldo_credito;
 private int C18fk_idtercero_rubro;
 private boolean C19exportador;
+private boolean C20eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -56,6 +57,15 @@ private static String nom_idtabla;
 		tercero.nom_idtabla = nom_idtabla;
 	}
 //---------------GET-SET-CAMPOS---------------
+
+    public boolean getC20eliminado() {
+        return C20eliminado;
+    }
+
+    public void setC20eliminado(boolean C20eliminado) {
+        this.C20eliminado = C20eliminado;
+    }
+        
 	public int getC1idtercero(){
 		return C1idtercero;
 	}

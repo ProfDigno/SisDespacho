@@ -25,10 +25,14 @@ public class DAO_tercero {
     private String mensaje_update = "TERCERO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO tercero(idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
             + "representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,"
-            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro,exportador) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
+            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro,exportador,eliminado) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE tercero SET fecha_creacion=?,creado_por=?,nombre=?,ruc=?,telefono=?,direccion=?,"
             + "representante_nombre=?,representante_cedula=?,importador=?,despachante=?,colaborador=?,proveedor=?,transportadora=?,"
-            + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=?,exportador=? WHERE idtercero=?;";
+            + "fk_idtercero_pais=?,fk_idtercero_ciudad=?,saldo_credito=?,fk_idtercero_rubro=?,exportador=?,eliminado=? "
+            + "WHERE idtercero=?;";
+    private String sql_update_eliminar = "UPDATE tercero SET eliminado=true "
+            + "WHERE idtercero=?;"; 
     private String sql_select = "SELECT t.idtercero,t.nombre,t.ruc,t.telefono,t.direccion,tr.nombre as rubro,\n"
             + "TRIM(to_char(t.saldo_credito,'"+varglo.getFormato_numero_3c()+"')) as saldo, \n"
             + "case when t.importador=true then 'SI' else 'NO' end as impor,\n"
@@ -36,10 +40,11 @@ public class DAO_tercero {
             + "case when t.despachante=true then 'SI' else 'NO' end as desp "
             + "FROM tercero t, tercero_rubro tr \n"
             + "where t.fk_idtercero_rubro=tr.idtercero_rubro \n"
+            + "and t.eliminado=false "
             + "order by 1 desc;";
     private String sql_cargar = "SELECT idtercero,fecha_creacion,creado_por,nombre,ruc,telefono,direccion,"
             + "representante_nombre,representante_cedula,importador,despachante,colaborador,proveedor,transportadora,"
-            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro,exportador FROM tercero WHERE idtercero=";
+            + "fk_idtercero_pais,fk_idtercero_ciudad,saldo_credito,fk_idtercero_rubro,exportador,eliminado FROM tercero WHERE idtercero=";
     private String sql_update_saldo = "update tercero set saldo_credito=\n"
             + "(select sum(cc.monto_contado - cc.monto_credito) as saldo\n"
             + "from grupo_credito_tercero gcc,credito_tercero cc\n"
@@ -51,6 +56,7 @@ public class DAO_tercero {
     public void insertar_tercero(Connection conn, tercero ter) {
         ter.setC1idtercero(eveconn.getInt_ultimoID_mas_uno(conn, ter.getTb_tercero(), ter.getId_idtercero()));
         String titulo = "insertar_tercero";
+        ter.setC20eliminado(false);
         PreparedStatement pst = null;
         try {
             pst = conn.prepareStatement(sql_insert);
@@ -73,6 +79,7 @@ public class DAO_tercero {
             pst.setDouble(17, ter.getC17saldo_credito());
             pst.setInt(18, ter.getC18fk_idtercero_rubro());
             pst.setBoolean(19, ter.getC19exportador());
+            pst.setBoolean(20, ter.getC20eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + ter.toString(), titulo);
@@ -105,7 +112,8 @@ public class DAO_tercero {
             pst.setDouble(16, ter.getC17saldo_credito());
             pst.setInt(17, ter.getC18fk_idtercero_rubro());
             pst.setBoolean(18, ter.getC19exportador());
-            pst.setInt(19, ter.getC1idtercero());
+            pst.setBoolean(19, ter.getC20eliminado());
+            pst.setInt(20, ter.getC1idtercero());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + ter.toString(), titulo);
@@ -140,6 +148,7 @@ public class DAO_tercero {
                 ter.setC17saldo_credito(rs.getDouble(17));
                 ter.setC18fk_idtercero_rubro(rs.getInt(18));
                 ter.setC19exportador(rs.getBoolean(19));
+                ter.setC20eliminado(rs.getBoolean(20));
                 evemen.Imprimir_serial_sql(sql_cargar + "\n" + ter.toString(), titulo);
             }
         } catch (Exception e) {
@@ -149,6 +158,7 @@ public class DAO_tercero {
 
     public void actualizar_tabla_tercero(Connection conn, JTable tbltabla) {
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
+        evejt.alinear_derecha_columna(tbltabla, 6);
         ancho_tabla_tercero(tbltabla);
     }
 
@@ -210,6 +220,9 @@ public class DAO_tercero {
         evejt.ocultar_columna(tbltabla, 9);
         evejt.ocultar_columna(tbltabla, 10);
         evejt.ocultar_columna(tbltabla, 11);
+        evejt.alinear_derecha_columna(tbltabla,4);
+        evejt.alinear_derecha_columna(tbltabla,5);
+        evejt.alinear_derecha_columna(tbltabla,6);
     }
 
     public void ancho_tabla_tercero_liquidacion(JTable tbltabla) {
@@ -228,8 +241,22 @@ public class DAO_tercero {
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
         ancho_tabla_tercero_recibo(tbltabla);
         evejt.ocultar_columna(tbltabla, 5);
+        evejt.alinear_derecha_columna(tbltabla,3);
     }
-
+    public void update_tercero_eliminar(Connection conn, tercero cli){
+        String titulo = "update_tercero_eliminar";
+        PreparedStatement pst = null;
+        try {
+            pst = conn.prepareStatement(sql_update_eliminar);
+            pst.setInt(1, cli.getC1idtercero());
+            pst.execute();
+            pst.close();
+            evemen.Imprimir_serial_sql(sql_update_eliminar + "\n" + cli.toString(), titulo);
+            evemen.modificado_correcto(sql_update_eliminar, false);
+        } catch (Exception e) {
+            evemen.mensaje_error(e, sql_update_eliminar + "\n" + cli.toString(), titulo);
+        }
+    }
     public void ancho_tabla_tercero_recibo(JTable tbltabla) {
         int Ancho[] = {10, 15, 50, 15, 14, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);

@@ -157,6 +157,9 @@ public class DAO_item_liquidacion_final {
                 + "where ilf.fk_idliquidacion_final="+fk_idliquidacion_final
                 + " order by 1 asc;";
         eveconn.Select_cargar_jtable(conn, sql, tbltabla);
+        evejt.alinear_derecha_columna(tbltabla, 3);
+        evejt.alinear_derecha_columna(tbltabla, 4);
+        evejt.alinear_derecha_columna(tbltabla, 5);
         ancho_tabla_item_liquidacion_final(tbltabla);
     }
 

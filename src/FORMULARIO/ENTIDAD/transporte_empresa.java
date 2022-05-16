@@ -7,6 +7,7 @@ private String C2nombre;
 private String C3sigla;
 private String C4direccion;
 private String C5telefono;
+private boolean C6eliminado;
 private static String nom_tabla;
 private static String nom_idtabla;
 //---------------TABLA-ID---------------
@@ -57,6 +58,15 @@ private static String nom_idtabla;
 	public void setC5telefono(String C5telefono){
 		this.C5telefono = C5telefono;
 	}
+
+    public boolean getC6eliminado() {
+        return C6eliminado;
+    }
+
+    public void setC6eliminado(boolean C6eliminado) {
+        this.C6eliminado = C6eliminado;
+    }
+        
 	public String toString() {
 		return "transporte_empresa(" + ",idtransporte_empresa=" + C1idtransporte_empresa + " ,nombre=" + C2nombre + " ,sigla=" + C3sigla + " ,direccion=" + C4direccion + " ,telefono=" + C5telefono + " )";
 	}

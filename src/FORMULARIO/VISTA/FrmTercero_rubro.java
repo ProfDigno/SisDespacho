@@ -24,25 +24,26 @@ public class FrmTercero_rubro extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private tercero_rubro entidad = new tercero_rubro();
-    private BO_tercero_rubro BO = new BO_tercero_rubro();
-    private DAO_tercero_rubro DAO = new DAO_tercero_rubro();
+    private tercero_rubro ENTtr = new tercero_rubro();
+    private BO_tercero_rubro BOtr = new BO_tercero_rubro();
+    private DAO_tercero_rubro DAOtr = new DAO_tercero_rubro();
     private EvenJTextField evejtf = new EvenJTextField();
     private EvenFecha evefec = new EvenFecha();
     Connection conn = ConnPostgres.getConnPosgres();
     cla_color_palete clacolor= new cla_color_palete();
+    private dao_usuario DAOusu=new dao_usuario();
     private void abrir_formulario() {
         this.setTitle("TERCERO RUBRO");
         evetbl.centrar_formulario_internalframa(this);        
         reestableser();
-        DAO.actualizar_tabla_tercero_rubro(conn, tbltabla);
+        DAOtr.actualizar_tabla_tercero_rubro(conn, tbltabla);
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_rubro);
         cargar_tabla_rubro_liquidacion();
         color_formulario();
     }
     void cargar_tabla_rubro_liquidacion(){
         String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_rubro, " lf.fecha_despacho ");
-        DAO.actualizar_tabla_tercero_rubro_liquidacion(conn, tblrubro_liquidacion, fecha);
+        DAOtr.actualizar_tabla_tercero_rubro_liquidacion(conn, tblrubro_liquidacion, fecha);
     }
     private void color_formulario(){
         panel_tabla.setBackground(clacolor.getColor_tabla());
@@ -63,33 +64,34 @@ public class FrmTercero_rubro extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4descripcion(txtadescripcion.getText());
-            BO.insertar_tercero_rubro(entidad, tbltabla);
+            ENTtr.setC2nombre(txtnombre.getText());
+            ENTtr.setC3sigla(txtsigla.getText());
+            ENTtr.setC4descripcion(txtadescripcion.getText());
+            BOtr.insertar_tercero_rubro(ENTtr, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1idtercero_rubro(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            entidad.setC3sigla(txtsigla.getText());
-            entidad.setC4descripcion(txtadescripcion.getText());
-            BO.update_tercero_rubro(entidad, tbltabla);
+            ENTtr.setC1idtercero_rubro(Integer.parseInt(txtid.getText()));
+            ENTtr.setC2nombre(txtnombre.getText());
+            ENTtr.setC3sigla(txtsigla.getText());
+            ENTtr.setC4descripcion(txtadescripcion.getText());
+            BOtr.update_tercero_rubro(ENTtr, tbltabla);
         }
     }
 
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_tercero_rubro(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1idtercero_rubro()));
-        txtnombre.setText(entidad.getC2nombre());
-        txtsigla.setText(entidad.getC3sigla());
-        txtadescripcion.setText(entidad.getC4descripcion());
+        DAOtr.cargar_tercero_rubro(conn,ENTtr, idproducto);
+        txtid.setText(String.valueOf(ENTtr.getC1idtercero_rubro()));
+        txtnombre.setText(ENTtr.getC2nombre());
+        txtsigla.setText(ENTtr.getC3sigla());
+        txtadescripcion.setText(ENTtr.getC4descripcion());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
     private void reestableser(){
         txtid.setText(null);
@@ -100,6 +102,13 @@ public class FrmTercero_rubro extends javax.swing.JInternalFrame {
         btneditar.setEnabled(false);
         btndeletar.setEnabled(false);
         txtnombre.grabFocus();
+    }
+    private void boton_eliminar_tercero_rubro() {
+        if (tbltabla.getSelectedRow()>=0) {
+            ENTtr.setC1idtercero_rubro(Integer.parseInt(txtid.getText()));
+            BOtr.update_tercero_rubro_eliminar(ENTtr, tbltabla);
+            reestableser();
+        }
     }
     private void boton_nuevo(){
         reestableser();
@@ -217,6 +226,11 @@ public class FrmTercero_rubro extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("SIGLA:");
@@ -429,8 +443,8 @@ public class FrmTercero_rubro extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_tercero_rubro(tbltabla);
-        DAO.ancho_tabla_tercero_rubro_liquidacion(tblrubro_liquidacion);
+        DAOtr.ancho_tabla_tercero_rubro(tbltabla);
+        DAOtr.ancho_tabla_tercero_rubro_liquidacion(tblrubro_liquidacion);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -462,6 +476,13 @@ public class FrmTercero_rubro extends javax.swing.JInternalFrame {
 //        actualizar_tabla_suma();
         cargar_tabla_rubro_liquidacion();
     }//GEN-LAST:event_cmbfecha_rubroActionPerformed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar_tercero_rubro();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

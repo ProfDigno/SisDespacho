@@ -199,4 +199,25 @@ public class BO_tercero {
         }
         return insert;
     }
+     public void update_tercero_eliminar(tercero ter, JTable tbltabla) {
+        if (evmen.MensajeGeneral_warning("ESTAS SEGURO DE ELIMINAR TERCERO", "ELIMINAR", "ACEPTAR", "CANCELAR")) {
+            String titulo = "update_tercero_eliminar";
+            Connection conn = ConnPostgres.getConnPosgres();
+            try {
+                if (conn.getAutoCommit()) {
+                    conn.setAutoCommit(false);
+                }
+                ter_dao.update_tercero_eliminar(conn, ter);
+                ter_dao.actualizar_tabla_tercero(conn, tbltabla);
+                conn.commit();
+            } catch (SQLException e) {
+                evmen.mensaje_error(e, ter.toString(), titulo);
+                try {
+                    conn.rollback();
+                } catch (SQLException e1) {
+                    evmen.Imprimir_serial_sql_error(e1, ter.toString(), titulo);
+                }
+            }
+        }
+    }
 }

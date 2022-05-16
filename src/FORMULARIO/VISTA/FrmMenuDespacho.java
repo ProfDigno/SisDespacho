@@ -37,7 +37,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 //    dao_usuario dao_usu=new dao_usuario();
     cla_InvPro_compra_todos inv_com = new cla_InvPro_compra_todos();
     json_imprimir_pos jsprint = new json_imprimir_pos();
-    private String version_estatica = "V:1.1";
+    private String version_estatica = "V:1.2";
 
     void abrir_formulario() {
         config.cargar_jsom_configuracion();
@@ -123,11 +123,6 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         btnliquidacion_proforma = new javax.swing.JButton();
         lblversion = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu_proforma = new javax.swing.JMenu();
-        jMenuItem_nueva_proforma = new javax.swing.JMenuItem();
-        jMenuItem_tipo_comprobante = new javax.swing.JMenuItem();
-        jMenuItem_tipo_mercaderia = new javax.swing.JMenuItem();
-        jMenuItem_local_aduana = new javax.swing.JMenuItem();
         jMenu_tercero = new javax.swing.JMenu();
         jMenuItem_nuevo_tercero = new javax.swing.JMenuItem();
         jMenuItem_pais = new javax.swing.JMenuItem();
@@ -148,6 +143,8 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenu_liquidacion = new javax.swing.JMenu();
         jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem_tipo_comprobante = new javax.swing.JMenuItem();
+        jMenuItem_local_aduana = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem3 = new javax.swing.JMenuItem();
         jMenuItem4 = new javax.swing.JMenuItem();
@@ -275,42 +272,6 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
                 .addComponent(lblversion)
                 .addGap(0, 482, Short.MAX_VALUE))
         );
-
-        jMenu_proforma.setText("PROFORMA");
-
-        jMenuItem_nueva_proforma.setText("NUEVA PROFORMA");
-        jMenuItem_nueva_proforma.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem_nueva_proformaActionPerformed(evt);
-            }
-        });
-        jMenu_proforma.add(jMenuItem_nueva_proforma);
-
-        jMenuItem_tipo_comprobante.setText("TIPO COMPROBANTE");
-        jMenuItem_tipo_comprobante.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem_tipo_comprobanteActionPerformed(evt);
-            }
-        });
-        jMenu_proforma.add(jMenuItem_tipo_comprobante);
-
-        jMenuItem_tipo_mercaderia.setText("TIPO DE MERCADERIA");
-        jMenuItem_tipo_mercaderia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem_tipo_mercaderiaActionPerformed(evt);
-            }
-        });
-        jMenu_proforma.add(jMenuItem_tipo_mercaderia);
-
-        jMenuItem_local_aduana.setText("LOCAL ADUANA");
-        jMenuItem_local_aduana.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem_local_aduanaActionPerformed(evt);
-            }
-        });
-        jMenu_proforma.add(jMenuItem_local_aduana);
-
-        jMenuBar1.add(jMenu_proforma);
 
         jMenu_tercero.setText("TERCERO");
 
@@ -453,6 +414,22 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
             }
         });
         jMenu_liquidacion.add(jMenuItem6);
+
+        jMenuItem_tipo_comprobante.setText("TIPO COMPROBANTE");
+        jMenuItem_tipo_comprobante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_tipo_comprobanteActionPerformed(evt);
+            }
+        });
+        jMenu_liquidacion.add(jMenuItem_tipo_comprobante);
+
+        jMenuItem_local_aduana.setText("LOCAL ADUANA");
+        jMenuItem_local_aduana.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem_local_aduanaActionPerformed(evt);
+            }
+        });
+        jMenu_liquidacion.add(jMenuItem_local_aduana);
 
         jMenuItem2.setText("REGIMEN");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -598,11 +575,6 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         evetbl.abrir_TablaJinternal(new FrmTercero_ciudad());
     }//GEN-LAST:event_jMenuItem_ciudadActionPerformed
 
-    private void jMenuItem_tipo_mercaderiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_tipo_mercaderiaActionPerformed
-        // TODO add your handling code here:
-//        evetbl.abrir_TablaJinternal(new FrmMercaderia());
-    }//GEN-LAST:event_jMenuItem_tipo_mercaderiaActionPerformed
-
     private void jMenuItem_local_aduanaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_local_aduanaActionPerformed
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmAduana());
@@ -622,11 +594,6 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
         // TODO add your handling code here:
         evetbl.abrir_TablaJinternal(new FrmTercero_pais());
     }//GEN-LAST:event_jMenuItem_paisActionPerformed
-
-    private void jMenuItem_nueva_proformaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_nueva_proformaActionPerformed
-        // TODO add your handling code here:
-        evetbl.abrir_TablaJinternal(new FrmLiquidacion_proforma());
-    }//GEN-LAST:event_jMenuItem_nueva_proformaActionPerformed
 
     private void jMenuItem_moneda_cambioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_moneda_cambioActionPerformed
         // TODO add your handling code here:
@@ -824,14 +791,12 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     public static javax.swing.JMenuItem jMenuItem_honorario_despacho;
     public static javax.swing.JMenuItem jMenuItem_local_aduana;
     public static javax.swing.JMenuItem jMenuItem_moneda_cambio;
-    public static javax.swing.JMenuItem jMenuItem_nueva_proforma;
     public static javax.swing.JMenuItem jMenuItem_nuevo_tercero;
     private javax.swing.JMenuItem jMenuItem_pais;
     public static javax.swing.JMenuItem jMenuItem_rol_usuario;
     public static javax.swing.JMenuItem jMenuItem_tipo_comprobante;
     public static javax.swing.JMenuItem jMenuItem_tipo_dependencia;
     public static javax.swing.JMenuItem jMenuItem_tipo_institucion;
-    public static javax.swing.JMenuItem jMenuItem_tipo_mercaderia;
     public static javax.swing.JMenuItem jMenuItem_tipo_registro;
     public static javax.swing.JMenuItem jMenuItem_usuario_formulario;
     public static javax.swing.JMenuItem jMenuItem_usuario_tipo_evento;
@@ -839,7 +804,6 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
     public static javax.swing.JMenu jMenu_gasto;
     public static javax.swing.JMenu jMenu_informe;
     public static javax.swing.JMenu jMenu_liquidacion;
-    public static javax.swing.JMenu jMenu_proforma;
     public static javax.swing.JMenu jMenu_tercero;
     public static javax.swing.JMenu jMenu_usuario;
     public static javax.swing.JMenu jMenu_vale;

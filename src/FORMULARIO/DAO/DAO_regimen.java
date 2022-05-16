@@ -20,13 +20,14 @@ public class DAO_regimen {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "REGIMEN GUARDADO CORRECTAMENTE";
     private String mensaje_update = "REGIMEN MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO regimen(idregimen,nombre,sigla,descripcion) VALUES (?,?,?,?);";
-    private String sql_update = "UPDATE regimen SET nombre=?,sigla=?,descripcion=? WHERE idregimen=?;";
-    private String sql_select = "SELECT idregimen,nombre,sigla,descripcion FROM regimen order by 1 desc;";
+    private String sql_insert = "INSERT INTO regimen(idregimen,nombre,sigla,descripcion,eliminado) VALUES (?,?,?,?,?);";
+    private String sql_update = "UPDATE regimen SET nombre=?,sigla=?,descripcion=?,eliminado=? WHERE idregimen=?;";
+    private String sql_select = "SELECT idregimen as idr,nombre as regimen,sigla,descripcion FROM regimen where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idregimen,nombre,sigla,descripcion FROM regimen WHERE idregimen=";
 
     public void insertar_regimen(Connection conn, regimen reg) {
         reg.setC1idregimen(eveconn.getInt_ultimoID_mas_uno(conn, reg.getTb_regimen(), reg.getId_idregimen()));
+        reg.setC5eliminado(false);
         String titulo = "insertar_regimen";
         PreparedStatement pst = null;
         try {
@@ -35,6 +36,7 @@ public class DAO_regimen {
             pst.setString(2, reg.getC2nombre());
             pst.setString(3, reg.getC3sigla());
             pst.setString(4, reg.getC4descripcion());
+            pst.setBoolean(5, reg.getC5eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + reg.toString(), titulo);
@@ -52,7 +54,8 @@ public class DAO_regimen {
             pst.setString(1, reg.getC2nombre());
             pst.setString(2, reg.getC3sigla());
             pst.setString(3, reg.getC4descripcion());
-            pst.setInt(4, reg.getC1idregimen());
+            pst.setBoolean(4, reg.getC5eliminado());
+            pst.setInt(5, reg.getC1idregimen());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + reg.toString(), titulo);

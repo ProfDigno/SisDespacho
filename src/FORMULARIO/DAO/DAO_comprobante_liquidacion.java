@@ -20,13 +20,15 @@ public class DAO_comprobante_liquidacion {
     EvenFecha evefec = new EvenFecha();
     private String mensaje_insert = "COMPROBANTE_LIQUIDACION GUARDADO CORRECTAMENTE";
     private String mensaje_update = "COMPROBANTE_LIQUIDACION MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO comprobante_liquidacion(idcomprobante_liquidacion,descripcion,por_iva,tipo_iva,nro_despacho) VALUES (?,?,?,?,?);";
-    private String sql_update = "UPDATE comprobante_liquidacion SET descripcion=?,por_iva=?,tipo_iva=?,nro_despacho=? WHERE idcomprobante_liquidacion=?;";
-    private String sql_select = "SELECT idcomprobante_liquidacion as idc,descripcion,por_iva as p_iva,tipo_iva,nro_despacho as nro_des FROM comprobante_liquidacion order by 1 desc;";
+    private String sql_insert = "INSERT INTO comprobante_liquidacion(idcomprobante_liquidacion,descripcion,por_iva,tipo_iva,nro_despacho,eliminado) VALUES (?,?,?,?,?,?);";
+    private String sql_update = "UPDATE comprobante_liquidacion SET descripcion=?,por_iva=?,tipo_iva=?,nro_despacho=?,eliminado=? WHERE idcomprobante_liquidacion=?;";
+    private String sql_select = "SELECT idcomprobante_liquidacion as idc,descripcion,por_iva as p_iva,tipo_iva,nro_despacho as nro_des "
+            + "FROM comprobante_liquidacion where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idcomprobante_liquidacion,descripcion,por_iva,tipo_iva,nro_despacho FROM comprobante_liquidacion WHERE idcomprobante_liquidacion=";
 
     public void insertar_comprobante_liquidacion(Connection conn, comprobante_liquidacion coliq) {
         coliq.setC1idcomprobante_liquidacion(eveconn.getInt_ultimoID_mas_uno(conn, coliq.getTb_comprobante_liquidacion(), coliq.getId_idcomprobante_liquidacion()));
+        coliq.setC6eliminado(false);
         String titulo = "insertar_comprobante_liquidacion";
         PreparedStatement pst = null;
         try {
@@ -36,6 +38,7 @@ public class DAO_comprobante_liquidacion {
             pst.setDouble(3, coliq.getC3por_iva());
             pst.setString(4, coliq.getC4tipo_iva());
             pst.setBoolean(5, coliq.getC5nro_despacho());
+            pst.setBoolean(6, coliq.getC6eliminado());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_insert + "\n" + coliq.toString(), titulo);
@@ -54,7 +57,8 @@ public class DAO_comprobante_liquidacion {
             pst.setDouble(2, coliq.getC3por_iva());
             pst.setString(3, coliq.getC4tipo_iva());
             pst.setBoolean(4, coliq.getC5nro_despacho());
-            pst.setInt(5, coliq.getC1idcomprobante_liquidacion());
+            pst.setBoolean(5, coliq.getC6eliminado());
+            pst.setInt(6, coliq.getC1idcomprobante_liquidacion());
             pst.execute();
             pst.close();
             evemen.Imprimir_serial_sql(sql_update + "\n" + coliq.toString(), titulo);

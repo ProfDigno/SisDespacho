@@ -76,6 +76,33 @@ public class dao_usuario {
         }
     }
 
+    public boolean getBoolean_sena_usuario(Connection conn) {
+        String titulo = "getBoolean_sena_usuario";
+        entidad_usuario usu = new entidad_usuario();
+        String sena = JOptionPane.showInputDialog(null, "INGRESE SU SEÑA\n" + usu.getGlobal_nombre());
+        if (sena.equals("")) {
+            JOptionPane.showMessageDialog(null, "SE DEBE CARGAR SEÑA");
+            return false;
+        } else {
+            usu.setC3senha(sena);
+            String sql = "select * from usuario "
+                    + "where idusuario='" + usu.getGlobal_idusuario() + "' "
+                    + "and senha='" + usu.getC3senha() + "' ";
+            try {
+                ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
+                if (rs.next()) {
+                    return true;
+                } else {
+                    JOptionPane.showMessageDialog(null, "USUARIO O SENHA INCORRECTA", "ERROR", JOptionPane.ERROR_MESSAGE);
+                    return false;
+                }
+            } catch (Exception e) {
+                evemen.mensaje_error(e, sql, titulo);
+                return false;
+            }
+        }
+    }
+
     public boolean getBoolean_hab_evento(Connection conn, String cod_evento) {
         boolean habilitar = false;
         String titulo = "getBoolean_hab_evento";
@@ -85,14 +112,14 @@ public class dao_usuario {
                 + "and ur.idusuario_rol=iur.fk_idusuario_rol\n"
                 + "and iur.fk_idusuario_evento=ue.idusuario_evento\n"
                 + " and u.idusuario=" + user.getGlobal_idusuario()
-                + " and ue.cod_evento='" + cod_evento+"'"
+                + " and ue.cod_evento='" + cod_evento + "'"
                 + "  ";
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
             if (rs.next()) {
                 habilitar = (rs.getBoolean(1));
-            }else{
-                JOptionPane.showMessageDialog(null,"NO SE ENCONTRO NINGUN EVENTO PARA EL CODIGO:"+cod_evento);
+            } else {
+                JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN EVENTO PARA EL CODIGO:" + cod_evento);
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
@@ -110,7 +137,7 @@ public class dao_usuario {
                 + "and ur.idusuario_rol=iur.fk_idusuario_rol\n"
                 + "and iur.fk_idusuario_evento=ue.idusuario_evento\n"
                 + " and u.idusuario=" + user.getGlobal_idusuario()
-                + " and ue.cod_evento='" + cod_evento+"'"
+                + " and ue.cod_evento='" + cod_evento + "'"
                 + "  ";
         try {
             ResultSet rs = eveconn.getResulsetSQL(conn, sql, titulo);
@@ -119,12 +146,26 @@ public class dao_usuario {
                 if (!habilitar) {
                     JOptionPane.showMessageDialog(null, rs.getString(2), "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
-            }else{
-                JOptionPane.showMessageDialog(null,"NO SE ENCONTRO NINGUN EVENTO PARA EL CODIGO:"+cod_evento);
+            } else {
+                JOptionPane.showMessageDialog(null, "NO SE ENCONTRO NINGUN EVENTO PARA EL CODIGO:" + cod_evento);
             }
         } catch (Exception e) {
             evemen.mensaje_error(e, sql, titulo);
 
+        }
+        return habilitar;
+    }
+
+    public boolean getboo_habilitar_boton_eliminar(Connection conn) {
+        boolean habilitar = false;
+        if (getBoolean_hab_evento_mensaje_error(conn, "25")) {
+            if(getBoolean_sena_usuario(conn)){
+                habilitar = true;
+            }else{
+                habilitar = false;
+            }
+        }else{
+            habilitar = false;
         }
         return habilitar;
     }

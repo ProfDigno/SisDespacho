@@ -23,23 +23,27 @@ public class FrmDespacho_zona extends javax.swing.JInternalFrame {
 
     EvenJFRAME evetbl = new EvenJFRAME();
     EvenJtable eveJtab = new EvenJtable();
-    private despacho_zona entidad = new despacho_zona();
-    private BO_despacho_zona BO = new BO_despacho_zona();
-    private DAO_despacho_zona DAO = new DAO_despacho_zona();
+    private despacho_zona ENTdz = new despacho_zona();
+    private BO_despacho_zona BOdz = new BO_despacho_zona();
+    private DAO_despacho_zona DAOdz = new DAO_despacho_zona();
     private EvenJTextField evejtf = new EvenJTextField();
     Connection conn = ConnPostgres.getConnPosgres();
-    cla_color_palete clacolor= new cla_color_palete();
+    cla_color_palete clacolor = new cla_color_palete();
+    private dao_usuario DAOusu = new dao_usuario();
+
     private void abrir_formulario() {
         this.setTitle("DESPACHO ZONA");
-        evetbl.centrar_formulario_internalframa(this);        
+        evetbl.centrar_formulario_internalframa(this);
         reestableser();
-        DAO.actualizar_tabla_despacho_zona(conn, tbltabla);
+        DAOdz.actualizar_tabla_despacho_zona(conn, tbltabla);
         color_formulario();
     }
-    private void color_formulario(){
+
+    private void color_formulario() {
         panel_tabla.setBackground(clacolor.getColor_tabla());
         panel_insertar.setBackground(clacolor.getColor_insertar_primario());
     }
+
     private boolean validar_guardar() {
         if (evejtf.getBoo_JTextField_vacio(txtnombre, "DEBE CARGAR UN NOMBRE")) {
             return false;
@@ -49,29 +53,41 @@ public class FrmDespacho_zona extends javax.swing.JInternalFrame {
 
     private void boton_guardar() {
         if (validar_guardar()) {
-            entidad.setC2nombre(txtnombre.getText());
-            BO.insertar_despacho_zona(entidad, tbltabla);
+            ENTdz.setC2nombre(txtnombre.getText());
+            BOdz.insertar_despacho_zona(ENTdz, tbltabla);
             reestableser();
         }
     }
 
     private void boton_editar() {
         if (validar_guardar()) {
-            entidad.setC1iddespacho_zona(Integer.parseInt(txtid.getText()));
-            entidad.setC2nombre(txtnombre.getText());
-            BO.update_despacho_zona(entidad, tbltabla);
+            ENTdz.setC1iddespacho_zona(Integer.parseInt(txtid.getText()));
+            ENTdz.setC2nombre(txtnombre.getText());
+            ENTdz.setC3eliminado(false);
+            BOdz.update_despacho_zona(ENTdz, tbltabla, true);
+        }
+    }
+
+    private void boton_eliminar() {
+        if (validar_guardar()) {
+            ENTdz.setC1iddespacho_zona(Integer.parseInt(txtid.getText()));
+            ENTdz.setC3eliminado(true);
+            BOdz.update_despacho_zona(ENTdz, tbltabla, false);
+            reestableser();
         }
     }
 
     private void seleccionar_tabla() {
         int idproducto = eveJtab.getInt_select_id(tbltabla);
-        DAO.cargar_despacho_zona(conn,entidad, idproducto);
-        txtid.setText(String.valueOf(entidad.getC1iddespacho_zona()));
-        txtnombre.setText(entidad.getC2nombre());
+        DAOdz.cargar_despacho_zona(conn, ENTdz, idproducto);
+        txtid.setText(String.valueOf(ENTdz.getC1iddespacho_zona()));
+        txtnombre.setText(ENTdz.getC2nombre());
         btnguardar.setEnabled(false);
         btneditar.setEnabled(true);
+        btndeletar.setEnabled(true);
     }
-    private void reestableser(){
+
+    private void reestableser() {
         txtid.setText(null);
         txtnombre.setText(null);
         btnguardar.setEnabled(true);
@@ -79,9 +95,11 @@ public class FrmDespacho_zona extends javax.swing.JInternalFrame {
         btndeletar.setEnabled(false);
         txtnombre.grabFocus();
     }
-    private void boton_nuevo(){
+
+    private void boton_nuevo() {
         reestableser();
     }
+
     public FrmDespacho_zona() {
         initComponents();
         abrir_formulario();
@@ -183,6 +201,11 @@ public class FrmDespacho_zona extends javax.swing.JInternalFrame {
         btndeletar.setText("DELETAR");
         btndeletar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         btndeletar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btndeletar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btndeletarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panel_insertarLayout = new javax.swing.GroupLayout(panel_insertar);
         panel_insertar.setLayout(panel_insertarLayout);
@@ -294,7 +317,7 @@ public class FrmDespacho_zona extends javax.swing.JInternalFrame {
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
-        DAO.ancho_tabla_despacho_zona(tbltabla);
+        DAOdz.ancho_tabla_despacho_zona(tbltabla);
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void tbltablaMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbltablaMouseReleased
@@ -316,6 +339,13 @@ public class FrmDespacho_zona extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
 //        evejtf.saltar_campo_enter(evt, txtnombre, txtprecio_venta);
     }//GEN-LAST:event_txtnombreKeyPressed
+
+    private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
+        // TODO add your handling code here:
+        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+            boton_eliminar();
+        }
+    }//GEN-LAST:event_btndeletarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
