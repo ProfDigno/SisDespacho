@@ -39,7 +39,7 @@ public class EvenFecha {
         return formato_fechaHora_psql;
     }
 
-    private String formato_fecha = "dd-MM-yyyy";
+    private String formato_fecha = "yyyy-MM-dd";
     String fecha_dia1 = "yyyy-MM-01";
     String formato_fechaHora = "yyyy-MM-dd HH:mm";
     private String formato_hora = "HH:mm:ss";

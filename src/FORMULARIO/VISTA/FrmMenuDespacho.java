@@ -607,7 +607,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 
     private void btnliquidacion_proformaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnliquidacion_proformaActionPerformed
         // TODO add your handling code here:
-//        evetbl.abrir_TablaJinternal(new FrmLiquidacion_proforma());
+        evetbl.abrir_TablaJinternal(new FrmPre_Liquidacion_final());
     }//GEN-LAST:event_btnliquidacion_proformaActionPerformed
 
     private void jMenuItem_crear_usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem_crear_usuarioActionPerformed

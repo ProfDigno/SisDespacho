@@ -33,7 +33,7 @@ public class DAO_liquidacion_final {
             + "tasa_cambio_aduana,tasa_cambio_mercado,tipo_tasa_cambio,\n"
             + "factura_numero,monto_letra,\n"
             + "fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,\n"
-            + "fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,\n"
+            + "fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_exportador,\n"
             + "fk_idmoneda_cambio,fk_idregimen,fk_idincoterms,fecha_pagado,monto_pagado,otro_nombre,otro_monto,"
             + "fk_idtercero_despachante,fk_idrecibo_pago_tercero) \n"
             + "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);\n";
@@ -45,7 +45,7 @@ public class DAO_liquidacion_final {
             + "tasa_cambio_aduana,tasa_cambio_mercado,tipo_tasa_cambio,"
             + "factura_numero,monto_letra,"
             + "fk_idtipo_comprobante,fk_idtercero_ciudad,fk_idaduana,fk_iddespacho_zona,"
-            + "fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_transportadora,"
+            + "fk_idtransporte_empresa,fk_idtercero_importador,fk_idtercero_exportador,"
             + "fk_idmoneda_cambio,fk_idregimen,fk_idincoterms,fecha_pagado,monto_pagado,otro_nombre,otro_monto,fk_idtercero_despachante,fk_idrecibo_pago_tercero "
             + "FROM liquidacion_final WHERE idliquidacion_final=";
     private String sql_update_estado = "UPDATE liquidacion_final SET estado=? WHERE idliquidacion_final=?;";
@@ -56,7 +56,7 @@ public class DAO_liquidacion_final {
             + "tasa_cambio_aduana=?,tasa_cambio_mercado=?,tipo_tasa_cambio=?,"
             + "factura_numero=?,monto_letra=?,"
             + "fk_idtipo_comprobante=?,fk_idtercero_ciudad=?,fk_idaduana=?,fk_iddespacho_zona=?,"
-            + "fk_idtransporte_empresa=?,fk_idtercero_importador=?,fk_idtercero_transportadora=?,"
+            + "fk_idtransporte_empresa=?,fk_idtercero_importador=?,fk_idtercero_exportador=?,"
             + "fk_idmoneda_cambio=?,fk_idregimen=?,fk_idincoterms=?,fecha_pagado=?,monto_pagado=?,otro_nombre=?,otro_monto=? WHERE idliquidacion_final=?;";
 
     public void insertar_liquidacion_final(Connection conn, liquidacion_final liqfin) {
@@ -252,7 +252,7 @@ public class DAO_liquidacion_final {
                 + "lf.estado,ti.idtercero as idi\n"
                 + "from liquidacion_final lf,tercero ti,tercero tex,aduana ad,regimen re\n"
                 + "where lf.fk_idtercero_importador=ti.idtercero\n"
-                + "and lf.fk_idtercero_transportadora=tex.idtercero \n"
+                + "and lf.fk_idtercero_exportador=tex.idtercero \n"
                 + "and lf.fk_idaduana=ad.idaduana \n"
                 + "and lf.fk_idregimen=re.idregimen \n" + filtro
                 + " order by 1 desc";
@@ -289,7 +289,7 @@ public class DAO_liquidacion_final {
                 + "from liquidacion_final lf,tercero ti,tipo_comprobante tc,tercero_ciudad tc2,aduana ad,transporte_empresa te,\n"
                 + "despacho_zona dz,tercero tex,regimen re,incoterms ic,item_liquidacion_final ilf \n"
                 + "where lf.fk_idtercero_importador=ti.idtercero\n"
-                + "and lf.fk_idtercero_transportadora=tex.idtercero \n"
+                + "and lf.fk_idtercero_exportador=tex.idtercero \n"
                 + "and lf.fk_idtipo_comprobante=tc.idtipo_comprobante\n"
                 + "and lf.fk_idtercero_ciudad=tc2.idtercero_ciudad\n"
                 + "and lf.fk_idaduana=ad.idaduana \n"

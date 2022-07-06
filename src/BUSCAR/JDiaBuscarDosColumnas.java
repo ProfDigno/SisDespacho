@@ -17,6 +17,7 @@ import FORMULARIO.DAO.DAO_tercero_ciudad;
 import FORMULARIO.ENTIDAD.tercero_ciudad;
 import FORMULARIO.VISTA.FrmGasto;
 import FORMULARIO.VISTA.FrmLiquidacion_final;
+import FORMULARIO.VISTA.FrmPre_Liquidacion_final;
 import FORMULARIO.VISTA.FrmVale;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
@@ -163,7 +164,31 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
             int Ancho1[] = {10, 70, 20};
             Ancho = Ancho1;
         }
-        if (vbus.getTipo_tabla() == 3 || vbus.getTipo_tabla() == 12) {
+        if (vbus.getTipo_tabla() == 14) {
+            sql = "select te.idtercero as idte,te.nombre, te.ruc,\n"
+                    + "tr.nombre as rubro,te.saldo_credito \n"
+                    + "from tercero te,tercero_rubro tr \n"
+                    + "where te.fk_idtercero_rubro=tr.idtercero_rubro \n"
+                    + "and te.importador=true\n "
+                    + "and te.eliminado=false\n "
+                    + "and te.nombre ilike '%" + buscar + "%'\n"
+                    + "order by 2 desc;";
+            int Ancho1[] = {10, 70, 18, 1, 1};
+            Ancho = Ancho1;
+        }
+        if (vbus.getTipo_tabla() == 15) {
+             sql = "select te.idtercero as idte,te.nombre, te.ruc,\n"
+                    + "tr.nombre as rubro,te.saldo_credito \n"
+                    + "from tercero te,tercero_rubro tr \n"
+                    + "where te.fk_idtercero_rubro=tr.idtercero_rubro \n"
+                    + "and te.exportador=true\n "
+                    + "and te.eliminado=false\n "
+                    + "and te.nombre ilike '%" + buscar + "%'\n"
+                    + "order by 2 desc;";
+            int Ancho1[] = {10, 70, 18, 1, 1};
+            Ancho = Ancho1;
+        }
+        if (vbus.getTipo_tabla() == 3 || vbus.getTipo_tabla() == 12 || vbus.getTipo_tabla() == 14 || vbus.getTipo_tabla() == 15) {
             eveconn.Select_cargar_jtable(conn, sql, tblbuscar);
             eveJtab.setAnchoColumnaJtable(tblbuscar, Ancho);
             eveJtab.ocultar_columna(tblbuscar,3);
@@ -246,15 +271,33 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                 FrmLiquidacion_final.txtruc_importador.setText(ruc);
                 FrmLiquidacion_final.txtimportador_rubro.setText(rubro);
                 FrmLiquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
-//                FrmLiquidacion_final.setFk_idtercero_importador(id);
                 FrmLiquidacion_final.setFk_idtercero_exportador(id);
             }
             if (vbus.getTipo_tabla() == 13) {
                 String ruc = eveJtab.getString_select(tblbuscar, 2);
                 FrmLiquidacion_final.txtbuscar_exportador.setText(nombre);
                 FrmLiquidacion_final.txtruc_exportador.setText(ruc);
-//                FrmLiquidacion_final.setFk_idtercero_exportador(id);
                 FrmLiquidacion_final.setFk_idtercero_importador(id);
+            }
+            if (vbus.getTipo_tabla() == 14) {
+                String ruc = eveJtab.getString_select(tblbuscar, 2);
+                String rubro = eveJtab.getString_select(tblbuscar, 3);
+                String saldo = eveJtab.getString_select(tblbuscar, 4);
+                FrmPre_Liquidacion_final.txtbuscar_importador.setText(nombre);
+                FrmPre_Liquidacion_final.txtruc_importador.setText(ruc);
+                FrmPre_Liquidacion_final.txtimportador_rubro.setText(rubro);
+                FrmPre_Liquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
+                FrmPre_Liquidacion_final.setFk_idtercero_importador(id);
+            }
+            if (vbus.getTipo_tabla() == 15) {
+                String ruc = eveJtab.getString_select(tblbuscar, 2);
+                String rubro = eveJtab.getString_select(tblbuscar, 3);
+                String saldo = eveJtab.getString_select(tblbuscar, 4);
+                FrmPre_Liquidacion_final.txtbuscar_exportador.setText(nombre);
+                FrmPre_Liquidacion_final.txtruc_exportador.setText(ruc);
+                FrmPre_Liquidacion_final.txtexportador_rubro.setText(rubro);
+                FrmPre_Liquidacion_final.jFexportador_saldo.setValue(Integer.parseInt(saldo));
+                FrmPre_Liquidacion_final.setFk_idtercero_exportador(id);
             }
         }
     }
@@ -298,6 +341,12 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
         }
         if (vbus.getTipo_tabla() == 13) {
             FrmLiquidacion_final.txtbuscar_despachante.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 14) {
+            FrmPre_Liquidacion_final.txtbuscar_exportador.grabFocus();
+        }
+        if (vbus.getTipo_tabla() == 15) {
+            FrmPre_Liquidacion_final.txtdescripcion.grabFocus();
         }
     }
 

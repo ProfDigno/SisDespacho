@@ -22,8 +22,10 @@ public class DAO_funcionario {
     EveVarGlobal varglo=new EveVarGlobal();
     private String mensaje_insert = "FUNCIONARIO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "FUNCIONARIO MODIFICADO CORECTAMENTE";
-    private String sql_insert = "INSERT INTO funcionario(idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario,eliminado) VALUES (?,?,?,?,?,?,?,?,?,?);";
-    private String sql_update = "UPDATE funcionario SET fecha_creado=?,creado_por=?,nombre=?,cedula=?,telefono=?,direccion=?,cargo=?,salario=?,eliminado=? WHERE idfuncionario=?;";
+    private String sql_insert = "INSERT INTO funcionario(idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario,eliminado) "
+            + "VALUES (?,?,?,?,?,?,?,?,?,?);";
+    private String sql_update = "UPDATE funcionario SET fecha_creado=?,creado_por=?,nombre=?,cedula=?,telefono=?,direccion=?,cargo=?,salario=?,eliminado=? "
+            + "WHERE idfuncionario=?;";
     private String sql_select = "SELECT idfuncionario as idf,nombre,cedula,cargo,to_char(salario,'"+varglo.getFormato_numero_3c()+"') as salario "
             + "FROM funcionario where eliminado=false order by 1 desc;";
     private String sql_cargar = "SELECT idfuncionario,fecha_creado,creado_por,nombre,cedula,telefono,direccion,cargo,salario FROM funcionario WHERE idfuncionario=";
