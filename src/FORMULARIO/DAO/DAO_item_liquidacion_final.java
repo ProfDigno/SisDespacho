@@ -68,9 +68,9 @@ public class DAO_item_liquidacion_final {
             String ord = ((tblitem_producto.getModel().getValueAt(row, 0).toString()));
             String descripcion = ((tblitem_producto.getModel().getValueAt(row, 1).toString()));
             String comprobante = ((tblitem_producto.getModel().getValueAt(row, 2).toString()));
-            String Stotal = ((tblitem_producto.getModel().getValueAt(row, 3).toString()));
-            String Ssin_iva = ((tblitem_producto.getModel().getValueAt(row, 4).toString()));
-            String Ssolo_iva = ((tblitem_producto.getModel().getValueAt(row, 5).toString()));
+            String Stotal = ((tblitem_producto.getModel().getValueAt(row, 8).toString()));
+            String Ssin_iva = ((tblitem_producto.getModel().getValueAt(row, 9).toString()));
+            String Ssolo_iva = ((tblitem_producto.getModel().getValueAt(row, 10).toString()));
             String idliqui = ((tblitem_producto.getModel().getValueAt(row, 6).toString()));
             String idcompro = ((tblitem_producto.getModel().getValueAt(row, 7).toString()));
             double total = Double.parseDouble(Stotal);

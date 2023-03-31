@@ -37,7 +37,7 @@ public class FrmMenuDespacho extends javax.swing.JFrame {
 //    dao_usuario dao_usu=new dao_usuario();
     cla_InvPro_compra_todos inv_com = new cla_InvPro_compra_todos();
     json_imprimir_pos jsprint = new json_imprimir_pos();
-    private String version_estatica = "V:1.2";
+    private String version_estatica = "V:1.3";
 
     void abrir_formulario() {
         config.cargar_jsom_configuracion();

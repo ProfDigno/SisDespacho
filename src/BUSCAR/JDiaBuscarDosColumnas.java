@@ -217,8 +217,8 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                 String saldo = eveJtab.getString_select(tblbuscar, 4);
                 FrmLiquidacion_final.txtbuscar_importador.setText(nombre);
                 FrmLiquidacion_final.txtruc_importador.setText(ruc);
-                FrmLiquidacion_final.txtimportador_rubro.setText(rubro);
-                FrmLiquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
+//                FrmLiquidacion_final.txtimportador_rubro.setText(rubro);
+//                FrmLiquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
                 FrmLiquidacion_final.setFk_idtercero_importador(id);
             }
             if (vbus.getTipo_tabla() == 4) {
@@ -269,8 +269,8 @@ public class JDiaBuscarDosColumnas extends javax.swing.JDialog {
                 String saldo = eveJtab.getString_select(tblbuscar, 4);
                 FrmLiquidacion_final.txtbuscar_importador.setText(nombre);
                 FrmLiquidacion_final.txtruc_importador.setText(ruc);
-                FrmLiquidacion_final.txtimportador_rubro.setText(rubro);
-                FrmLiquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
+//                FrmLiquidacion_final.txtimportador_rubro.setText(rubro);
+//                FrmLiquidacion_final.jFimportador_saldo.setValue(Integer.parseInt(saldo));
                 FrmLiquidacion_final.setFk_idtercero_exportador(id);
             }
             if (vbus.getTipo_tabla() == 13) {

@@ -66,6 +66,8 @@ public class FrmGasto extends javax.swing.JInternalFrame {
     private void abrir_formulario() {
         this.setTitle("GASTO");
         evetbl.centrar_formulario_internalframa(this);
+        evefec.setFechaDCSistema(dcfecha_desde);
+        evefec.setFechaDCSistema(dcfecha_hasta);
         reestableser();
         color_formulario();
         evefec.cargar_combobox_intervalo_fecha(cmbfecha_gasto);
@@ -154,7 +156,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private void reestableser() {
         idgasto = (eveconn.getInt_ultimoID_mas_uno(conn, ENTg.getTb_gasto(), ENTg.getId_idgasto()));
-        actualizar_tabla_gasto();
+        actualizar_tabla_gasto(1);
         txtid.setText(null);
         txtfecha.setText(evefec.getString_formato_fecha());
         txtbuscar_gasto_tipo.setText(null);
@@ -165,21 +167,32 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         txtadescripcion.grabFocus();
     }
 
-    void actualizar_tabla_gasto() {
+    private void actualizar_tabla_gasto(int tipo) {
         String filtro = "";
         String estado = "";
+        String fil_fecha_defi="";
+        String fil_fecha_date="";
         if (jCanulado.isSelected()) {
             estado = " and g.estado='ANULADO' ";
         } else {
             estado = " and g.estado='EMITIDO' ";
         }
-        String fecha = evefec.getIntervalo_fecha_combobox(cmbfecha_gasto, " g.fecha ");
-        filtro = fecha + estado;
+        if(tipo==1){
+            fil_fecha_defi = evefec.getIntervalo_fecha_combobox(cmbfecha_gasto, " g.fecha ");
+        }
+        if(tipo==2){
+            fil_fecha_date=evefec.getSting_filtro_fecha_desde_hasta(dcfecha_desde, dcfecha_hasta,"g.fecha");
+        }
+        filtro = fil_fecha_defi+fil_fecha_date + estado;
         DAOg.actualizar_tabla_gasto(conn, tbltabla, filtro);
         double suma_gasto = eveJtab.getDouble_sumar_tabla(tbltabla, 5);
         jFsuma_gasto.setValue(suma_gasto);
     }
-
+    private void boton_imprimir_filtro_gasto(){
+        String fil_fecha_date="";
+        fil_fecha_date=evefec.getSting_filtro_fecha_desde_hasta(dcfecha_desde, dcfecha_hasta,"g.fecha");
+        DAOg.imprimir_gasto_filtro(conn, fil_fecha_date);
+    }
     private void boton_nuevo() {
         reestableser();
     }
@@ -229,6 +242,10 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         jLabel18 = new javax.swing.JLabel();
         cmbfecha_gasto = new javax.swing.JComboBox<>();
         jCanulado = new javax.swing.JCheckBox();
+        dcfecha_desde = new com.toedter.calendar.JDateChooser();
+        dcfecha_hasta = new com.toedter.calendar.JDateChooser();
+        btnbuscar_fecha = new javax.swing.JButton();
+        btnimprimir_filtro_gasto = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -450,27 +467,57 @@ public class FrmGasto extends javax.swing.JInternalFrame {
             }
         });
 
+        btnbuscar_fecha.setText("BUSCAR ");
+        btnbuscar_fecha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnbuscar_fechaActionPerformed(evt);
+            }
+        });
+
+        btnimprimir_filtro_gasto.setText("IMPRIMIR FILTRO GASTO");
+        btnimprimir_filtro_gasto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnimprimir_filtro_gastoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel18)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jCanulado)
-                    .addComponent(cmbfecha_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cmbfecha_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jCanulado))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dcfecha_desde, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(dcfecha_hasta, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnbuscar_fecha))
+                    .addComponent(btnimprimir_filtro_gasto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(cmbfecha_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel18))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jCanulado)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(cmbfecha_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel18))
+                    .addComponent(dcfecha_desde, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(dcfecha_hasta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnbuscar_fecha))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jCanulado)
+                    .addComponent(btnimprimir_filtro_gasto))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -478,10 +525,10 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         panel_tabla.setLayout(panel_tablaLayout);
         panel_tablaLayout.setHorizontalGroup(
             panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 620, Short.MAX_VALUE)
+            .addComponent(jScrollPane1)
             .addGroup(panel_tablaLayout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jFsuma_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panel_tablaLayout.setVerticalGroup(
@@ -492,7 +539,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
                 .addGroup(panel_tablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jFsuma_gasto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -552,7 +599,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private void cmbfecha_gastoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cmbfecha_gastoItemStateChanged
         // TODO add your handling code here:
-        actualizar_tabla_gasto();
+        actualizar_tabla_gasto(1);
     }//GEN-LAST:event_cmbfecha_gastoItemStateChanged
 
     private void btnanularActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnanularActionPerformed
@@ -562,7 +609,7 @@ public class FrmGasto extends javax.swing.JInternalFrame {
 
     private void jCanuladoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCanuladoActionPerformed
         // TODO add your handling code here:
-        actualizar_tabla_gasto();
+        actualizar_tabla_gasto(1);
     }//GEN-LAST:event_jCanuladoActionPerformed
 
     private void lblgasto_tipoMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblgasto_tipoMouseMoved
@@ -580,13 +627,27 @@ public class FrmGasto extends javax.swing.JInternalFrame {
         evetbl.abrir_TablaJinternal(new FrmGasto_tipo());
     }//GEN-LAST:event_lblgasto_tipoMouseClicked
 
+    private void btnbuscar_fechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscar_fechaActionPerformed
+        // TODO add your handling code here:
+        actualizar_tabla_gasto(2);
+    }//GEN-LAST:event_btnbuscar_fechaActionPerformed
+
+    private void btnimprimir_filtro_gastoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnimprimir_filtro_gastoActionPerformed
+        // TODO add your handling code here:
+        boton_imprimir_filtro_gasto();
+    }//GEN-LAST:event_btnimprimir_filtro_gastoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnanular;
+    private javax.swing.JButton btnbuscar_fecha;
     private javax.swing.JButton btnbuscar_gasto_tipo;
     private javax.swing.JButton btnguardar;
+    private javax.swing.JButton btnimprimir_filtro_gasto;
     private javax.swing.JButton btnnuevo;
     private javax.swing.JComboBox<String> cmbfecha_gasto;
+    private com.toedter.calendar.JDateChooser dcfecha_desde;
+    private com.toedter.calendar.JDateChooser dcfecha_hasta;
     private javax.swing.JCheckBox jCanulado;
     private javax.swing.JFormattedTextField jFsuma_gasto;
     private javax.swing.JLabel jLabel1;

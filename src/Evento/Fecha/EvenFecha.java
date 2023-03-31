@@ -7,6 +7,7 @@ package Evento.Fecha;
 
 import BASEDATO.EvenConexion;
 import Evento.Mensaje.EvenMensajeJoptionpane;
+import com.toedter.calendar.JDateChooser;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -343,5 +344,23 @@ public class EvenFecha {
         cal.setTime(date);
         int month = cal.get(Calendar.MONTH);
         return month+1;
+    }
+    public void setFechaDCSistema(JDateChooser dcfecha) {
+        java.util.Date date = new java.util.Date();
+        dcfecha.setDate(date);
+    }
+    private  String getfechaDCStringFormat(JDateChooser dcfecha) {
+        String ifecha;
+        java.util.Date date = dcfecha.getDate();
+        SimpleDateFormat sdf = new SimpleDateFormat(formato_fecha);
+        ifecha = (sdf.format(date));
+        return ifecha;
+    }
+    public String getSting_filtro_fecha_desde_hasta(JDateChooser dcfecha_desde,JDateChooser dcfecha_hasta, String campofecha){
+        String fil_fecha="";
+        String fec_desde=getfechaDCStringFormat(dcfecha_desde);
+        String fec_hasta=getfechaDCStringFormat(dcfecha_hasta);
+        fil_fecha="and date("+campofecha+")>='"+fec_desde+"' and date("+campofecha+")<='"+fec_hasta+"'";
+        return fil_fecha;
     }
 }

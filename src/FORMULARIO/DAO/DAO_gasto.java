@@ -19,13 +19,14 @@ public class DAO_gasto {
     EvenJasperReport rep = new EvenJasperReport();
     EvenMensajeJoptionpane evemen = new EvenMensajeJoptionpane();
     EvenFecha evefec = new EvenFecha();
-    EveVarGlobal varglo=new EveVarGlobal();
+    EveVarGlobal varglo = new EveVarGlobal();
     private String mensaje_insert = "GASTO GUARDADO CORRECTAMENTE";
     private String mensaje_update = "GASTO MODIFICADO CORECTAMENTE";
     private String sql_insert = "INSERT INTO gasto(idgasto,fecha_creado,creado_por,fecha,descripcion,monto_gasto,estado,fk_idgasto_tipo,fk_idusuario) VALUES (?,?,?,?,?,?,?,?,?);";
     private String sql_update = "UPDATE gasto SET fecha_creado=?,creado_por=?,fecha=?,descripcion=?,monto_gasto=?,estado=?,fk_idgasto_tipo=?,fk_idusuario=? WHERE idgasto=?;";
     private String sql_cargar = "SELECT idgasto,fecha_creado,creado_por,fecha,descripcion,monto_gasto,estado,fk_idgasto_tipo,fk_idusuario FROM gasto WHERE idgasto=";
     private String sql_anular = "UPDATE gasto SET estado=? WHERE idgasto=?;";
+
     public void insertar_gasto(Connection conn, gasto gas) {
         gas.setC1idgasto(eveconn.getInt_ultimoID_mas_uno(conn, gas.getTb_gasto(), gas.getId_idgasto()));
         String titulo = "insertar_gasto";
@@ -72,6 +73,7 @@ public class DAO_gasto {
             evemen.mensaje_error(e, sql_update + "\n" + gas.toString(), titulo);
         }
     }
+
     public void anular_gasto(Connection conn, gasto gas) {
         String titulo = "anular_gasto";
         PreparedStatement pst = null;
@@ -87,6 +89,7 @@ public class DAO_gasto {
             evemen.mensaje_error(e, sql_anular + "\n" + gas.toString(), titulo);
         }
     }
+
     public void cargar_gasto(Connection conn, gasto gas, int idgasto) {
         String titulo = "Cargar_gasto";
         try {
@@ -108,12 +111,12 @@ public class DAO_gasto {
         }
     }
 
-    public void actualizar_tabla_gasto(Connection conn, JTable tbltabla,String fecha) {
-        String sql_select = "SELECT g.idgasto,to_char(g.fecha,'"+evefec.getFormato_fecha()+"') as fecha,gt.nombre,"
-                + "trim(to_char(g.monto_gasto,'"+varglo.getFormato_numero_3c()+"')) as monto,g.estado,g.monto_gasto "
-            + "FROM gasto g,gasto_tipo gt "
-            + "where g.fk_idgasto_tipo=gt.idgasto_tipo "+fecha
-            + " order by 1 desc;";
+    public void actualizar_tabla_gasto(Connection conn, JTable tbltabla, String fecha) {
+        String sql_select = "SELECT g.idgasto,to_char(g.fecha,'" + evefec.getFormato_fecha() + "') as fecha,gt.nombre,\n"
+                + "trim(to_char(g.monto_gasto,'" + varglo.getFormato_numero_3c() + "')) as monto,g.estado,g.monto_gasto \n"
+                + "FROM gasto g,gasto_tipo gt \n"
+                + "where g.fk_idgasto_tipo=gt.idgasto_tipo " + fecha
+                + " order by 1 desc;";
         eveconn.Select_cargar_jtable(conn, sql_select, tbltabla);
         evejt.ocultar_columna(tbltabla, 5);
         evejt.alinear_derecha_columna(tbltabla, 3);
@@ -121,7 +124,24 @@ public class DAO_gasto {
     }
 
     public void ancho_tabla_gasto(JTable tbltabla) {
-        int Ancho[] = {5,20,40, 20, 15,1};
+        int Ancho[] = {5, 20, 40, 20, 15, 1};
         evejt.setAnchoColumnaJtable(tbltabla, Ancho);
+    }
+
+    public void imprimir_gasto_filtro(Connection conn, String filtro) {
+        String sql_select = "SELECT g.idgasto as idg,\n"
+                + "to_char(g.fecha,'" + evefec.getFormato_fecha() + "') as fecha,\n"
+                + "gt.nombre as tipo,\n"
+                + "g.descripcion as descripcion,\n"
+                + "g.estado as estado,\n"
+                + "g.monto_gasto as monto \n"
+                + "FROM gasto g,gasto_tipo gt \n"
+                + "where g.fk_idgasto_tipo=gt.idgasto_tipo \n"
+                + "and g.estado='EMITIDO'  \n"+filtro
+                + " order by g.idgasto desc;";
+        String titulonota = "FILTRO GASTO";
+        String direccion = "src/REPORTE/GASTO/repFiltroGasto.jrxml";
+        String rutatemp = "Filtr_gasto_" + evefec.getString_formato_fecha();
+        rep.imprimir_jasper_o_pdf(conn, sql_select, titulonota, direccion, rutatemp);
     }
 }

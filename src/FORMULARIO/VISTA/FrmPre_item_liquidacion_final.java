@@ -482,9 +482,9 @@ public class FrmPre_item_liquidacion_final extends javax.swing.JInternalFrame {
 
     private void btndeletarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndeletarActionPerformed
         // TODO add your handling code here:
-        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
+//        if(DAOusu.getboo_habilitar_boton_eliminar(conn)){
             boton_eliminado();
-        }
+//        }
     }//GEN-LAST:event_btndeletarActionPerformed
 
 
